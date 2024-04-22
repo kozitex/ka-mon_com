@@ -36,6 +36,7 @@ export default class Kageigeta {
     this.scene.background = new THREE.Color( this.backColor );
 
     // 外枠の描画
+    // this.drawLine();
     this.drawFrame();
 
     // ガイドラインの描画
@@ -96,21 +97,55 @@ export default class Kageigeta {
     this.render();
   }
 
+  // drawLine = () => {
+  //   const vertex = 1240;
+  //   const shape = new THREE.Shape()
+  //           .moveTo(- vertex,   vertex)
+  //           .lineTo(  vertex,   vertex)
+  //           .lineTo(  vertex, - vertex)
+  //           .lineTo(- vertex, - vertex)
+  //           .lineTo(- vertex,   vertex);
+  //   const material = new THREE.LineBasicMaterial({
+  //   // const material = new THREE.MeshBasicMaterial({
+  //     color: this.guideColor,
+  //     side: THREE.DoubleSide,
+      
+  //   });
+  //   // shape.autoClose = true;
+
+  //   const points = shape.getPoints();
+  //   const geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+
+  //   // const geometry = new THREE.ShapeGeometry(shape);
+  //   const mesh = new THREE.Line(geometry, material);
+  //   this.scene.add(mesh);
+
+  // }
+
   // フレームの描画
   drawFrame = () => {
     // 外枠の描画
     const material = new THREE.LineBasicMaterial({
-      color: this.guideColor
+      color: this.guideColor,
+      side: THREE.DoubleSide
     });
+    const vertex = 1240;
+    // this.vertex = 0;
     const points = [];
-    points.push( new THREE.Vector3( -1240,  1240, 0 ) );
-    points.push( new THREE.Vector3(  1240,  1240, 0 ) );
-    points.push( new THREE.Vector3(  1240, -1240, 0 ) );
-    points.push( new THREE.Vector3( -1240, -1240, 0 ) );
-    points.push( new THREE.Vector3( -1240,  1240, 0 ) );
+    points.push( new THREE.Vector3(- vertex,   vertex, 0));
+    points.push( new THREE.Vector3(  vertex,   vertex, 0));
+    points.push( new THREE.Vector3(  vertex, - vertex, 0));
+    points.push( new THREE.Vector3(- vertex, - vertex, 0));
+    points.push( new THREE.Vector3(- vertex,   vertex, 0));
+    // points.push( new THREE.Vector3(- this.vertex.value,   this.vertex.value, 0));
+    // points.push( new THREE.Vector3(  this.vertex.value,   this.vertex.value, 0));
+    // points.push( new THREE.Vector3(  this.vertex.value, - this.vertex.value, 0));
+    // points.push( new THREE.Vector3(- this.vertex.value, - this.vertex.value, 0));
+    // points.push( new THREE.Vector3(- this.vertex.value,   this.vertex.value, 0));
     const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    const line = new THREE.Line( geometry, material );
-    this.scene.add( line );
+    this.line = new THREE.Line( geometry, material );
+    this.scene.add( this.line );
 
     // // 外枠の描画（背景付き）
     // const vertex = 1240;
@@ -130,6 +165,7 @@ export default class Kageigeta {
 
   // ガイドラインの描画
   drawGuideline = () => {
+    const base = new THREE.Vector3(16130, 12390, 0);
     const guideVertices = [
       {start: {x: -1239, y:     0}, end: {x:   374, y:  1239}},
       {start: {x: -1239, y:   -74}, end: {x:   472, y:  1239}},
@@ -151,10 +187,14 @@ export default class Kageigeta {
           side: THREE.DoubleSide,
         });
         const points = [];
-        const startX = i == 0 ? vertex.start.x : -vertex.start.x;
-        const endX = i == 0 ? vertex.end.x : -vertex.end.x;
-        points.push(new THREE.Vector3(startX, vertex.start.y, 0));
-        points.push(new THREE.Vector3(endX, vertex.end.y, 0));
+        // const startX = i == 0 ? vertex.start.x : -vertex.start.x;
+        // const endX = i == 0 ? vertex.end.x : -vertex.end.x;
+        // const start = new THREE.Vector3(startX, vertex.start.y, 0);
+        // const end = new THREE.Vector3(endX, vertex.end.y, 0);
+        const start = new THREE.Vector3(i == 0 ? vertex.start.x - 16130 : - vertex.start.x + 16130, vertex.start.y - 12390, 0);
+        const end = new THREE.Vector3(i == 0 ? vertex.end.x + 16130 : - vertex.end.x - 16130, vertex.end.y + 12390, 0);
+        points.push(i == 0 ? start : start.negate());
+        points.push(i == 0 ? end : end.negate());
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         const line = new THREE.Line( geometry, material );
         this.scene.add( line );
@@ -265,9 +305,6 @@ export default class Kageigeta {
     this.scene.add(mesh);
   }
 
-
-  // 塗りつぶし図形の描画
-
   onWindowResize = () => {
     this.w = window.innerWidth;
     this.h = window.innerHeight
@@ -285,6 +322,17 @@ export default class Kageigeta {
     requestAnimationFrame(() => this.render());
 
     const sec = performance.now() / 1000;
+
+    const vertex = 1240;
+    const points = [];
+    points.push( new THREE.Vector3(- vertex,   vertex, 0));
+    points.push( new THREE.Vector3(  vertex,   vertex, 0));
+    points.push( new THREE.Vector3(  vertex, - vertex, 0));
+    points.push( new THREE.Vector3(- vertex, - vertex, 0));
+    // points.push( new THREE.Vector3(- vertex,   vertex, 0));
+
+    // this.line.geometry. .setFromPoints(points);
+    this.line.geometry.setDrawRange(0, 2);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
