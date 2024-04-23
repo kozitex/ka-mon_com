@@ -8,6 +8,8 @@ export default class Kageigeta {
     this.frontColor = 0xffffff;
     this.backColor  = 0x111111;
     this.guideColor = 0x808080;
+    this.gridColor = 0x333333;
+    this.gridThinColor = 0x1a1a1a;
 
     // ウィンドウサイズ
     this.w = window.innerWidth;
@@ -29,15 +31,32 @@ export default class Kageigeta {
 
     // カメラ
     this.camera = new THREE.PerspectiveCamera( 45, this.w / this.h, 1, 10000 );
-    this.camera.position.set( 0, 0, 4000 );
+    this.camera.position.set( 0, 0, 5000 );
 
     // シーン
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color( this.backColor );
 
-    // 外枠の描画
-    // this.drawLine();
+    this.ceiling = 1600;
+    this.guidelines = [];
+    this.mainlines = [];
+    this.count = 0;
+    this.clock = 0;
+    this.f =[1280, 1180, 1060, 960, 500, 400];
+    this.typeNum = [
+      [{type: 0, num: 2}, {type: 3, num: 2}],
+      [{type: 3, num: 2}, {type: 0, num: 0}],
+      [{type: 0, num: 0}, {type: 3, num: 5}],
+      [{type: 3, num: 5}, {type: 0, num: 2}],
+      [{type: 0, num: 2}, {type: 2, num: 5}],
+      [{type: 2, num: 5}, {type: 0, num: 0}],
+      [{type: 0, num: 0}, {type: 2, num: 2}],
+      [{type: 2, num: 2}, {type: 0, num: 2}],
+    ];
+
+    // フレーム・グリッドの描画
     this.drawFrame();
+    this.drawGrid();
 
     // ガイドラインの描画
     this.drawGuideline();
@@ -76,14 +95,15 @@ export default class Kageigeta {
     ];
 
     // 本線の描画（外側の表）
-    this.drawMainLine(mainOuter1);
-    this.drawMainLine(mainOuter2);
-    this.drawMainLine(mainInner1);
-    this.drawMainLine(mainInner2);
+    this.drawMainLine();
+    // this.drawMainLine(mainOuter1);
+    // this.drawMainLine(mainOuter2);
+    // this.drawMainLine(mainInner1);
+    // this.drawMainLine(mainInner2);
 
     // 塗りつぶし図形の描画
-    this.drawMainFill(mainOuter1, mainOuter2);
-    this.drawMainFill(mainInner1, mainInner2);
+    // this.drawMainFill(mainOuter1, mainOuter2);
+    // this.drawMainFill(mainInner1, mainInner2);
 
     const controls = new OrbitControls( this.camera, this.renderer.domElement);
     controls.target.set( 0, 0, 0 );
@@ -97,143 +117,231 @@ export default class Kageigeta {
     this.render();
   }
 
-  // drawLine = () => {
-  //   const vertex = 1240;
-  //   const shape = new THREE.Shape()
-  //           .moveTo(- vertex,   vertex)
-  //           .lineTo(  vertex,   vertex)
-  //           .lineTo(  vertex, - vertex)
-  //           .lineTo(- vertex, - vertex)
-  //           .lineTo(- vertex,   vertex);
-  //   const material = new THREE.LineBasicMaterial({
-  //   // const material = new THREE.MeshBasicMaterial({
-  //     color: this.guideColor,
-  //     side: THREE.DoubleSide,
-      
-  //   });
-  //   // shape.autoClose = true;
-
-  //   const points = shape.getPoints();
-  //   const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-
-  //   // const geometry = new THREE.ShapeGeometry(shape);
-  //   const mesh = new THREE.Line(geometry, material);
-  //   this.scene.add(mesh);
-
-  // }
-
   // フレームの描画
   drawFrame = () => {
-    // 外枠の描画
+    const framePoints = [
+      {x: - this.ceiling, y:   this.ceiling},
+      {x:   this.ceiling, y:   this.ceiling},
+      {x:   this.ceiling, y: - this.ceiling},
+      {x: - this.ceiling, y: - this.ceiling},
+      {x: - this.ceiling, y:   this.ceiling},
+      {x: - this.ceiling, y:            0},
+      {x:   this.ceiling, y:            0},
+      {x:            0, y:            0},
+      {x:            0, y:   this.ceiling},
+      {x:            0, y: - this.ceiling},
+    ];
+    const points = [];
+    framePoints.forEach((point) => {
+      points.push( new THREE.Vector3(point.x, point.y, 0));
+    });
+    const geometry = new THREE.BufferGeometry().setFromPoints( points );
     const material = new THREE.LineBasicMaterial({
-      color: this.guideColor,
+      color: this.gridColor,
       side: THREE.DoubleSide
     });
-    const vertex = 1240;
-    // this.vertex = 0;
-    const points = [];
-    points.push( new THREE.Vector3(- vertex,   vertex, 0));
-    points.push( new THREE.Vector3(  vertex,   vertex, 0));
-    points.push( new THREE.Vector3(  vertex, - vertex, 0));
-    points.push( new THREE.Vector3(- vertex, - vertex, 0));
-    points.push( new THREE.Vector3(- vertex,   vertex, 0));
-    // points.push( new THREE.Vector3(- this.vertex.value,   this.vertex.value, 0));
-    // points.push( new THREE.Vector3(  this.vertex.value,   this.vertex.value, 0));
-    // points.push( new THREE.Vector3(  this.vertex.value, - this.vertex.value, 0));
-    // points.push( new THREE.Vector3(- this.vertex.value, - this.vertex.value, 0));
-    // points.push( new THREE.Vector3(- this.vertex.value,   this.vertex.value, 0));
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
     this.line = new THREE.Line( geometry, material );
     this.scene.add( this.line );
+  }
 
-    // // 外枠の描画（背景付き）
-    // const vertex = 1240;
-    // const shape = new THREE.Shape()
-    //         .moveTo(- vertex,   vertex)
-    //         .lineTo(  vertex,   vertex)
-    //         .lineTo(  vertex, - vertex)
-    //         .lineTo(- vertex, - vertex);
-    // const material = new THREE.MeshBasicMaterial({
-    //   color: this.frontColor,
-    //   side: THREE.DoubleSide
-    // });
-    // const geometry = new THREE.ShapeGeometry(shape);
-    // const mesh = new THREE.Mesh(geometry, material);
-    // this.scene.add(mesh);
+  // グリッドの描画
+  drawGrid = () => {
+    const start = - this.ceiling;
+    for (var i = 0;i <= 1;i ++) {
+      var axis = start;
+      for (var j = 0;j <= 30;j ++) {
+        axis += 100;
+        if (axis == 0) continue;
+        const points = [];
+        if (i == 0) {
+          points.push( new THREE.Vector3(axis,   this.ceiling, 0));
+          points.push( new THREE.Vector3(axis, - this.ceiling, 0));
+        } else {
+          points.push( new THREE.Vector3(   this.ceiling, axis, 0));
+          points.push( new THREE.Vector3( - this.ceiling, axis, 0));
+        }
+        const geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const material = new THREE.LineBasicMaterial({
+          color: this.gridThinColor,
+          side: THREE.DoubleSide
+        });
+        this.line = new THREE.Line( geometry, material );
+        this.scene.add( this.line );
+      }
+    }
   }
 
   // ガイドラインの描画
   drawGuideline = () => {
-    const base = new THREE.Vector3(16130, 12390, 0);
-    const guideVertices = [
-      {start: {x: -1239, y:     0}, end: {x:   374, y:  1239}},
-      {start: {x: -1239, y:   -74}, end: {x:   472, y:  1239}},
-      {start: {x: -1239, y:  -160}, end: {x:   584, y:  1239}},
-      {start: {x: -1239, y:  -234}, end: {x:   680, y:  1239}},
-      {start: {x: -1239, y:  -550}, end: {x:  1092, y:  1239}},
-      {start: {x: -1239, y:  -623}, end: {x:  1187, y:  1239}},
-      {start: {x: -1186, y: -1239}, end: {x:  1239, y:   622}},
-      {start: {x: -1091, y: -1239}, end: {x:  1239, y:   549}},
-      {start: {x:  -680, y: -1239}, end: {x:  1239, y:   234}},
-      {start: {x:  -584, y: -1239}, end: {x:  1239, y:   160}},
-      {start: {x:  -469, y: -1239}, end: {x:  1239, y:    71}},
-      {start: {x:  -373, y: -1239}, end: {x:  1239, y:     0}},
-    ];
-    for(var i = 0;i <= 1;i ++) {
-      guideVertices.forEach((vertex) => {
+    for (var i = 0;i <= 3;i ++) {
+      for (var j = 0;j <= 5;j ++) {
+        const points = this.getGuidelineVector(i, j);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
         const material = new THREE.LineBasicMaterial({
           color: this.guideColor,
           side: THREE.DoubleSide,
         });
-        const points = [];
-        // const startX = i == 0 ? vertex.start.x : -vertex.start.x;
-        // const endX = i == 0 ? vertex.end.x : -vertex.end.x;
-        // const start = new THREE.Vector3(startX, vertex.start.y, 0);
-        // const end = new THREE.Vector3(endX, vertex.end.y, 0);
-        const start = new THREE.Vector3(i == 0 ? vertex.start.x - 16130 : - vertex.start.x + 16130, vertex.start.y - 12390, 0);
-        const end = new THREE.Vector3(i == 0 ? vertex.end.x + 16130 : - vertex.end.x - 16130, vertex.end.y + 12390, 0);
-        points.push(i == 0 ? start : start.negate());
-        points.push(i == 0 ? end : end.negate());
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
         const line = new THREE.Line( geometry, material );
+        this.guidelines.push(line);
         this.scene.add( line );
-      });
+      }
     }
   }
 
-  // 本線の描画
-  drawMainLine = (vertices) => {
-    const material = new THREE.LineBasicMaterial({
-      color: this.frontColor,
-      side: THREE.DoubleSide,
-    });
-    const points = [];
-    const num = vertices.length - 1;
-    for (var i = 0;i <= 3;i ++) {
-      for (var j = 0;j <= num;j ++) {
-        var cooX;
-        var cooY;
-        if (i == 0) {
-          cooX = vertices[j].x;
-          cooY = vertices[j].y;
-        } else if (i == 1) {
-          cooX = - vertices[num - j].x;
-          cooY = vertices[num - j].y;
-        } else if (i == 2) {
-          cooX = - vertices[j].x;
-          cooY = - vertices[j].y;
-
-        } else if (i == 3) {
-          cooX = vertices[num - j].x;
-          cooY = - vertices[num - j].y;
-        }
-        points.push(new THREE.Vector3(cooX, cooY, 0));
-      }
+  // ガイドラインの方程式
+  guidelineEq = (type, num, x, y) => {
+    // const f =[1280, 1180, 1060, 960, 500, 400];
+    var pm = this.getPmType(type);
+    if (y == undefined) {
+      return pm[0] * 0.8 * x + pm[1] * this.f[num];
+    } else {
+      return pm[2] * 1.25 * y - pm[3] * 1.25 * this.f[num];
     }
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.Line(geometry, material);
-    this.scene.add(line);
+  }
+
+  // 正負タイプを返す
+  getPmType = (type) => {
+    var pm = [];
+    switch (type) {
+      case 0:
+        pm = [1, 1, 1, 1];
+        break;
+      case 1:
+        pm = [1, -1, 1, -1];
+        break;
+      case 2:
+        pm = [-1, 1, -1, -1];
+        break;
+      case 3:
+        pm = [-1, -1, -1, 1];
+        break;
+    }
+    return pm;
+  } 
+
+  // ガイドラインの始点・終点の座標を取得
+  getGuidelineVector = (i, j) => {
+    var points = [];
+    var interX, interY;
+    switch (i) {
+      case 0:
+        interX = -1600, interY =  1600;
+        break;
+      case 1:
+        interX =  1600, interY = -1600;
+        break;
+      case 2:
+        interX =  1600, interY =  1600;
+        break;
+      case 3:
+        interX = -1600, interY = -1600;
+        break;
+    }
+    const start = {x: interX, y: this.guidelineEq(i, j, interX, undefined)};
+    const end   = {x: this.guidelineEq(i, j, undefined, interY), y: interY};
+
+    points.push(new THREE.Vector3(start.x, start.y, 0));
+
+    const pitch = (end.x - start.x) / 100;
+    for (var k = 0;k <= 99;k ++) {
+      const midX = start.x + (pitch * k);
+      const mid = {x: midX, y: this.guidelineEq(i, j, midX, undefined)}
+      points.push(new THREE.Vector3(mid.x, mid.y, 0));
+    }
+    points.push(new THREE.Vector3(end.x, end.y, 0));
+    return points;
+  }
+
+  // 本線の描画
+  // drawMainLine = (vertices) => {
+  //   const material = new THREE.LineBasicMaterial({
+  //     color: this.frontColor,
+  //     side: THREE.DoubleSide,
+  //   });
+  //   const points = [];
+  //   const num = vertices.length - 1;
+  //   for (var i = 0;i <= 3;i ++) {
+  //     for (var j = 0;j <= num;j ++) {
+  //       var cooX;
+  //       var cooY;
+  //       if (i == 0) {
+  //         cooX = vertices[j].x;
+  //         cooY = vertices[j].y;
+  //       } else if (i == 1) {
+  //         cooX = - vertices[num - j].x;
+  //         cooY = vertices[num - j].y;
+  //       } else if (i == 2) {
+  //         cooX = - vertices[j].x;
+  //         cooY = - vertices[j].y;
+
+  //       } else if (i == 3) {
+  //         cooX = vertices[num - j].x;
+  //         cooY = - vertices[num - j].y;
+  //       }
+  //       points.push(new THREE.Vector3(cooX, cooY, 0));
+  //     }
+  //   }
+  //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //   const line = new THREE.Line(geometry, material);
+  //   this.scene.add(line);
+  // }
+
+
+  drawMainLine = () => {
+    for (var k = 0;k <= 3;k ++) {
+      const points = [];
+      for (var i = 0;i <= this.typeNum.length - 1;i ++) {
+        const typeNum = this.typeNum[i];
+        var coor = this.intersect(typeNum[0].type, typeNum[0].num, typeNum[1].type, typeNum[1].num);
+        if (k == 1) {
+          coor.x = - coor.x;
+        } else if (k == 2) {
+          coor.x = - coor.x, coor.y = - coor.y;
+        } else if (k == 3) {
+          coor.y = - coor.y;
+        }
+        // console.log(k, coor.x, coor.y);
+        // if (i > 0) {
+        //   const preTypeNum = this.typeNum[i - 1];
+        //   const preCoor = this.intersect(preTypeNum[0].type, preTypeNum[0].num, preTypeNum[1].type, preTypeNum[1].num);
+        //   if (k == 1) {
+        //     preCoor.x = - preCoor.x;
+        //   } else if (k == 2) {
+        //     preCoor.x = - preCoor.x, preCoor.y = - preCoor.y;
+        //   } else if (k == 3) {
+        //     preCoor.y = - preCoor.y;
+        //   }
+        //   console.log(k, preCoor.x, preCoor.y);
+        //   const pitch = (coor.x - preCoor.x) / 10;
+        //   for (var j = 0;j <= 9;j ++) {
+        //     const divX = preCoor.x + (pitch * j);
+        //     const divY = this.guidelineEq(preTypeNum[1].type, preTypeNum[1].num, divX, undefined);
+        //     points.push(new THREE.Vector3(divX, divY, 0));
+        //   }
+        // }
+        // console.log(coor.x, coor.y);
+        points.push(new THREE.Vector3(coor.x, coor.y, 0));
+      }
+      const material = new THREE.LineBasicMaterial({
+        color: this.frontColor,
+        side: THREE.DoubleSide,
+      });
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(geometry, material);
+      this.mainlines.push(line);
+      this.scene.add(line);
+    }
+  }
+
+  // ２直線の交点を求める式
+  intersect = (type1, num1, type2, num2) => {
+    var pm1 = this.getPmType(type1);
+    var pm2 = this.getPmType(type2);
+    // console.log(pm1, pm2);
+    const interX = (-pm1[1] * this.f[num1] + pm2[1] * this.f[num2]) / (0.8 * (pm1[0] - pm2[0]));
+    const interY = pm1[0] * 0.8 * interX + pm1[1] * this.f[num1];
+    // console.log(interX, interY);
+    return {x: interX, y: interY};
   }
 
   // 塗りつぶし図形の描画
@@ -323,16 +431,16 @@ export default class Kageigeta {
 
     const sec = performance.now() / 1000;
 
-    const vertex = 1240;
-    const points = [];
-    points.push( new THREE.Vector3(- vertex,   vertex, 0));
-    points.push( new THREE.Vector3(  vertex,   vertex, 0));
-    points.push( new THREE.Vector3(  vertex, - vertex, 0));
-    points.push( new THREE.Vector3(- vertex, - vertex, 0));
-    // points.push( new THREE.Vector3(- vertex,   vertex, 0));
+    this.clock ++;
 
-    // this.line.geometry. .setFromPoints(points);
-    this.line.geometry.setDrawRange(0, 2);
+    // console.log(this.count, this.count - 50);
+    this.guidelines.forEach((guideline) => {
+      guideline.geometry.setDrawRange(0, this.count);
+    });
+    this.mainlines.forEach((mainline) => {
+      mainline.geometry.setDrawRange(0, this.count - 110);
+    });
+    if (this.clock%2 == 0) this.count ++;
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
