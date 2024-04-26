@@ -2,21 +2,22 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import Grid from './grid.js';
 
 export default class Kageigeta {
   constructor() {
-    this.frontColor = 0xffffff;
-    this.backColor  = 0x111111;
-    this.guideColor = 0x808080;
-    this.gridColor = 0x333333;
+    this.frontColor    = 0xffffff;
+    this.backColor     = 0x111111;
+    this.guideColor    = 0x666666;
+    this.gridColor     = 0x333333;
     this.gridThinColor = 0x1a1a1a;
 
     // ウィンドウサイズ
     this.w = window.innerWidth;
     this.h = window.innerHeight
 
-    // スクロール量
-    this.scroll = 0;
+    // フレームのサイズ
+    this.size = 1600;
 
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({
@@ -38,78 +39,135 @@ export default class Kageigeta {
     this.scene.background = new THREE.Color( this.backColor );
 
     this.ceiling = 1600;
+    this.grids = [];
     this.guidelines = [];
     this.mainlines = [];
+    this.mainfills = [];
     this.count = 0;
-    this.clock = 0;
-    this.f =[1280, 1180, 1060, 960, 500, 400];
-    this.typeNum = [
-      [{type: 0, num: 2}, {type: 3, num: 2}],
-      [{type: 3, num: 2}, {type: 0, num: 0}],
-      [{type: 0, num: 0}, {type: 3, num: 5}],
-      [{type: 3, num: 5}, {type: 0, num: 2}],
-      [{type: 0, num: 2}, {type: 2, num: 5}],
-      [{type: 2, num: 5}, {type: 0, num: 0}],
-      [{type: 0, num: 0}, {type: 2, num: 2}],
-      [{type: 2, num: 2}, {type: 0, num: 2}],
+    this.guideAxises = [
+      [ 1,  1,  1,  1],
+      [ 1, -1,  1, -1],
+      [-1,  1, -1, -1],
+      [-1, -1, -1,  1]
+    ];
+    this.mainAxises = [
+      {x:  1, y:  1},
+      {x: -1, y:  1},
+      {x: -1, y: -1},
+      {x:  1, y: -1},
+    ];
+
+    this.a = [0.8, -0.8];
+    this.b = [1280, 1180, 1060, 960, 500, 400];
+    
+
+    this.nums = [1280, 1180, 1060, 960, 500, 400];
+    this.crossGroups = [
+      [
+        [{type: 0, num: 2}, {type: 3, num: 2}],
+        [{type: 3, num: 2}, {type: 0, num: 0}],
+        [{type: 0, num: 0}, {type: 3, num: 5}],
+        [{type: 3, num: 5}, {type: 0, num: 2}],
+        [{type: 0, num: 2}, {type: 2, num: 5}],
+        [{type: 2, num: 5}, {type: 0, num: 0}],
+        [{type: 0, num: 0}, {type: 2, num: 2}],
+        [{type: 2, num: 2}, {type: 0, num: 2}],
+      ],
+      [
+        [{type: 0, num: 3}, {type: 3, num: 3}],
+        [{type: 3, num: 3}, {type: 0, num: 1}],
+        [{type: 0, num: 1}, {type: 3, num: 4}],
+        [{type: 3, num: 4}, {type: 0, num: 3}],
+        [{type: 0, num: 3}, {type: 2, num: 4}],
+        [{type: 2, num: 4}, {type: 0, num: 1}],
+        [{type: 0, num: 1}, {type: 2, num: 3}],
+        [{type: 2, num: 3}, {type: 0, num: 3}],
+      ],
+      [
+        [{type: 3, num: 4}, {type: 0, num: 4}],
+        [{type: 0, num: 4}, {type: 2, num: 4}],
+      ],
+      [
+        [{type: 3, num: 5}, {type: 0, num: 5}],
+        [{type: 0, num: 5}, {type: 2, num: 5}],
+      ],
     ];
 
     // フレーム・グリッドの描画
-    this.drawFrame();
-    this.drawGrid();
+    this.grid = new Grid();
+    this.scene.add(this.grid.generate());
 
-    // ガイドラインの描画
-    this.drawGuideline();
+    // ガイドラインの作成
+    this.generateGuideline();
 
-    // 頂点の座標
-    const mainOuter1 = [
-      {x: -1031, y:     0},
-      {x: -1136, y:    78},
-      {x:  -836, y:   312},
-      {x:  -728, y:   231},
-      {x:  -301, y:   559},
-      {x:  -406, y:   641},
-      {x:  -105, y:   873},
-      {x:     0, y:   791},
-    ];
+    // 本線の作成
+    this.generateMainLine();
 
-    const mainOuter2 = [
-      {x:  -935, y:     0},
-      {x: -1039, y:    80},
-      {x:  -835, y:   237},
-      {x:  -730, y:   157},
-      {x:  -205, y:   560},
-      {x:  -308, y:   641},
-      {x:  -104, y:   797},
-      {x:     0, y:   717},
-    ];
 
-    const mainInner1 = [
-      {x:  -525, y:     0},
-      {x:     0, y:   403},
-    ];
 
-    const mainInner2 = [
-      {x:  -427, y:     0},
-      {x:     0, y:   328},
-    ];
 
-    // 本線の描画（外側の表）
-    this.drawMainLine();
-    // this.drawMainLine(mainOuter1);
-    // this.drawMainLine(mainOuter2);
-    // this.drawMainLine(mainInner1);
-    // this.drawMainLine(mainInner2);
+    // this.guideGroup1 = new THREE.Group();
+    // const as = [0.8, -0.8];
+    // const bs = [1280,  1180, -1280, -1180];
+    // as.forEach((a) => {
+    //   bs.forEach((b) => {
+    //     var startX, endY;
+    //     if ((a > 0 && b > 0) || (a < 0 && b < 0)) {
+    //       startX = -1600;
+    //     } else {
+    //       startX = 1600;
+    //     }
+    //     if (b > 0) {
+    //       endY = 1600;
+    //     } else {
+    //       endY = -1600;
+    //     }
+    //     const start = {x: startX, y: a * startX + b};
+    //     const end   = {x: (endY - b) / a, y: endY};
+
+    //     // console.log(a, b, start, end);
+
+    //     var points = [];
+    //     const divCount = 200;
+    //     for (var k = 0;k <= divCount - 1;k ++) {
+    //       const midX = THREE.MathUtils.damp(start.x, end.x, 10, k / divCount);
+    //       const mid = {x: midX, y: a * midX + b};
+    //       points.push(new THREE.Vector3(mid.x, mid.y, 0));
+    //     }
+    //     const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    //     // geometry.setDrawRange(0, 0);
+    //     const material = new THREE.LineBasicMaterial({
+    //       color: this.guideColor,
+    //       side: THREE.DoubleSide,
+    //       transparent: true
+    //     });
+    //     const line = new THREE.Line(geometry, material);
+    //     this.guideGroup1.add(line);
+    //     this.scene.add(line);
+    //   })
+    // })
+
+    // for (var i = 0;i <= as.length - 1;i ++) {
+    //   for (var j = 0;j <= bs.length - 1;j ++) {
+
+      
+    //   }
+    // }
+
+
+    // this.drawGuideline();
+
+    // 本線の描画
+    // this.drawMainLine();
 
     // 塗りつぶし図形の描画
-    // this.drawMainFill(mainOuter1, mainOuter2);
-    // this.drawMainFill(mainInner1, mainInner2);
+    // this.drawMainFill();
 
     const controls = new OrbitControls( this.camera, this.renderer.domElement);
     controls.target.set( 0, 0, 0 );
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.2;
     controls.update();
-
-    controls.addEventListener( 'change', this.render );
 
     window.addEventListener( 'resize', this.onWindowResize );
 
@@ -117,300 +175,553 @@ export default class Kageigeta {
     this.render();
   }
 
-  // フレームの描画
-  drawFrame = () => {
-    const framePoints = [
-      {x: - this.ceiling, y:   this.ceiling},
-      {x:   this.ceiling, y:   this.ceiling},
-      {x:   this.ceiling, y: - this.ceiling},
-      {x: - this.ceiling, y: - this.ceiling},
-      {x: - this.ceiling, y:   this.ceiling},
-      {x: - this.ceiling, y:            0},
-      {x:   this.ceiling, y:            0},
-      {x:            0, y:            0},
-      {x:            0, y:   this.ceiling},
-      {x:            0, y: - this.ceiling},
-    ];
-    const points = [];
-    framePoints.forEach((point) => {
-      points.push( new THREE.Vector3(point.x, point.y, 0));
-    });
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    const material = new THREE.LineBasicMaterial({
-      color: this.gridColor,
-      side: THREE.DoubleSide
-    });
-    this.line = new THREE.Line( geometry, material );
-    this.scene.add( this.line );
-  }
-
-  // グリッドの描画
-  drawGrid = () => {
-    const start = - this.ceiling;
-    for (var i = 0;i <= 1;i ++) {
-      var axis = start;
-      for (var j = 0;j <= 30;j ++) {
-        axis += 100;
-        if (axis == 0) continue;
-        const points = [];
-        if (i == 0) {
-          points.push( new THREE.Vector3(axis,   this.ceiling, 0));
-          points.push( new THREE.Vector3(axis, - this.ceiling, 0));
-        } else {
-          points.push( new THREE.Vector3(   this.ceiling, axis, 0));
-          points.push( new THREE.Vector3( - this.ceiling, axis, 0));
+  // ガイドラインを作成
+  generateGuideline = () => {
+    const a = 0.8;
+    const bs = [400, 500, 960, 1060, 1180, 1280];
+    const g = this.size;
+    const divCount = 200;
+    var start, end;
+    this.guidelineGroup = [];
+    bs.forEach((b) => {
+      const group = [];
+      for (var q = 0;q <= 3;q ++) {
+        var points = [];
+        if (q == 0) {
+          start = {x: (-g), y: (a * -g + b)};
+          end   = {x: ((g - b) / a), y: (g)};
+          for (var d = 0;d <= divCount - 1;d ++) {
+            const midX = THREE.MathUtils.damp(start.x, end.x, 10, d / divCount);
+            const mid = {x: midX, y: (a) * midX + (b)};
+            points.push(new THREE.Vector3(mid.x, mid.y, 0));
+          }
+        } else if (q == 1) {
+          start = {x: ((g - b) / -a), y: (g)};
+          end   = {x: (g), y: (-a * g + b)};
+          for (var d = 0;d <= divCount - 1;d ++) {
+            const midX = THREE.MathUtils.damp(start.x, end.x, 10, d / divCount);
+            const mid = {x: midX, y: (-a) * midX + (b)};
+            points.push(new THREE.Vector3(mid.x, mid.y, 0));
+          }
+        } else if (q == 2) {
+          start = {x: (g), y: (a * g - b)};
+          end   = {x: ((-g + b) / a), y: (-g)};
+          for (var d = 0;d <= divCount - 1;d ++) {
+            const midX = THREE.MathUtils.damp(start.x, end.x, 10, d / divCount);
+            const mid = {x: midX, y: (a) * midX + (-b)};
+            points.push(new THREE.Vector3(mid.x, mid.y, 0));
+          }
+        } else if (q == 3) {
+          start = {x: ((-g + b) / -a), y: (-g)};
+          end   = {x: (-g), y: (-a * -g - b)};
+          for (var d = 0;d <= divCount - 1;d ++) {
+            const midX = THREE.MathUtils.damp(start.x, end.x, 10, d / divCount);
+            const mid = {x: midX, y: (-a) * midX + (-b)};
+            points.push(new THREE.Vector3(mid.x, mid.y, 0));
+          }
         }
-        const geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const material = new THREE.LineBasicMaterial({
-          color: this.gridThinColor,
-          side: THREE.DoubleSide
-        });
-        this.line = new THREE.Line( geometry, material );
-        this.scene.add( this.line );
-      }
-    }
-  }
-
-  // ガイドラインの描画
-  drawGuideline = () => {
-    for (var i = 0;i <= 3;i ++) {
-      for (var j = 0;j <= 5;j ++) {
-        const points = this.getGuidelineVector(i, j);
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        geometry.setDrawRange(0, 0);
         const material = new THREE.LineBasicMaterial({
           color: this.guideColor,
           side: THREE.DoubleSide,
+          transparent: true
         });
-        const line = new THREE.Line( geometry, material );
-        this.guidelines.push(line);
-        this.scene.add( line );
+        const line = new THREE.Line(geometry, material);
+        group.push(line);
+        this.scene.add(line);
       }
-    }
+      this.guidelineGroup.push(group);
+    })
   }
 
-  // ガイドラインの方程式
-  guidelineEq = (type, num, x, y) => {
-    // const f =[1280, 1180, 1060, 960, 500, 400];
-    var pm = this.getPmType(type);
-    if (y == undefined) {
-      return pm[0] * 0.8 * x + pm[1] * this.f[num];
-    } else {
-      return pm[2] * 1.25 * y - pm[3] * 1.25 * this.f[num];
-    }
+  // 本線を作成
+  generateMainLine = () => {
+    const a = 0.8;
+    // const bs = [400, 500, 960, 1060, 1180, 1280];
+    const bs = [400, 500, 960, 1060, 500, 500, 400, 400, 1180, 1180, 1280, 1280, 960, 960, 1060, 1060];
+    const g = 0;
+    const divCount = 200;
+    var start, end;
+    this.mainlineGroup = [];
+    var index = 0;
+    bs.forEach((b) => {
+      const group = [];
+      for (var q = 0;q <= 3;q ++) {
+        var points = [];
+        if (index <= 1) {
+          var a1, b1, a2, b2, a3, b3;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -b;
+            a3 = -a, b3 =  b;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  b;
+            a3 =  a, b3 = -b;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  b;
+            a3 = -a, b3 = -b;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -b;
+            a3 =  a, b3 =  b;
+          }
+        } else if (index == 2) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 500;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 =  c;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 = -c;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 = -c;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 =  c;
+          }
+        } else if (index == 3) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 400;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 =  c;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 = -c;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 = -c;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 =  c;
+          }
+        } else if (index == 4) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 960;
+          const d = 1180;
+          if (q == 0) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 5) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 960;
+          const d = 1180;
+          if (q == 0) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 6) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 1060;
+          const d = 1280;
+          if (q == 0) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 7) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 1060;
+          const d = 1280;
+          if (q == 0) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 8) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 500;
+          const d = 960;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          }
+        } else if (index == 9) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 500;
+          const d = 960;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          }
+        } else if (index == 10) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 400;
+          const d = 1060;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          }
+        } else if (index == 11) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 400;
+          const d = 1060;
+          if (q == 0) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 1) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 2) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          } else if (q == 3) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          }
+        } else if (index == 12) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 1180;
+          const d = 960;
+          if (q == 0) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 13) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 1180;
+          const d = 960;
+          if (q == 0) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 14) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 1280;
+          const d = 1060;
+          if (q == 0) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        } else if (index == 15) {
+          var a1, b1, a2, b2, a3, b3;
+          const c = 1280;
+          const d = 1060;
+          if (q == 0) {
+            a1 = -a, b1 =  b;
+            a2 =  a, b2 =  c;
+            a3 =  a, b3 =  d;
+          } else if (q == 1) {
+            a1 =  a, b1 = -b;
+            a2 = -a, b2 =  c;
+            a3 = -a, b3 =  d;
+          } else if (q == 2) {
+            a1 = -a, b1 = -b;
+            a2 =  a, b2 = -c;
+            a3 =  a, b3 = -d;
+          } else if (q == 3) {
+            a1 =  a, b1 =  b;
+            a2 = -a, b2 = -c;
+            a3 = -a, b3 = -d;
+          }
+        }
+
+        start = {x: (b2 - b1) / (a1 - a2), y: (a1 * b2 - a2 * b1) / (a2 - a1)};
+        end   = {x: (b3 - b1) / (a1 - a3), y: (a1 * b3 - a3 * b1) / (a3 - a1)};
+        for (var d = 0;d <= divCount - 1;d ++) {
+          const midX = THREE.MathUtils.damp(start.x, end.x, 10, d / divCount);
+          const mid = {x: midX, y: a1 * midX + b1};
+          points.push(new THREE.Vector3(mid.x, mid.y, 0));
+        }
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        geometry.setDrawRange(0, 0);
+        const material = new THREE.LineBasicMaterial({
+          color: this.frontColor,
+          side: THREE.DoubleSide,
+          transparent: true
+        });
+        const line = new THREE.Line(geometry, material);
+        group.push(line);
+        this.scene.add(line);
+        // index ++;
+      }
+      this.mainlineGroup.push(group);
+      index ++;
+    })
+    // console.log(this.mainlineGroup);
   }
 
-  // 正負タイプを返す
-  getPmType = (type) => {
-    var pm = [];
-    switch (type) {
-      case 0:
-        pm = [1, 1, 1, 1];
-        break;
-      case 1:
-        pm = [1, -1, 1, -1];
-        break;
-      case 2:
-        pm = [-1, 1, -1, -1];
-        break;
-      case 3:
-        pm = [-1, -1, -1, 1];
-        break;
-    }
-    return pm;
-  } 
-
-  // ガイドラインの始点・終点の座標を取得
-  getGuidelineVector = (i, j) => {
-    var points = [];
-    var interX, interY;
-    switch (i) {
-      case 0:
-        interX = -1600, interY =  1600;
-        break;
-      case 1:
-        interX =  1600, interY = -1600;
-        break;
-      case 2:
-        interX =  1600, interY =  1600;
-        break;
-      case 3:
-        interX = -1600, interY = -1600;
-        break;
-    }
-    const start = {x: interX, y: this.guidelineEq(i, j, interX, undefined)};
-    const end   = {x: this.guidelineEq(i, j, undefined, interY), y: interY};
-
-    points.push(new THREE.Vector3(start.x, start.y, 0));
-
-    const pitch = (end.x - start.x) / 100;
-    for (var k = 0;k <= 99;k ++) {
-      const midX = start.x + (pitch * k);
-      const mid = {x: midX, y: this.guidelineEq(i, j, midX, undefined)}
-      points.push(new THREE.Vector3(mid.x, mid.y, 0));
-    }
-    points.push(new THREE.Vector3(end.x, end.y, 0));
-    return points;
-  }
-
-  // 本線の描画
-  // drawMainLine = (vertices) => {
-  //   const material = new THREE.LineBasicMaterial({
-  //     color: this.frontColor,
-  //     side: THREE.DoubleSide,
-  //   });
-  //   const points = [];
-  //   const num = vertices.length - 1;
-  //   for (var i = 0;i <= 3;i ++) {
-  //     for (var j = 0;j <= num;j ++) {
-  //       var cooX;
-  //       var cooY;
-  //       if (i == 0) {
-  //         cooX = vertices[j].x;
-  //         cooY = vertices[j].y;
-  //       } else if (i == 1) {
-  //         cooX = - vertices[num - j].x;
-  //         cooY = vertices[num - j].y;
-  //       } else if (i == 2) {
-  //         cooX = - vertices[j].x;
-  //         cooY = - vertices[j].y;
-
-  //       } else if (i == 3) {
-  //         cooX = vertices[num - j].x;
-  //         cooY = - vertices[num - j].y;
-  //       }
-  //       points.push(new THREE.Vector3(cooX, cooY, 0));
-  //     }
-  //   }
-  //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  //   const line = new THREE.Line(geometry, material);
-  //   this.scene.add(line);
+  // guidelineEqY = (index, num, x) => {
+  //   var pm = this.guideAxises[index];
+  //   return pm[0] * 0.8 * x + pm[1] * this.nums[num];
   // }
 
+  // guidelineEqX = (index, num, y) => {
+  //   var pm = this.guideAxises[index];
+  //   return pm[2] * 1.25 * y - pm[3] * 1.25 * this.nums[num];
+  // }
 
+  // // ガイドラインの始点・終点の座標を取得
+  // getGuidelineVector = (index, num) => {
+  //   var points = [];
+  //   var interX, interY;
+  //   switch (index) {
+  //     case 0:
+  //       interX = -1600, interY =  1600;
+  //       break;
+  //     case 1:
+  //       interX =  1600, interY = -1600;
+  //       break;
+  //     case 2:
+  //       interX =  1600, interY =  1600;
+  //       break;
+  //     case 3:
+  //       interX = -1600, interY = -1600;
+  //       break;
+  //   }
+  //   const start = {x: interX, y: this.guidelineEqY(index, num, interX)};
+  //   const end   = {x: this.guidelineEqX(index, num, interY), y: interY};
+
+  //   points.push(new THREE.Vector3(start.x, start.y, 0));
+  //   const divCount = 200;
+  //   for (var k = 0;k <= divCount - 1;k ++) {
+  //     const midX = THREE.MathUtils.damp(start.x, end.x, 10, k / divCount);
+  //     const mid = {x: midX, y: this.guidelineEqY(index, num, midX)}
+  //     points.push(new THREE.Vector3(mid.x, mid.y, 0));
+  //   }
+  //   points.push(new THREE.Vector3(end.x, end.y, 0));
+  //   return points;
+  // }
+
+  // 本線の描画
   drawMainLine = () => {
-    for (var k = 0;k <= 3;k ++) {
-      const points = [];
-      for (var i = 0;i <= this.typeNum.length - 1;i ++) {
-        const typeNum = this.typeNum[i];
-        var coor = this.intersect(typeNum[0].type, typeNum[0].num, typeNum[1].type, typeNum[1].num);
-        if (k == 1) {
-          coor.x = - coor.x;
-        } else if (k == 2) {
-          coor.x = - coor.x, coor.y = - coor.y;
-        } else if (k == 3) {
-          coor.y = - coor.y;
+    this.crossGroups.forEach((crossLines) => {
+      const lines = [];
+      this.mainAxises.forEach((pm) => {
+        for (var i = 0;i <= crossLines.length - 1;i ++) {
+          const points = [];
+          const crossLine = crossLines[i];
+          var coor = this.intersect(crossLine[0].type, crossLine[0].num, crossLine[1].type, crossLine[1].num);
+          // console.log(coor);
+          if (i > 0) {
+            const preTypeNum = crossLines[i - 1];
+            const preCoor = this.intersect(preTypeNum[0].type, preTypeNum[0].num, preTypeNum[1].type, preTypeNum[1].num);
+            const divCount = 150;
+            for (var j = 0;j <= divCount - 1;j ++) {
+              const divX = THREE.MathUtils.damp(coor.x, preCoor.x, 10, j / divCount);
+              const divY = this.guidelineEqY(preTypeNum[1].type, preTypeNum[1].num, divX);
+              points.push(new THREE.Vector3(divX * pm.x, divY * pm.y, 0));
+            }
+          }
+          points.push(new THREE.Vector3(coor.x * pm.x, coor.y * pm.y, 0));
+          const material = new THREE.LineBasicMaterial({
+            color: this.frontColor,
+            side: THREE.DoubleSide,
+            transparent: true
+          });
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          geometry.setDrawRange(0, 0);
+          const line = new THREE.Line(geometry, material);
+          line.computeLineDistances();
+          lines.push(line);
+          this.scene.add(line);
         }
-        // console.log(k, coor.x, coor.y);
-        // if (i > 0) {
-        //   const preTypeNum = this.typeNum[i - 1];
-        //   const preCoor = this.intersect(preTypeNum[0].type, preTypeNum[0].num, preTypeNum[1].type, preTypeNum[1].num);
-        //   if (k == 1) {
-        //     preCoor.x = - preCoor.x;
-        //   } else if (k == 2) {
-        //     preCoor.x = - preCoor.x, preCoor.y = - preCoor.y;
-        //   } else if (k == 3) {
-        //     preCoor.y = - preCoor.y;
-        //   }
-        //   console.log(k, preCoor.x, preCoor.y);
-        //   const pitch = (coor.x - preCoor.x) / 10;
-        //   for (var j = 0;j <= 9;j ++) {
-        //     const divX = preCoor.x + (pitch * j);
-        //     const divY = this.guidelineEq(preTypeNum[1].type, preTypeNum[1].num, divX, undefined);
-        //     points.push(new THREE.Vector3(divX, divY, 0));
-        //   }
-        // }
-        // console.log(coor.x, coor.y);
-        points.push(new THREE.Vector3(coor.x, coor.y, 0));
-      }
-      const material = new THREE.LineBasicMaterial({
-        color: this.frontColor,
-        side: THREE.DoubleSide,
-      });
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const line = new THREE.Line(geometry, material);
-      this.mainlines.push(line);
-      this.scene.add(line);
-    }
+      })
+      this.mainlines.push(lines);
+    })
   }
 
   // ２直線の交点を求める式
   intersect = (type1, num1, type2, num2) => {
-    var pm1 = this.getPmType(type1);
-    var pm2 = this.getPmType(type2);
-    // console.log(pm1, pm2);
-    const interX = (-pm1[1] * this.f[num1] + pm2[1] * this.f[num2]) / (0.8 * (pm1[0] - pm2[0]));
-    const interY = pm1[0] * 0.8 * interX + pm1[1] * this.f[num1];
-    // console.log(interX, interY);
+    var pm1 = this.guideAxises[type1];
+    var pm2 = this.guideAxises[type2];
+    const interX = (-pm1[1] * this.nums[num1] + pm2[1] * this.nums[num2]) / (0.8 * (pm1[0] - pm2[0]));
+    const interY = pm1[0] * 0.8 * interX + pm1[1] * this.nums[num1];
     return {x: interX, y: interY};
   }
 
   // 塗りつぶし図形の描画
-  drawMainFill = (shapeVer, pathVer) => {
-    // 塗りつぶす範囲を描画
-    const shape = new THREE.Shape();
-    const shapeNum = shapeVer.length - 1;
-    for (var i = 0;i <= 3;i ++) {
-      for (var j = 0;j <= shapeNum;j ++) {
-        var shapeVerX;
-        var shapeVerY;
-        if (i == 0) {
-          shapeVerX = shapeVer[j].x;
-          shapeVerY = shapeVer[j].y;
-        } else if (i == 1) {
-          shapeVerX = - shapeVer[shapeNum - j].x;
-          shapeVerY = shapeVer[shapeNum - j].y;
-        } else if (i == 2) {
-          shapeVerX = - shapeVer[j].x;
-          shapeVerY = - shapeVer[j].y;
-        } else if (i == 3) {
-          shapeVerX = shapeVer[shapeNum - j].x;
-          shapeVerY = - shapeVer[shapeNum - j].y;
-        }
-        if (j == 0) {
-          shape.moveTo(shapeVerX, shapeVerY);
-        } else {
-          shape.lineTo(shapeVerX, shapeVerY);
+  drawMainFill = () => {
+    for (var k = 0;k <= 2;k += 2) {
+      const shape = new THREE.Shape();
+      for (var j = 0;j <= this.mainAxises.length - 1;j ++) {
+        const pm = this.mainAxises[j];
+        const count = this.crossGroups[k].length - 1;
+        for (var i = 0;i <= count;i ++) {
+          var crossLine = this.crossGroups[k][j == 0 || j == 2 ? i : (count - i)];
+          const inter = this.intersect(crossLine[0].type, crossLine[0].num, crossLine[1].type, crossLine[1].num);
+          if (i == 0) {
+            shape.moveTo(inter.x * pm.x, inter.y * pm.y);
+          } else {
+            shape.lineTo(inter.x * pm.x, inter.y * pm.y);
+          }
         }
       }
-    }
-
-    // 切り抜く範囲を描画
-    const path = new THREE.Path();
-    const pathNum = pathVer.length - 1;
-    for (var i = 0;i <= 3;i ++) {
-      for (var j = 0;j <= pathNum;j ++) {
-        var pathVerX;
-        var pathVerY;
-        if (i == 0) {
-          pathVerX = pathVer[j].x;
-          pathVerY = pathVer[j].y;
-        } else if (i == 1) {
-          pathVerX = - pathVer[pathNum - j].x;
-          pathVerY = pathVer[pathNum - j].y;
-        } else if (i == 2) {
-          pathVerX = - pathVer[j].x;
-          pathVerY = - pathVer[j].y;
-        } else if (i == 3) {
-          pathVerX = pathVer[pathNum - j].x;
-          pathVerY = - pathVer[pathNum - j].y;
-        }
-        if (j == 0) {
-          path.moveTo(pathVerX, pathVerY);
-        } else {
-          path.lineTo(pathVerX, pathVerY);
+      const path = new THREE.Path();
+      for (var j = 0;j <= this.mainAxises.length - 1;j ++) {
+        const pm = this.mainAxises[j];
+        const count = this.crossGroups[k].length - 1;
+        for (var i = 0;i <= count;i ++) {
+          var crossLine = this.crossGroups[k + 1][j == 0 || j == 2 ? i : (count - i)];
+          const inter = this.intersect(crossLine[0].type, crossLine[0].num, crossLine[1].type, crossLine[1].num);
+          if (i == 0) {
+            path.moveTo(inter.x * pm.x, inter.y * pm.y);
+          } else {
+            path.lineTo(inter.x * pm.x, inter.y * pm.y);
+          }
         }
       }
+
+      shape.holes.push(path);
+
+      const material = new THREE.MeshBasicMaterial({
+        color: this.frontColor,
+        side: THREE.DoubleSide,
+        opacity: 0.0,
+        transparent: true
+      });
+      const geometry = new THREE.ShapeGeometry(shape);
+      const mesh = new THREE.Mesh(geometry, material);
+      this.mainfills.push(mesh);
+      this.scene.add(mesh);
     }
-
-    shape.holes.push(path);
-
-    const material = new THREE.MeshBasicMaterial({
-      color: this.frontColor,
-      side: THREE.DoubleSide
-    });
-    const geometry = new THREE.ShapeGeometry(shape);
-    const mesh = new THREE.Mesh(geometry, material);
-    this.scene.add(mesh);
   }
 
   onWindowResize = () => {
@@ -429,18 +740,68 @@ export default class Kageigeta {
     // 次のフレームを要求
     requestAnimationFrame(() => this.render());
 
-    const sec = performance.now() / 1000;
+    const sec = performance.now();
 
-    this.clock ++;
+    // ガイドラインの表示アニメーション
+    for (var i = 0;i <= this.guidelineGroup.length - 1;i ++) {
+      const lines = this.guidelineGroup[i];
+      const linesLen = lines.length;
+      for(var j = 0;j <= linesLen - 1;j ++) {
+        const num = 24;
+        const line = lines[j];
+        const index = (i * linesLen) + j;
+        const delay = THREE.MathUtils.lerp(0, 3000, index / num);
+        if (i <= 1) {
+          line.geometry.setDrawRange(0, (sec - (500 + delay)) / 30);
+        } else if (i <= 4) {
+          line.geometry.setDrawRange(0, (sec - (1800 + delay)) / 30);
+        } else {
+          line.geometry.setDrawRange(0, (sec - (2400 + delay)) / 30);
+        }
+      }
+    }
 
-    // console.log(this.count, this.count - 50);
-    this.guidelines.forEach((guideline) => {
-      guideline.geometry.setDrawRange(0, this.count);
-    });
-    this.mainlines.forEach((mainline) => {
-      mainline.geometry.setDrawRange(0, this.count - 110);
-    });
-    if (this.clock%2 == 0) this.count ++;
+    // 本線の表示アニメーション
+    for (var i = 0;i <= this.mainlineGroup.length - 1;i ++) {
+      const lines = this.mainlineGroup[i];
+      const linesLen = lines.length;
+      for(var j = 0;j <= linesLen - 1;j ++) {
+        const num = 16;
+        const line = lines[j];
+        const index = (i * linesLen) + j;
+        const delay = THREE.MathUtils.lerp(0, (500 - (i * 31)), j / linesLen);
+        if (i <= 1) {
+          line.geometry.setDrawRange(0, (sec - (1600 + (i * 300) + delay)) / (30 - (i * 2)));
+        } else {
+          line.geometry.setDrawRange(0, (sec - (3200 + (i * 300) + delay)) / (20 - (i * 1)));
+        }
+      }
+    }
+
+
+    // 本線を描画
+    // for (var i = 0;i <= this.mainlines.length - 1;i ++) {
+    //   this.mainlines[i].forEach((mainline) => {
+    //     mainline.geometry.setDrawRange(0, (sec - (2500 + i * 100)) / 20 );
+    //   });
+    // }
+
+    // 塗りつぶし図形をフェードイン
+    // for (var i = 0;i <= this.mainfills.length - 1;i ++) {
+    //   this.mainfills[i].material.opacity = THREE.MathUtils.damp(0.0, 1.0, 2, (sec - 4200) / 1200 );
+    // }
+
+    // ガイドラインをフェードアウト
+    // this.guidelines.forEach((lines) => {
+    //   const num = lines.length - 1;
+    //   for (var i = 0;i <= num;i ++) {
+    //     lines[i].material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, (sec - 5000) / 1000);
+    //     if (sec > 6500) lines[i].visible = false;
+    //   }
+    // });
+
+    // グリッドをフェードアウト
+    // this.grid.fadeOut((sec - 5000) / 1000);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
