@@ -6,5 +6,14 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 const init = () => {
-  new Kageigeta();
+  const kageigeta = new Kageigeta();
+
+  const themes = document.getElementsByName('theme');
+  themes.forEach((theme) => {
+    theme.addEventListener('change', () => {
+      document.body.classList.remove('light', 'dark');
+      document.body.classList.add(theme.value);
+      kageigeta.onChangeTheme(theme.value);
+    })
+  })
 }

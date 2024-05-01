@@ -8,7 +8,12 @@
 	<!-- Google Fontsを読み込み -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP&display=swap" rel="stylesheet">
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP&display=swap" rel="stylesheet"> -->
+  <!-- スタイルシートを読み込み -->
+  <link rel="stylesheet" href="./css/style.css">
   <!-- GSAPを読み込み -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <!-- Three.jsを読み込み -->
@@ -24,6 +29,28 @@
   <script type="module" src="./js/main.js"></script>
   <title>ka-mon.com</title>
 </head>
-<body>
+<body class="dark">
+  <div id="theme">
+    <div>
+      <input type="radio" id="dark" name="theme" value="dark" checked>
+      <label for="dark" title="dark"></label>
+    </div>
+    <div>
+      <input type="radio" id="light" name="theme" value="light">
+      <label for="light" title="light"></label>
+    </div>
+  </div>
+  <div id="info" class="jp">
+    <div class="name">陰井桁</div>
+    <div class="desc">
+      井筒・井桁紋とは、井戸をモチーフとした家紋。井戸の地上部分を囲むように囲まれた井の字型の木組を「井桁」、また円形のものを「井筒」というが、紋章では正方形のものを井筒、菱形のものを井桁と呼ぶ。
+    </div>
+  </div>
+  <div id="info" class="en">
+    <div class="name">Kage-Igeta</div>
+    <div class="desc">
+      The Izutsu/Igeta crest is a family crest with a well motif. The well-shaped wooden structure surrounding the above-ground part of the well is called "Igeta", and the circular one is called "Izutsu"," but in the coat of arms, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".
+    </div>
+  </div>
 </body>
 </html>
