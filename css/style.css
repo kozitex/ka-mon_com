@@ -3,28 +3,50 @@ body {
   padding: 0;
 }
 
-#theme {
+body.dark {
+  background-color: #111;
+}
+
+body.light {
+  background-color: #fff;
+}
+
+canvas {
   position: fixed;
-  top: 32px;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+#scroller {
+  position: relative;
+  width: 100%;
+  height: 2000vh;
+}
+
+#themeChanger {
+  position: fixed;
+  top: 64px;
   right: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
+  z-index: 1;
 }
 
-#theme input[type="radio"] {
+#themeChanger input[type="radio"] {
   display: none;
 }
 
-#theme label {
+#themeChanger label {
   display: block;
   width: 16px;
   height: 16px;
   cursor: pointer;
 }
 
-#theme input[type="radio"]:checked + label {
+#themeChanger input[type="radio"]:checked + label {
   width: 18px;
   height: 18px;
   border: 2px solid #808080;
@@ -41,39 +63,20 @@ body {
   background-color: #fff;
 }
 
-#info {
+#info .jp, #info .en {
   position: fixed;
-  /* bottom: 0; */
-  /* margin: auto 0; */
   width: 330px;
-  /* height: 480px; */
-  /* color: #fff; */
-  opacity: 0.0;
-  /* transform: translateX(-10%); */
-  transition: all 400ms cubic-bezier(0.215, 0.61, 0.355, 1);
-  animation: fadeIn 2s cubic-bezier(0.215, 0.61, 0.355, 1) both 1.5s;
+  z-index: 1;
 }
 
-#info.jp {
+#info .jp {
   top: 32px;
   left : 32px;
 }
 
-#info.en {
+#info .en {
   right: 32px;
   bottom : 32px;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    /* transform: translateX(-10%); */
-  }
-
-  100% {
-    opacity: 1;
-    /* transform: translateX(0%); */
-  }
 }
 
 #info .name {
@@ -82,7 +85,9 @@ body {
   font-style: normal;
   font-size: 48px;
   margin: 0 0 10px;
-  /* box-shadow: 1px 1px 1px #000; */
+  animation-duration: 1000ms;
+  animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+  animation-fill-mode: both;
 }
 
 body.dark #info .name {
@@ -95,22 +100,28 @@ body.light #info .name {
   filter: drop-shadow(1px 1px 3px #ccc);
 }
 
-#info.jp .name {
+#info .jp .name {
   font-family: "Zen Old Mincho";
   letter-spacing: 4px;
+  opacity: 0.0;
+  transform: translateX(-100%);
 }
 
-#info.en .name {
+#info .en .name {
   font-family: "Zen Old Mincho";
+  opacity: 0.0;
+  transform: translateX(100%);
 }
 
 #info .desc {
-  /* font-family: "Noto Serif JP"; */
   font-weight: 400;
   font-style: normal;
   font-size: 14px;
   line-height: 1.8;
   color: #ccc;
+  animation-duration: 1000ms;
+  animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+  animation-fill-mode: both;
 }
 
 body.dark #info .desc {
@@ -123,10 +134,76 @@ body.light #info .desc {
   filter: drop-shadow(1px 1px 0px #ccc);
 }
 
-#info.jp .desc {
+#info .jp .desc {
   font-family: "Noto Serif JP";
+  opacity: 0.0;
+  transform: translateY(-100%);
 }
 
-#info.en .desc {
+#info .en .desc {
   font-family: "Noto Serif JP";
+  opacity: 0.0;
+  transform: translateY(100%);
+}
+
+#progress {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  z-index: 1;
+}
+
+#rate {
+  position: absolute;
+  margin: 0 auto;
+  top: 8px;
+  left: 0;
+  right: 0;
+  width: 36px;
+  font-family: "Roboto";
+  font-size: 10px;
+  text-align: center;
+}
+
+.dark #rate {
+  color: #ccc;
+}
+
+.light #rate {
+  color: #111;
+}
+
+#barWrap {
+  position: relative;
+  width: 300px;
+  height: 2px;
+  overflow: hidden;
+}
+
+.dark #barWrap {
+  background-color: #ffffff4d;
+}
+
+.light #barWrap {
+  background-color: #1111114d;
+}
+
+#bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* opacity: 0.7; */
+  transform: translateX(-100%);
+  transition: all  cubic-bezier(0.215, 0.610, 0.355, 1);
+  z-index: 0;
+}
+
+.dark #bar {
+  background-color: #fff;
+}
+
+.light #bar {
+  background-color: #111;
 }

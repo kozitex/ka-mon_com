@@ -6,7 +6,8 @@ import Grid from './grid.js';
 
 export default class Kageigeta {
   constructor() {
-    this.rot = 0;
+
+    // 基本カラー
     this.frontColor    = 0xffffff;
     this.backColor     = 0x111111;
     this.guideColor    = 0x666666;
@@ -15,8 +16,22 @@ export default class Kageigeta {
     this.w = window.innerWidth;
     this.h = window.innerHeight
 
+    // カメラのZ位置
+    this.camZ = 3000;
+
+    // スクローラーの高さ
+    this.scroller = document.getElementById('scroller');
+    this.scrollerH = this.scroller.scrollHeight - this.h;
+    // console.log(this.scroller.scrollHeight - this.h);
+
+    // スクロール量
+    this.scrollY = 0;
+
     // フレームのサイズ
-    this.size = 1600;
+    this.size = 3200;
+
+    // カメラの回転量
+    this.rot = 0;
 
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({
@@ -31,7 +46,7 @@ export default class Kageigeta {
 
     // カメラ
     this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 1, 10000);
-    // this.camera.position.set(0, 0, 8000);
+    this.camera.position.set(0, 0, this.camZ);
 
     // シーン
     this.scene = new THREE.Scene();
@@ -60,16 +75,33 @@ export default class Kageigeta {
     // 塗りつぶし図形の描画
     this.generateMainFill();
 
-    const controls = new OrbitControls( this.camera, this.renderer.domElement);
-    controls.target.set( 0, 0, 0 );
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.2;
-    controls.update();
+    // const controls = new OrbitControls( this.camera, this.renderer.domElement);
+    // controls.target.set( 0, 0, 0 );
+    // controls.enableDamping = true;
+    // controls.dampingFactor = 0.2;
+    // controls.update();
 
     window.addEventListener( 'resize', this.onWindowResize );
 
+    // infoの準備
+    this.jpName = document.getElementById('jpName');
+    this.jpDesc = document.getElementById('jpDesc');
+    this.enName = document.getElementById('enName');
+    this.enDesc = document.getElementById('enDesc');
+
+    this.jpName.textContent = '陰井桁';
+    this.jpDesc.textContent = '井筒・井桁紋とは、井戸をモチーフとした家紋。井戸の地上部分を囲むように囲まれた井の字型の木組を「井桁」、また円形のものを「井筒」というが、紋章では正方形のものを井筒、菱形のものを井桁と呼ぶ。';
+    this.enName.textContent = 'Kage-Igeta';
+    this.enDesc.textContent = 'The Izutsu/Igeta crest is a family crest with a well motif. The well-shaped wooden structure surrounding the above-ground part of the well is called "Igeta", and the circular one is called "Izutsu", but in the coat of arms, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".';
+
     // 描画ループ開始
     this.render();
+  }
+
+  // 画面のスクロール量を取得a
+  scrolled(y) {
+    // console.log(y);
+    this.scrollY = y;
   }
 
   // ガイドラインを作成
@@ -148,7 +180,7 @@ export default class Kageigeta {
           geometry.setDrawRange(0, 0);
           const material = new THREE.LineBasicMaterial({
             color: this.frontColor,
-            // side: THREE.DoubleSide,
+            side: THREE.DoubleSide,
             // transparent: true,
             // opacity: 0.0,
           });
@@ -192,7 +224,7 @@ export default class Kageigeta {
 
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
-        // side: THREE.DoubleSide,
+        side: THREE.DoubleSide,
         opacity: 0.0,
         transparent: true
       });
@@ -366,46 +398,140 @@ export default class Kageigeta {
     this.mainfills.forEach((figure) => {
       figure.material.color = new THREE.Color(this.frontColor);
     })
+  }
 
+  // プログレスバーのアニメーション制御
+  progressBarControl = (tick) => {
+    const bar = document.getElementById('bar');
+    const rate = document.getElementById('rate');
+    const ratio = tick * 100;
+    rate.textContent = ratio.toFixed(1) + '%';
+    bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
+  }
+
+  // ガイドラインのアニメーション制御
+  guidelineAnimeControl = (tick) => {
+    for (var i = 0;i <= this.guidelineGroup.length - 1;i ++) {
+      const lines = this.guidelineGroup[i];
+      const linesLen = lines.length;
+      for(var j = 0;j <= linesLen - 1;j ++) {
+        const line = lines[j];
+        const start = 0.1;
+        const end   = 0.45;
+        const delay = 0;
+        var count = 0;
+        if (tick <= start) {
+          count = 0;
+        } else if (tick > start && tick <= end) {
+          const ratio = (tick - (start + i * 0.02)) / end;
+          count = THREE.MathUtils.lerp(0, 110, ratio) - delay;
+        } else if (tick > end) {
+          count = 110;
+        }
+        line.geometry.setDrawRange(0, count);
+      }
+    }
+  }
+
+  // 本線の表示アニメーション制御
+  mainlineAnimeControl = (tick) => {
+    const start = 0.45;
+    const end   = 0.55;
+    for (var i = 0;i <= this.mainlines.length - 1;i ++) {
+      const lines = this.mainlines[i];
+      const linesLen = lines.length;
+      for(var j = 0;j <= linesLen - 1;j ++) {
+        var count = 0;
+        const line = lines[j];
+        if (tick <= start) {
+          count = 0;
+        } else if (tick > start && tick <= end) {
+          const ratio = (tick - start) / (end - start);
+          count = THREE.MathUtils.lerp(0, 110, ratio);
+        } else if (tick > end) {
+          count = 110;
+        }
+        line.geometry.setDrawRange(0, count);
+      }
+    }
+  }
+
+  // descのアニメーション制御
+  descAnimeControl = (tick) => {
+    const start =  0.9;
+    const end   = 1.0;
+    const percent = (tick - start) * 10;
+    var opaPer;
+    var traPer;
+    if (tick < start) {
+      opaPer = 0.0;
+      traPer = 100;
+    } else if (tick >= start && tick < end) {
+      opaPer = THREE.MathUtils.damp(0.0, 1.0, 5, percent);
+      traPer = THREE.MathUtils.damp(100,   0, 5, percent);
+    } else if (tick >= end) {
+      opaPer = 1.0;
+      traPer = 0;
+    }
+    this.jpName.style = "opacity: " + opaPer + ";transform: translateX(-" + traPer +"%);"
+    this.jpDesc.style = "opacity: " + opaPer + ";transform: translateY( " + traPer +"%);"
+    this.enName.style = "opacity: " + opaPer + ";transform: translateX( " + traPer +"%);"
+    this.enDesc.style = "opacity: " + opaPer + ";transform: translateY( " + traPer +"%);"
   }
 
   render = () => {
     // 次のフレームを要求
     requestAnimationFrame(() => this.render());
 
-    const sec = performance.now();
+    // const sec = performance.now();
 
-    // ガイドラインの表示アニメーション
-    for (var i = 0;i <= this.guidelineGroup.length - 1;i ++) {
-      const lines = this.guidelineGroup[i];
-      const linesLen = lines.length;
-      for(var j = 0;j <= linesLen - 1;j ++) {
-        const line = lines[j];
-        const start = 2000;
-        const speed = 20;
-        const delay = THREE.MathUtils.lerp(0, 30, j / linesLen);
-        const count = (sec - (start + i * 300)) / speed;
-        line.geometry.setDrawRange(0, count - delay);
-      }
-    }
+    const tick = this.scrollY / this.scrollerH;
+    // const tick = THREE.MathUtils.lerp(0, 1, ratio);
+    // const tick = THREE.MathUtils.damp(0, 1, 5, ratio);
+    // console.log(tick);
 
-    // 本線の表示アニメーション
-    for (var i = 0;i <= this.mainlines.length - 1;i ++) {
-      const lines = this.mainlines[i];
-      const linesLen = lines.length;
-      for(var j = 0;j <= linesLen - 1;j ++) {
-        const line = lines[j];
-        // const count = (sec - 6500) / 15;
-        // line.material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, count);
-        line.geometry.setDrawRange(0, (sec - 6500) / 15);
-      }
-    }
+    // プログレスバーのアニメーション制御
+    this.progressBarControl(tick);
+
+    // ガイドラインの表示アニメーション制御
+    this.guidelineAnimeControl(tick);
+
+    // const tick = this.scrollY;
+    // for (var i = 0;i <= this.guidelineGroup.length - 1;i ++) {
+    //   const lines = this.guidelineGroup[i];
+    //   const linesLen = lines.length;
+    //   for(var j = 0;j <= linesLen - 1;j ++) {
+    //     const line = lines[j];
+    //     const start = 2000;
+    //     const speed = 20;
+    //     const delay = THREE.MathUtils.lerp(0, 30, j / linesLen);
+    //     // const count = (sec - (start + i * 300)) / speed;
+    //     const count = (tick - (start + i * 300)) / speed;
+    //     line.geometry.setDrawRange(0, count - delay);
+    //   }
+    // }
+
+    // 本線の表示アニメーション制御
+    this.mainlineAnimeControl(tick);
+    // for (var i = 0;i <= this.mainlines.length - 1;i ++) {
+    //   const lines = this.mainlines[i];
+    //   const linesLen = lines.length;
+    //   for(var j = 0;j <= linesLen - 1;j ++) {
+    //     const line = lines[j];
+    //     line.geometry.setDrawRange(0, (tick - 6500) / 15);
+    //     // const count = (sec - 6500) / 15;
+    //     // line.material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, count);
+    //     // line.geometry.setDrawRange(0, (sec - 6500) / 15);
+    //   }
+    // }
 
     // 塗りつぶし図形をフェードイン
     for (var i = 0;i <= this.mainfills.length - 1;i ++) {
       const material = this.mainfills[i].material;
-      const count = (sec - 8000) / 2000;
-      if (sec > 8000) this.mainfills[i].position.z = 1;
+      const count = (tick - 8000) / 2000;
+      if (tick > 8000) this.mainfills[i].position.z = 1;
+      // const count = (sec - 8000) / 2000;
+      // if (sec > 8000) this.mainfills[i].position.z = 1;
       material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, count);
     }
 
@@ -414,30 +540,47 @@ export default class Kageigeta {
       const num = lines.length - 1;
       for (var i = 0;i <= num;i ++) {
         const material = lines[i].material;
-        const count = (sec - 8000) / 1000;
+        const delay = 9000;
+        // const count = (sec - delay) / 1000;
+        const count = (tick - delay) / 1000;
         material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, count);
-        if (sec > 9500) lines[i].visible = false;
+        // if (sec > delay + 1000) lines[i].visible = false;
+        if (tick > delay + 1000) {
+          lines[i].visible = false;
+        } else {
+          lines[i].visible = true;
+        }
       }
     });
 
     // グリッドをフェードアウト
-    this.grid.fadeOut((sec - 8000) / 1000);
+    this.grid.fadeOut(tick, 9000, 1000);
+    // this.grid.fadeOut(sec, 9000, 1000);
 
-    if (this.rot <= 379) {
-      // this.rot += 1.2;
-      this.rot = THREE.MathUtils.damp(0, 380, 5, sec / 8000);
-      // ラジアンに変換する
-      const radian = (this.rot * Math.PI) / 180;
+    // 図形の周りを一回転
+    // if (sec > 10000) {
+        // this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    if (tick > 10000) {
+        const total = 360;
+      // if (this.rot <= total - 1) {
+        // this.rot = THREE.MathUtils.damp(0, total, 5, (sec - 10000) / 3000);
+        this.rot = THREE.MathUtils.damp(0, total, 5, (tick - 10000) / 3000);
+        const radian = (this.rot * Math.PI) / 180;
+        // const dist = THREE.MathUtils.damp(0, 3000, 3, this.rot / total);
+        this.camera.position.x = this.camZ * Math.sin(radian);
+        this.camera.position.z = this.camZ * Math.cos(radian);
 
-      const dist = THREE.MathUtils.damp(0, 3000, 5, this.rot / 380);
-      // 角度に応じてカメラの位置を設定
-      this.camera.position.x = dist * Math.sin(radian);
-      this.camera.position.z = dist * Math.cos(radian);
-      console.log(this.rot);
-      // 原点方向を見つめる
+        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      // }
+    } else {
+      this.camera.position.set(0, 0, this.camZ);
       this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      // this.camera.position.x = 0;
+      // this.camera.position.z = 0;
     }
 
+    // descのアニメーションを制御
+    this.descAnimeControl(tick);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);

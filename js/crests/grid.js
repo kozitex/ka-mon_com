@@ -99,11 +99,13 @@ export default class Grid {
   }
 
   // フェードアウト
-  fadeOut = (progress) => {
+  fadeOut = (sec, delay, duration) => {
     this.group.children.forEach((child) => {
-      child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, progress);
-      if (progress > 1.5) {
+      child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, (sec - delay) / duration);
+      if (sec > delay + 1000) {
         child.visible = false;
+      } else {
+        child.visible = true;
       }
     });
   }
