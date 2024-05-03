@@ -99,15 +99,32 @@ export default class Grid {
   }
 
   // フェードアウト
-  fadeOut = (sec, delay, duration) => {
+  fadeOut = (tick, start, end) => {
     this.group.children.forEach((child) => {
-      child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, (sec - delay) / duration);
-      if (sec > delay + 1000) {
-        child.visible = false;
-      } else {
+      var count;
+      if (tick <= start) {
+        count = 0.0;
         child.visible = true;
+      } else if (tick > start && tick <= end) {
+        const ratio = (tick - start) / (end - start);
+        count = THREE.MathUtils.lerp(0, 1, ratio);
+      } else if (tick > end) {
+        count = 1.0;
+        child.visible = false;
       }
+      child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, count);
     });
   }
+
+  // fadeOut = (sec, delay, duration) => {
+  //   this.group.children.forEach((child) => {
+  //     child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, (sec - delay) / duration);
+  //     if (sec > delay + 1000) {
+  //       child.visible = false;
+  //     } else {
+  //       child.visible = true;
+  //     }
+  //   });
+  // }
 
 }

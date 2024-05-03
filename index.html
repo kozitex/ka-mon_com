@@ -10,8 +10,10 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <!-- <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP&display=swap" rel="stylesheet"> -->
+	<!-- FontAwesomeを読み込み -->
+  <script src="https://kit.fontawesome.com/a2dc0bb3f8.js" crossorigin="anonymous"></script>
   <!-- スタイルシートを読み込み -->
   <link rel="stylesheet" href="./css/style.css">
   <!-- GSAPを読み込み -->
@@ -30,7 +32,11 @@
   <title>ka-mon.com</title>
 </head>
 <body class="dark">
+  <div id="guide" class="hide">
+    please scroll down&nbsp;<i class="fa-light fa-angles-down"></i>
+  </div>
   <div id="themeChanger">
+    <div class="caption">dark / light</div>
     <div>
       <input type="radio" id="dark" name="themeChanger" value="dark" checked>
       <label for="dark" title="dark"></label>
@@ -53,7 +59,17 @@
       <div id="barWrap">
         <div id="bar"></div>
       </div>
-      <div id="rate">0</div>
+      <div id="rate"></div>
+    </div>
+    <div id="auto">
+      <div id="forward">
+        <i class="fa-light fa-forward"></i>
+        <div>forward</div>
+      </div>
+      <div id="backward">
+        <i class="fa-light fa-backward"></i>
+        <div>backward</div>
+      </div>
     </div>
     <div class="param">
       <div>

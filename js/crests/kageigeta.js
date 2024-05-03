@@ -10,7 +10,8 @@ export default class Kageigeta {
     // 基本カラー
     this.frontColor    = 0xffffff;
     this.backColor     = 0x111111;
-    this.guideColor    = 0x666666;
+    this.guideColor    = 0x999999;
+    // this.guideColor    = 0x666666;
 
     // ウィンドウサイズ
     this.w = window.innerWidth;
@@ -109,7 +110,7 @@ export default class Kageigeta {
     const a = 0.8;
     const bs = [400, 500, 960, 1060, 1180, 1280];
     const divCount = 200;
-    this.guidelineGroup = [];
+    // this.guidelines = [];
     bs.forEach((b) => {
       const group = [];
       for (var q = 0;q <= 3;q ++) {
@@ -151,7 +152,7 @@ export default class Kageigeta {
         group.push(line);
         this.scene.add(line);
       }
-      this.guidelineGroup.push(group);
+      this.guidelines.push(group);
     })
   }
 
@@ -163,31 +164,34 @@ export default class Kageigeta {
     vers.forEach((figure) => {
       figure.forEach((vers) => {
         for (var i = 0;i <= vers.length - 2;i ++) {
-          const startX = vers[i].x;
-          const startY = vers[i].y;
-          const endX   = vers[i + 1].x;
-          const endY   = vers[i + 1].y;
-          const a1 = (startY - endY) / (startX - endX);
-          const b1 = (startX * endY - endX * startY) / (startX - endX);
-          const points = [];
-          if (startX == endX && startY == endY) continue;
-          for (var d = 0;d <= divCount - 1;d ++) {
-            const midX = THREE.MathUtils.damp(startX, endX, 10, d / divCount);
-            const mid = {x: midX, y: a1 * midX + b1};
-            points.push(new THREE.Vector3(mid.x, mid.y, 1));
-          }
-          const geometry = new THREE.BufferGeometry().setFromPoints(points);
-          geometry.setDrawRange(0, 0);
-          const material = new THREE.LineBasicMaterial({
-            color: this.frontColor,
-            side: THREE.DoubleSide,
-            // transparent: true,
-            // opacity: 0.0,
-          });
-          const line = new THREE.Line(geometry, material);
-          group.push(line);
-          this.scene.add(line);
-          this.mainlines.push(group);
+          const gs = [0, 1, -1, 2, -2, 3, -3];
+          gs.forEach((g) => {
+            const startX = vers[i].x + g;
+            const startY = vers[i].y;
+            const endX   = vers[i + 1].x + g;
+            const endY   = vers[i + 1].y;
+            const a1 = (startY - endY) / (startX - endX);
+            const b1 = (startX * endY - endX * startY) / (startX - endX);
+            const points = [];
+            if (startX == endX && startY == endY) return;
+            for (var d = 0;d <= divCount - 1;d ++) {
+              const midX = THREE.MathUtils.damp(startX, endX, 10, d / divCount);
+              const mid = {x: midX, y: a1 * midX + b1};
+              points.push(new THREE.Vector3(mid.x, mid.y, 1));
+            }
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            geometry.setDrawRange(0, 0);
+            const material = new THREE.LineBasicMaterial({
+              color: this.frontColor,
+              side: THREE.DoubleSide,
+              // transparent: true,
+              // opacity: 0.0,
+            });
+            const line = new THREE.Line(geometry, material);
+            group.push(line);
+            this.scene.add(line);
+            this.mainlines.push(group);
+          })
         }
       })
     })
@@ -230,7 +234,6 @@ export default class Kageigeta {
       });
       const geometry = new THREE.ShapeGeometry(shape);
       const mesh = new THREE.Mesh(geometry, material);
-      // mesh.position.z = 2;
       this.mainfills.push(mesh);
       this.scene.add(mesh);
     });
@@ -362,13 +365,15 @@ export default class Kageigeta {
     if (theme == 'dark') {
       this.frontColor    = 0xffffff;
       this.backColor     = 0x111111;
-      this.guideColor    = 0x666666;
+      this.guideColor    = 0x999999;
+      // this.guideColor    = 0x666666;
       this.gridColor     = 0x333333;
       this.gridThinColor = 0x1a1a1a;
     } else {
       this.frontColor    = 0x111111;
       this.backColor     = 0xffffff;
-      this.guideColor    = 0x999999;
+      this.guideColor    = 0x333333;
+      // this.guideColor    = 0x999999;
       this.gridColor     = 0xcccccc;
       this.gridThinColor = 0xe6e6e6;
     }
@@ -385,6 +390,13 @@ export default class Kageigeta {
         line.material.color = new THREE.Color(this.gridThinColor);
       }
       index ++;
+    })
+
+    // ガイドラインの色を変更
+    this.guidelines.forEach((group) => {
+      group.forEach((line) => {
+        line.material.color = new THREE.Color(this.guideColor);
+      })
     })
 
     // 本線の色を変更
@@ -409,24 +421,24 @@ export default class Kageigeta {
     bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
   }
 
-  // ガイドラインのアニメーション制御
-  guidelineAnimeControl = (tick) => {
-    for (var i = 0;i <= this.guidelineGroup.length - 1;i ++) {
-      const lines = this.guidelineGroup[i];
+  // ガイドラインの描画アニメーション制御
+  guidelineDrawAnimeControl = (tick) => {
+    for (var i = 0;i <= this.guidelines.length - 1;i ++) {
+      const lines = this.guidelines[i];
       const linesLen = lines.length;
       for(var j = 0;j <= linesLen - 1;j ++) {
         const line = lines[j];
-        const start = 0.1;
-        const end   = 0.45;
+        const start = 0.0;
+        const end   = 0.4;
         const delay = 0;
         var count = 0;
         if (tick <= start) {
           count = 0;
         } else if (tick > start && tick <= end) {
-          const ratio = (tick - (start + i * 0.02)) / end;
-          count = THREE.MathUtils.lerp(0, 110, ratio) - delay;
+          const ratio = (tick - (start + i * 0.05)) / end;
+          count = THREE.MathUtils.lerp(0, 200, ratio) - delay;
         } else if (tick > end) {
-          count = 110;
+          count = 200;
         }
         line.geometry.setDrawRange(0, count);
       }
@@ -435,8 +447,8 @@ export default class Kageigeta {
 
   // 本線の表示アニメーション制御
   mainlineAnimeControl = (tick) => {
-    const start = 0.45;
-    const end   = 0.55;
+    const start = 0.4;
+    const end   = 0.5;
     for (var i = 0;i <= this.mainlines.length - 1;i ++) {
       const lines = this.mainlines[i];
       const linesLen = lines.length;
@@ -447,19 +459,82 @@ export default class Kageigeta {
           count = 0;
         } else if (tick > start && tick <= end) {
           const ratio = (tick - start) / (end - start);
-          count = THREE.MathUtils.lerp(0, 110, ratio);
+          count = THREE.MathUtils.lerp(0, 200, ratio);
         } else if (tick > end) {
-          count = 110;
+          count = 200;
         }
         line.geometry.setDrawRange(0, count);
       }
     }
   }
 
+  // 塗りつぶし図形のアニメーション制御
+  mainfillAnimeControl = (tick) => {
+    const start = 0.5;
+    const end   = 0.7;
+    for (var i = 0;i <= this.mainfills.length - 1;i ++) {
+      var ratio;
+      const material = this.mainfills[i].material;
+      if (tick <= start) {
+        ratio = 0.0;
+      } else if (tick > start && tick <= end) {
+        ratio = (tick - start) / (end - start);
+        // count = THREE.MathUtils.lerp(0, 1, ratio);
+      } else if (tick > end) {
+        ratio = 1.0;
+      }
+      material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, ratio);
+    }
+  }
+
+  // ガイドラインのフェードアウトアニメーション制御
+  guidelineFadeOutAnimeControl = (tick) => {
+    const start = 0.45;
+    const end   = 0.55;
+    this.guidelines.forEach((lines) => {
+      const num = lines.length - 1;
+      for (var i = 0;i <= num;i ++) {
+        const material = lines[i].material;
+        var ratio;
+        if (tick <= start) {
+          ratio = 0.0;
+          lines[i].visible = true;
+        } else if (tick > start && tick <= end) {
+          ratio = (tick - start) / (end - start);
+          // count = THREE.MathUtils.lerp(0, 1, ratio);
+        } else if (tick > end) {
+          ratio = 1.0;
+          lines[i].visible = false;
+        }
+        material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, ratio);
+      }
+    });
+  }
+
+  // カメラを回転するアニメーション制御
+  cameraRotateAnimeControl = (tick) => {
+    const start = 0.6;
+    const end   = 1.0;
+    var x, z;
+    if (tick > start && tick <= end) {
+      const total = 360;
+      const ratio = (tick - start) / (end - start);
+      this.rot = THREE.MathUtils.damp(0, total, 5, ratio);
+      const radian = (this.rot * Math.PI) / 180;
+      x = this.camZ * Math.sin(radian);
+      z = this.camZ * Math.cos(radian);
+    } else {
+      x = 0;
+      z = this.camZ;
+    }
+    this.camera.position.set(x, 0, z);
+    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+  }
+
   // descのアニメーション制御
   descAnimeControl = (tick) => {
-    const start =  0.9;
-    const end   = 1.0;
+    const start =  0.8;
+    const end   = 0.9;
     const percent = (tick - start) * 10;
     var opaPer;
     var traPer;
@@ -486,98 +561,28 @@ export default class Kageigeta {
     // const sec = performance.now();
 
     const tick = this.scrollY / this.scrollerH;
-    // const tick = THREE.MathUtils.lerp(0, 1, ratio);
-    // const tick = THREE.MathUtils.damp(0, 1, 5, ratio);
     // console.log(tick);
 
     // プログレスバーのアニメーション制御
     this.progressBarControl(tick);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelineAnimeControl(tick);
-
-    // const tick = this.scrollY;
-    // for (var i = 0;i <= this.guidelineGroup.length - 1;i ++) {
-    //   const lines = this.guidelineGroup[i];
-    //   const linesLen = lines.length;
-    //   for(var j = 0;j <= linesLen - 1;j ++) {
-    //     const line = lines[j];
-    //     const start = 2000;
-    //     const speed = 20;
-    //     const delay = THREE.MathUtils.lerp(0, 30, j / linesLen);
-    //     // const count = (sec - (start + i * 300)) / speed;
-    //     const count = (tick - (start + i * 300)) / speed;
-    //     line.geometry.setDrawRange(0, count - delay);
-    //   }
-    // }
+    this.guidelineDrawAnimeControl(tick);
 
     // 本線の表示アニメーション制御
     this.mainlineAnimeControl(tick);
-    // for (var i = 0;i <= this.mainlines.length - 1;i ++) {
-    //   const lines = this.mainlines[i];
-    //   const linesLen = lines.length;
-    //   for(var j = 0;j <= linesLen - 1;j ++) {
-    //     const line = lines[j];
-    //     line.geometry.setDrawRange(0, (tick - 6500) / 15);
-    //     // const count = (sec - 6500) / 15;
-    //     // line.material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, count);
-    //     // line.geometry.setDrawRange(0, (sec - 6500) / 15);
-    //   }
-    // }
 
     // 塗りつぶし図形をフェードイン
-    for (var i = 0;i <= this.mainfills.length - 1;i ++) {
-      const material = this.mainfills[i].material;
-      const count = (tick - 8000) / 2000;
-      if (tick > 8000) this.mainfills[i].position.z = 1;
-      // const count = (sec - 8000) / 2000;
-      // if (sec > 8000) this.mainfills[i].position.z = 1;
-      material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, count);
-    }
+    this.mainfillAnimeControl(tick);
 
     // ガイドラインをフェードアウト
-    this.guidelineGroup.forEach((lines) => {
-      const num = lines.length - 1;
-      for (var i = 0;i <= num;i ++) {
-        const material = lines[i].material;
-        const delay = 9000;
-        // const count = (sec - delay) / 1000;
-        const count = (tick - delay) / 1000;
-        material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, count);
-        // if (sec > delay + 1000) lines[i].visible = false;
-        if (tick > delay + 1000) {
-          lines[i].visible = false;
-        } else {
-          lines[i].visible = true;
-        }
-      }
-    });
+    this.guidelineFadeOutAnimeControl(tick);
 
     // グリッドをフェードアウト
-    this.grid.fadeOut(tick, 9000, 1000);
-    // this.grid.fadeOut(sec, 9000, 1000);
+    this.grid.fadeOut(tick, 0.35, 0.5);
 
     // 図形の周りを一回転
-    // if (sec > 10000) {
-        // this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-    if (tick > 10000) {
-        const total = 360;
-      // if (this.rot <= total - 1) {
-        // this.rot = THREE.MathUtils.damp(0, total, 5, (sec - 10000) / 3000);
-        this.rot = THREE.MathUtils.damp(0, total, 5, (tick - 10000) / 3000);
-        const radian = (this.rot * Math.PI) / 180;
-        // const dist = THREE.MathUtils.damp(0, 3000, 3, this.rot / total);
-        this.camera.position.x = this.camZ * Math.sin(radian);
-        this.camera.position.z = this.camZ * Math.cos(radian);
-
-        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-      // }
-    } else {
-      this.camera.position.set(0, 0, this.camZ);
-      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-      // this.camera.position.x = 0;
-      // this.camera.position.z = 0;
-    }
+    this.cameraRotateAnimeControl(tick);
 
     // descのアニメーションを制御
     this.descAnimeControl(tick);

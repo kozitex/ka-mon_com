@@ -18,6 +18,42 @@ canvas {
   z-index: 0;
 }
 
+#guide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto";
+  font-size: 12px;
+  z-index: 1;
+  opacity: 0.0;
+  transition: opacity 5s cubic-bezier(0.215, 0.61, 0.355, 1);
+  animation: blink 5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#guide.hide {
+  /* opacity: 0.0; */
+  animation-iteration-count: 0;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 1.0;
+  }
+}
+
+body.dark #guide {
+  color: #ccc;
+}
+
+body.light #guide {
+  color: #111;
+}
+
 #scroller {
   position: relative;
   width: 100%;
@@ -28,11 +64,32 @@ canvas {
   position: fixed;
   top: 64px;
   right: 32px;
+  width: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
   z-index: 1;
+}
+
+#themeChanger .caption {
+  position: absolute;
+  left:   0;
+  right:  0;
+  bottom: -20px;
+  width: 60px;
+  margin: 0 auto;
+  font-family: "Roboto";
+  font-size: 10px;
+  text-align: center;
+}
+
+body.dark #themeChanger .caption {
+  color: #ccc;
+}
+
+body.light #themeChanger .caption {
+  color: #111;
 }
 
 #themeChanger input[type="radio"] {
@@ -44,6 +101,10 @@ canvas {
   width: 16px;
   height: 16px;
   cursor: pointer;
+}
+
+#themeChanger label:hover {
+  border: 2px solid #e6b422;
 }
 
 #themeChanger input[type="radio"]:checked + label {
@@ -80,10 +141,11 @@ canvas {
 }
 
 #info .name {
-  font-family: "Zen Old Mincho";
+  /* font-family: "Zen Old Mincho"; */
+  font-family: "Zen Kaku Gothic New";
   font-weight: 400;
   font-style: normal;
-  font-size: 48px;
+  font-size: 52px;
   margin: 0 0 10px;
   animation-duration: 1000ms;
   animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
@@ -101,14 +163,17 @@ body.light #info .name {
 }
 
 #info .jp .name {
-  font-family: "Zen Old Mincho";
+  /* font-family: "Zen Old Mincho"; */
+  /* font-family: "Zen Kaku Gothic New"; */
   letter-spacing: 4px;
   opacity: 0.0;
   transform: translateX(-100%);
 }
 
 #info .en .name {
-  font-family: "Zen Old Mincho";
+  /* font-family: "Zen Old Mincho"; */
+  /* font-family: "Zen Kaku Gothic New"; */
+  /* letter-spacing: 2px; */
   opacity: 0.0;
   transform: translateX(100%);
 }
@@ -165,11 +230,11 @@ body.light #info .desc {
   text-align: center;
 }
 
-.dark #rate {
+body.dark #rate {
   color: #ccc;
 }
 
-.light #rate {
+body.light #rate {
   color: #111;
 }
 
@@ -180,11 +245,11 @@ body.light #info .desc {
   overflow: hidden;
 }
 
-.dark #barWrap {
+body.dark #barWrap {
   background-color: #ffffff4d;
 }
 
-.light #barWrap {
+body.light #barWrap {
   background-color: #1111114d;
 }
 
@@ -200,10 +265,52 @@ body.light #info .desc {
   z-index: 0;
 }
 
-.dark #bar {
+body.dark #bar {
   background-color: #fff;
 }
 
-.light #bar {
+body.light #bar {
   background-color: #111;
+}
+
+#auto {
+  position: fixed;
+  top: 128px;
+  right: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto";
+  font-size: 10px;
+  text-align: center;
+  /* color: #fff; */
+  gap: 20px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+#auto i {
+  font-size: 20px;
+}
+
+#forward:hover i,
+#backward:hover i {
+  color: #e6b422;
+}
+
+#forward.active i,
+#backward.active i {
+  color: #e6b422;
+  opacity: 0.0;
+  animation: blink 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+
+body.dark #auto {
+  color: #ccc;
+}
+
+body.light #auto {
+  color: #111;
 }
