@@ -92,14 +92,20 @@ const init = () => {
 
   const forward = document.getElementById('forward');
   forward.addEventListener('click', () => {
-    forward.classList.add('active');
-    autoScroll(terminus);
+    if (window.scrollY < terminus) {
+      forward.classList.add('active');
+      autoScroll(terminus);
+      kageigeta.logRecord('- Animation has started playing.');
+    }
   });
 
   const backward = document.getElementById('backward');
   backward.addEventListener('click', () => {
-    backward.classList.add('active');
-    autoScroll(0);
+    if (window.scrollY > 0) {
+      backward.classList.add('active');
+      autoScroll(0);
+      kageigeta.logRecord('- Started playing the animation in reverse.');
+    }
   });
 
 }

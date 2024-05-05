@@ -49,6 +49,9 @@ export default class Kageigeta {
     this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 1, 10000);
     this.camera.position.set(0, 0, this.camZ);
 
+    // ロガーのDOMを取得
+    this.logger = document.getElementById('logger');
+
     // シーン
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.backColor);
@@ -58,6 +61,20 @@ export default class Kageigeta {
     this.mainlines = [];
     this.mainfills = [];
     this.count = 0;
+
+    // ログ記述用のフラグ
+    this.gdStarted = true;
+    this.gdEnded = true;
+    this.mdStarted = true;
+    this.mdEnded = true;
+    this.sdStarted = true;
+    this.sdEnded = true;
+    this.gfStarted = true;
+    this.gfEnded = true;
+    this.crStarted = true;
+    this.crEnded = true;
+    this.daStarted = true;
+    this.daEnded = true;
 
     // フレーム・グリッドの描画
     this.grid = new Grid();
@@ -99,7 +116,7 @@ export default class Kageigeta {
     this.render();
   }
 
-  // 画面のスクロール量を取得a
+  // 画面のスクロール量を取得
   scrolled(y) {
     // console.log(y);
     this.scrollY = y;
@@ -154,6 +171,9 @@ export default class Kageigeta {
       }
       this.guidelines.push(group);
     })
+
+    this.logRecord('- Guidelines have been generated.');
+    // this.logger.innerText += '- guideline is generated.\n';
   }
 
   // 本線を作成
@@ -195,6 +215,8 @@ export default class Kageigeta {
         }
       })
     })
+    this.logRecord('- Main lines have been generated.');
+    // this.logger.innerText += '- mainline is generated.\n';
   }
 
   // 塗りつぶし図形を生成
@@ -237,6 +259,8 @@ export default class Kageigeta {
       this.mainfills.push(mesh);
       this.scene.add(mesh);
     });
+    this.logRecord('- Shapes have been generated.');
+    // this.logger.innerText += '- figure is generated.\n';
   }
 
   // ２直線の交点を求める式
@@ -345,6 +369,8 @@ export default class Kageigeta {
 
     vs.push(arr2);
     this.mainVers.push(vs);
+
+    this.logRecord('- The vertices have been calculated.');
   }
 
   // ウィンドウサイズ変更
@@ -356,6 +382,10 @@ export default class Kageigeta {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(this.w, this.h);
+
+    this.scrollerH = this.scroller.scrollHeight - this.h;
+
+    this.logRecord('- Window has been resized.');
 
     this.render();
   }
@@ -410,6 +440,8 @@ export default class Kageigeta {
     this.mainfills.forEach((figure) => {
       figure.material.color = new THREE.Color(this.frontColor);
     })
+
+    this.logRecord('- Theme color is set to ' + theme + '.');
   }
 
   // プログレスバーのアニメーション制御
@@ -423,13 +455,13 @@ export default class Kageigeta {
 
   // ガイドラインの描画アニメーション制御
   guidelineDrawAnimeControl = (tick) => {
+    const start = 0.0;
+    const end   = 0.4;
     for (var i = 0;i <= this.guidelines.length - 1;i ++) {
       const lines = this.guidelines[i];
       const linesLen = lines.length;
       for(var j = 0;j <= linesLen - 1;j ++) {
         const line = lines[j];
-        const start = 0.0;
-        const end   = 0.4;
         const delay = 0;
         var count = 0;
         if (tick <= start) {
@@ -442,6 +474,17 @@ export default class Kageigeta {
         }
         line.geometry.setDrawRange(0, count);
       }
+    }
+    if (tick <= start) {
+      this.gdStarted = true;
+    } else if (tick > start && this.gdStarted) {
+      this.logRecord('- Drawing of guidelines has started.');
+      this.gdStarted = false;
+    } else if (tick <= end) {
+      this.gdEnded = true;
+    } else if (tick > end && this.gdEnded) {
+      this.logRecord('- Drawing of guidelines has ended.');
+      this.gdEnded = false;
     }
   }
 
@@ -466,6 +509,17 @@ export default class Kageigeta {
         line.geometry.setDrawRange(0, count);
       }
     }
+    if (tick <= start) {
+      this.mdStarted = true;
+    } else if (tick > start && this.mdStarted) {
+      this.logRecord('- Drawing of main lines has started.');
+      this.mdStarted = false;
+    } else if (tick <= end) {
+      this.mdEnded = true;
+    } else if (tick > end && this.mdEnded) {
+      this.logRecord('- Drawing of main lines has ended.');
+      this.mdEnded = false;
+    }
   }
 
   // 塗りつぶし図形のアニメーション制御
@@ -484,6 +538,17 @@ export default class Kageigeta {
         ratio = 1.0;
       }
       material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, ratio);
+    }
+    if (tick <= start) {
+      this.sdStarted = true;
+    } else if (tick > start && this.sdStarted) {
+      this.logRecord('- Drawing of shapes has started.');
+      this.sdStarted = false;
+    } else if (tick <= end) {
+      this.sdEnded = true;
+    } else if (tick > end && this.sdEnded) {
+      this.logRecord('- Drawing of shapes has ended.');
+      this.sdEnded = false;
     }
   }
 
@@ -509,6 +574,17 @@ export default class Kageigeta {
         material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, ratio);
       }
     });
+    if (tick <= start) {
+      this.gfStarted = true;
+    } else if (tick > start && this.gfStarted) {
+      this.logRecord('- The guidelines have begun to fade out.');
+      this.gfStarted = false;
+    } else if (tick <= end) {
+      this.gfEnded = true;
+    } else if (tick > end && this.gfEnded) {
+      this.logRecord('- The guidelines have finished fading out.');
+      this.gfEnded = false;
+    }
   }
 
   // カメラを回転するアニメーション制御
@@ -529,6 +605,17 @@ export default class Kageigeta {
     }
     this.camera.position.set(x, 0, z);
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    if (tick <= start) {
+      this.crStarted = true;
+    } else if (tick > start && this.crStarted) {
+      this.logRecord('- The camera started rotating.');
+      this.crStarted = false;
+    } else if (tick <= end) {
+      this.crEnded = true;
+    } else if (tick > end && this.crEnded) {
+      this.logRecord('- The camera rotation has finished.');
+      this.crEnded = false;
+    }
   }
 
   // descのアニメーション制御
@@ -552,7 +639,90 @@ export default class Kageigeta {
     this.jpDesc.style = "opacity: " + opaPer + ";transform: translateY( " + traPer +"%);"
     this.enName.style = "opacity: " + opaPer + ";transform: translateX( " + traPer +"%);"
     this.enDesc.style = "opacity: " + opaPer + ";transform: translateY( " + traPer +"%);"
+    if (tick <= start) {
+      this.daStarted = true;
+    } else if (tick > start && this.daStarted) {
+      this.logRecord('- The explanation display animation has started.');
+      this.daStarted = false;
+    } else if (tick <= end) {
+      this.daEnded = true;
+    } else if (tick > end && this.daEnded) {
+      this.logRecord('- The explanation display animation has ended.');
+      this.daEnded = false;
+    }
   }
+
+  logRecord = (text) => {
+    // console.log(text);
+    const arrText = text.split('');
+    // console.log(arrText);
+    const divElm = document.createElement('div');
+    this.logger.appendChild(divElm);
+    for (var i = 0;i <= arrText.length - 1;i ++) {
+      // const num = i;
+      setTimeout((i) => {
+        // console.log(num);
+        divElm.innerHTML += arrText[i];
+        // this.logger.innerHTML += arrText[i];
+        // if (i == arrText.length - 1) divElm.innerHTML += '<br>';
+        var bottom = this.logger.scrollHeight - this.logger.clientHeight;
+        this.logger.scroll(0, bottom);
+    }, i * 10, i);
+
+    }
+    // arrText.forEach((letter) => {
+    //   setTimeout(() => {
+    //     this.logger.innerHTML += letter;
+    //   }, 1000);
+    //   // var element = document.documentElement;
+    //   // var bottom = this.logger.scrollHeight - this.logger.clientHeight;
+    //   // this.easeScroll(bottom);
+    //   // this.logger.scroll(0, bottom);
+    // })
+    // this.logger.innerHTML += '<br>';
+  }
+
+  // toExecutableOnce = (f) => {
+  //   this.called = false;
+  //   var result = undefined;
+  //   return () => {
+  //     if(!this.called){
+  //       result = f.apply(this, arguments);
+  //       this.called = true;
+  //     }
+  //     return result;
+  //   };
+  // };
+
+
+  // // イージング関数を定義
+  // easingFunction = (t) => (
+  //   t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
+  // );
+
+  // // アニメーションスクロール関数の定義
+  // easeScroll = (target, duration = 1000) => {
+  //   const initialPosition = this.logger.scrollY;
+  //   const targetPosition = target;
+  //   const animationStart = performance.now();
+
+  //   const performAnimation = (currentTime) => {
+  //     const elapsedTime = currentTime - animationStart;
+  //     const progress = elapsedTime / duration;
+
+  //     if (progress < 1) {
+  //       const easedProgress = this.easingFunction(progress);
+  //       const currentPosition = initialPosition +
+  //         ((targetPosition - initialPosition) * easedProgress);
+  //       this.logger.scrollTo(0, currentPosition);
+  //       requestAnimationFrame(performAnimation);
+  //     } else {
+  //       this.logger.scrollTo(0, targetPosition);
+  //     }
+  //   };
+
+  //   requestAnimationFrame(performAnimation);
+  // };
 
   render = () => {
     // 次のフレームを要求
