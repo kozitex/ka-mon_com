@@ -63,7 +63,7 @@ body.light #guide {
 #scroller {
   position: relative;
   width: 100%;
-  height: 2000vh;
+  height: 3000vh;
 }
 
 #themeChanger {
@@ -112,8 +112,8 @@ body.light #themeChanger .wrapper:hover {
 
 #themeChanger label {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border: 1px solid #808080;
   cursor: pointer;
 }
@@ -223,69 +223,83 @@ body.light #info .desc {
 }
 
 #progress {
+  /* width: 300px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   gap: 8px;
-  /* position: fixed;
-  top: 32px;
-  right: 32px;
-  z-index: 1; */
 }
 
-#rate {
-  /* position: absolute;
-  margin: 0 auto;
-  top: 8px;
-  left: 0;
-  right: 0;
-  width: 36px; */
+.progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: "Roboto";
   font-size: 10px;
-  text-align: center;
+  gap: 8px;
 }
 
-body.dark #rate {
+.progress .label {
+  width: 52px;
+  text-align: right;
+}
+
+body.dark .progress .label {
   color: #ccc;
 }
 
-body.light #rate {
+body.light .progress .label {
   color: #111;
 }
 
-#barWrap {
+.progress .rate {
+  /* font-family: "Roboto"; */
+  /* font-size: 10px; */
+  width: 36px;
+  text-align: right;
+  /* text-align: center; */
+}
+
+body.dark .progress .rate {
+  color: #ccc;
+}
+
+body.light .progress .rate {
+  color: #111;
+}
+
+.progress .barWrap {
   position: relative;
-  width: 300px;
+  width: 120px;
   height: 2px;
   overflow: hidden;
 }
 
-body.dark #barWrap {
+body.dark .progress .barWrap {
   background-color: #ffffff4d;
 }
 
-body.light #barWrap {
+body.light .progress .barWrap {
   background-color: #1111114d;
 }
 
-#bar {
+.progress .bar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* opacity: 0.7; */
   transform: translateX(-100%);
   transition: all  cubic-bezier(0.215, 0.610, 0.355, 1);
   z-index: 0;
 }
 
-body.dark #bar {
+body.dark .progress .bar {
   background-color: #fff;
 }
 
-body.light #bar {
+body.light .progress .bar {
   background-color: #111;
 }
 
@@ -306,8 +320,29 @@ body.light #bar {
   z-index: 1;
 }
 
-#auto i {
+#auto .icon {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+#auto .icon i {
+  position: absolute;
+  top: 0;
+  left: 0;
   font-size: 20px;
+}
+
+#auto .icon i.fa-light {
+  opacity: 1.0;
+  /* display: block; */
+  /* animation: fadeIn 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
+}
+
+#auto .icon i.fa-solid {
+  opacity: 0.0;
+  /* display: none; */
+  /* animation: fadeOut 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
 }
 
 /* #forward:hover,
@@ -317,6 +352,10 @@ body.light #bar {
 
 #forward,
 #backward {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
@@ -326,6 +365,34 @@ body.light #bar {
   opacity: 1.0;
   animation: softBlink 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
+
+#forward.active i.fa-light,
+#backward.active i.fa-light,
+#forward:hover i.fa-light,
+#backward:hover i.fa-light {
+  opacity: 0.0;
+  /* display: none; */
+  /* animation: fadeOut 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
+}
+
+#forward.active i.fa-solid,
+#backward.active i.fa-solid,
+#forward:hover i.fa-solid,
+#backward:hover i.fa-solid {
+  opacity: 1.0;
+  /* display: block; */
+  /* animation: fadeIn 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
+}
+
+/* @keyframes fadeIn {
+  0% {opacity: 0;}
+100% {opacity: 1;}
+}
+
+@keyframes fadeOut {
+  0% {opacity: 1;}
+100% {opacity: 0;display: none;}
+} */
 
 body.dark #forward.active,
 body.dark #backward.active,
@@ -367,7 +434,7 @@ body.light #backward:hover {
   gap: 8px;
 }
 
-#stats .label {
+#stats > div > .label {
   font-family: "Roboto";
   font-size: 10px;
   color: #808080;

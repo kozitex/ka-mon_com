@@ -56,6 +56,35 @@ export default class Kageigeta {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.backColor);
 
+    this.progressArr = [
+      'overall', 'guidelines', 'mainlines', 'shapes', 'rotation', 'description'
+    ];
+
+    this.progressArr.forEach((id) => {
+      const progressDiv = document.createElement('div');
+      const labelDiv = document.createElement('div');
+      const barWrapDiv = document.createElement('div');
+      const barDiv = document.createElement('div');
+      const rateDiv = document.createElement('div');
+
+      progressDiv.id = id;
+      progressDiv.classList.add('progress');
+      labelDiv.classList.add('label');
+      labelDiv.textContent = id;
+      barWrapDiv.classList.add('barWrap');
+      barDiv.classList.add('bar');
+      rateDiv.classList.add('rate');
+      rateDiv.textContent = '0.0%';
+
+      progressDiv.appendChild(labelDiv);
+      barWrapDiv.appendChild(barDiv);
+      progressDiv.appendChild(barWrapDiv);
+      progressDiv.appendChild(rateDiv);
+
+      const progress = document.querySelector('#progress .content');
+      progress.appendChild(progressDiv);
+    })
+
     this.guidelines = [];
     this.mainVers = [];
     this.mainlines = [];
@@ -153,6 +182,7 @@ export default class Kageigeta {
         }
 
         for (var d = 0;d <= divCount - 1;d ++) {
+          // const midX = THREE.MathUtils.lerp(startX, endX, d / divCount);
           const midX = THREE.MathUtils.damp(startX, endX, 10, d / divCount);
           const mid = {x: midX, y: a1 * midX + b1};
           points.push(new THREE.Vector3(mid.x, mid.y, 0));
@@ -172,7 +202,7 @@ export default class Kageigeta {
       this.guidelines.push(group);
     })
 
-    this.logRecord('- Guidelines have been generated.');
+    this.logRecord('- the guidelines have been generated.');
     // this.logger.innerText += '- guideline is generated.\n';
   }
 
@@ -195,7 +225,8 @@ export default class Kageigeta {
             const points = [];
             if (startX == endX && startY == endY) return;
             for (var d = 0;d <= divCount - 1;d ++) {
-              const midX = THREE.MathUtils.damp(startX, endX, 10, d / divCount);
+              // const midX = THREE.MathUtils.damp(startX, endX, 10, d / divCount);
+              const midX = THREE.MathUtils.lerp(startX, endX, d / divCount);
               const mid = {x: midX, y: a1 * midX + b1};
               points.push(new THREE.Vector3(mid.x, mid.y, 1));
             }
@@ -215,7 +246,7 @@ export default class Kageigeta {
         }
       })
     })
-    this.logRecord('- Main lines have been generated.');
+    this.logRecord('- the mainlines have been generated.');
     // this.logger.innerText += '- mainline is generated.\n';
   }
 
@@ -259,7 +290,7 @@ export default class Kageigeta {
       this.mainfills.push(mesh);
       this.scene.add(mesh);
     });
-    this.logRecord('- Shapes have been generated.');
+    this.logRecord('- the shapes have been generated.');
     // this.logger.innerText += '- figure is generated.\n';
   }
 
@@ -370,7 +401,7 @@ export default class Kageigeta {
     vs.push(arr2);
     this.mainVers.push(vs);
 
-    this.logRecord('- The vertices have been calculated.');
+    this.logRecord('- the vertices have been calculated.');
   }
 
   // ウィンドウサイズ変更
@@ -385,7 +416,7 @@ export default class Kageigeta {
 
     this.scrollerH = this.scroller.scrollHeight - this.h;
 
-    this.logRecord('- Window has been resized.');
+    this.logRecord('- window has been resized.');
 
     this.render();
   }
@@ -441,13 +472,22 @@ export default class Kageigeta {
       figure.material.color = new THREE.Color(this.frontColor);
     })
 
-    this.logRecord('- Theme color is set to ' + theme + '.');
+    this.logRecord('- theme color is set to ' + theme + '.');
   }
 
+  // // プログレスバーのアニメーション制御
+  // progressBarControl = (tick) => {
+  //   const bar = document.getElementById('bar');
+  //   const rate = document.getElementById('rate');
+  //   const ratio = tick * 100;
+  //   rate.textContent = ratio.toFixed(1) + '%';
+  //   bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
+  // }
+
   // プログレスバーのアニメーション制御
-  progressBarControl = (tick) => {
-    const bar = document.getElementById('bar');
-    const rate = document.getElementById('rate');
+  progressBarControl = (id, tick) => {
+    const bar = document.querySelector('#' + id + ' .bar');
+    const rate = document.querySelector('#' + id + ' .rate');
     const ratio = tick * 100;
     rate.textContent = ratio.toFixed(1) + '%';
     bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
@@ -455,20 +495,23 @@ export default class Kageigeta {
 
   // ガイドラインの描画アニメーション制御
   guidelineDrawAnimeControl = (tick) => {
-    const start = 0.0;
-    const end   = 0.4;
+    const start = 0.05;
+    const end   = 0.35;
     for (var i = 0;i <= this.guidelines.length - 1;i ++) {
       const lines = this.guidelines[i];
       const linesLen = lines.length;
+      const waiting = i * 0.05;
       for(var j = 0;j <= linesLen - 1;j ++) {
         const line = lines[j];
-        const delay = 0;
+        const delay = j * 0.01;
         var count = 0;
         if (tick <= start) {
           count = 0;
         } else if (tick > start && tick <= end) {
-          const ratio = (tick - (start + i * 0.05)) / end;
-          count = THREE.MathUtils.lerp(0, 200, ratio) - delay;
+          const adjust = waiting + delay;
+          const ratio = (tick - (start + adjust)) / (end - (start + adjust));
+          count = THREE.MathUtils.lerp(0, 200, ratio);
+          // count = THREE.MathUtils.damp(0, 200, 10, ratio);
         } else if (tick > end) {
           count = 200;
         }
@@ -477,21 +520,30 @@ export default class Kageigeta {
     }
     if (tick <= start) {
       this.gdStarted = true;
-    } else if (tick > start && this.gdStarted) {
-      this.logRecord('- Drawing of guidelines has started.');
-      this.gdStarted = false;
-    } else if (tick <= end) {
+      this.progressBarControl('guidelines', 0);
+    } else if (tick > start && tick <= end) {
+      if (this.gdStarted) {
+        this.logRecord('- drawing of the guidelines has started.');
+        this.gdStarted = false;
+      }
       this.gdEnded = true;
-    } else if (tick > end && this.gdEnded) {
-      this.logRecord('- Drawing of guidelines has ended.');
-      this.gdEnded = false;
+      const ratio = (tick - start) / (end - start + 0.1);
+      this.progressBarControl('guidelines', ratio);
+    } else if (tick > end) {
+      if (this.gdEnded) {
+        this.logRecord('- drawing of the guidelines has ended.');
+        this.gdEnded = false;
+      }
+      this.progressBarControl('guidelines', 0.75);
     }
   }
 
   // 本線の表示アニメーション制御
   mainlineAnimeControl = (tick) => {
-    const start = 0.4;
+    const start = 0.35;
     const end   = 0.5;
+    const ratio = (tick - start) / (end - start);
+    // console.log(ratio);
     for (var i = 0;i <= this.mainlines.length - 1;i ++) {
       const lines = this.mainlines[i];
       const linesLen = lines.length;
@@ -501,8 +553,8 @@ export default class Kageigeta {
         if (tick <= start) {
           count = 0;
         } else if (tick > start && tick <= end) {
-          const ratio = (tick - start) / (end - start);
-          count = THREE.MathUtils.lerp(0, 200, ratio);
+          count = THREE.MathUtils.damp(0, 200, 10, ratio);
+          // count = THREE.MathUtils.lerp(0, 200, ratio);
         } else if (tick > end) {
           count = 200;
         }
@@ -511,21 +563,27 @@ export default class Kageigeta {
     }
     if (tick <= start) {
       this.mdStarted = true;
-    } else if (tick > start && this.mdStarted) {
-      this.logRecord('- Drawing of main lines has started.');
-      this.mdStarted = false;
-    } else if (tick <= end) {
+      this.progressBarControl('mainlines', 0);
+    } else if (tick > start && tick <= end) {
+      if (this.mdStarted) {
+        this.logRecord('- drawing of the mainlines has started.');
+        this.mdStarted = false;
+      }
       this.mdEnded = true;
-    } else if (tick > end && this.mdEnded) {
-      this.logRecord('- Drawing of main lines has ended.');
-      this.mdEnded = false;
+      this.progressBarControl('mainlines', ratio);
+    } else if (tick > end) {
+      if (tick > end && this.mdEnded) {
+        this.logRecord('- drawing of the mainlines has ended.');
+        this.mdEnded = false;
+      }
+      this.progressBarControl('mainlines', 1);
     }
   }
 
   // 塗りつぶし図形のアニメーション制御
   mainfillAnimeControl = (tick) => {
     const start = 0.5;
-    const end   = 0.7;
+    const end   = 0.6;
     for (var i = 0;i <= this.mainfills.length - 1;i ++) {
       var ratio;
       const material = this.mainfills[i].material;
@@ -537,18 +595,26 @@ export default class Kageigeta {
       } else if (tick > end) {
         ratio = 1.0;
       }
-      material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, ratio);
+      // material.opacity = THREE.MathUtils.damp(0.0, 1.0, 3, ratio);
+      material.opacity = THREE.MathUtils.lerp(0.0, 1.0, ratio);
     }
     if (tick <= start) {
       this.sdStarted = true;
-    } else if (tick > start && this.sdStarted) {
-      this.logRecord('- Drawing of shapes has started.');
-      this.sdStarted = false;
-    } else if (tick <= end) {
+      this.progressBarControl('shapes', 0);
+    } else if (tick > start && tick <= end) {
+      if (this.sdStarted) {
+        this.logRecord('- drawing of the shapes has started.');
+        this.sdStarted = false;
+      }
       this.sdEnded = true;
-    } else if (tick > end && this.sdEnded) {
-      this.logRecord('- Drawing of shapes has ended.');
-      this.sdEnded = false;
+      const ratio = (tick - start) / (end - start);
+      this.progressBarControl('shapes', ratio);
+    } else if (tick > end) {
+      if (this.sdEnded) {
+        this.logRecord('- drawing of the shapes has ended.');
+        this.sdEnded = false;
+      }
+      this.progressBarControl('shapes', 1);
     }
   }
 
@@ -565,6 +631,7 @@ export default class Kageigeta {
           ratio = 0.0;
           lines[i].visible = true;
         } else if (tick > start && tick <= end) {
+          lines[i].visible = true;
           ratio = (tick - start) / (end - start);
           // count = THREE.MathUtils.lerp(0, 1, ratio);
         } else if (tick > end) {
@@ -576,14 +643,21 @@ export default class Kageigeta {
     });
     if (tick <= start) {
       this.gfStarted = true;
-    } else if (tick > start && this.gfStarted) {
-      this.logRecord('- The guidelines have begun to fade out.');
-      this.gfStarted = false;
-    } else if (tick <= end) {
+      // this.progressBarControl('guidelines', 0.75);
+    } else if (tick > start && tick <= end) {
+      if (this.gfStarted) {
+        this.logRecord('- the guidelines have begun to fade out.');
+        this.gfStarted = false;
+      }
       this.gfEnded = true;
-    } else if (tick > end && this.gfEnded) {
-      this.logRecord('- The guidelines have finished fading out.');
-      this.gfEnded = false;
+      const ratio = (tick - start) / (end - start) / 4;
+      this.progressBarControl('guidelines', 0.75 + ratio);
+    } else if (tick > end) {
+      if (this.gfEnded) {
+        this.logRecord('- the guidelines have finished fading out.');
+        this.gfEnded = false;
+      }
+      this.progressBarControl('guidelines', 1);
     }
   }
 
@@ -607,14 +681,21 @@ export default class Kageigeta {
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
     if (tick <= start) {
       this.crStarted = true;
-    } else if (tick > start && this.crStarted) {
-      this.logRecord('- The camera started rotating.');
-      this.crStarted = false;
-    } else if (tick <= end) {
+      this.progressBarControl('rotation', 0);
+    } else if (tick > start && tick <= end) {
+      if (this.crStarted) {
+        this.logRecord('- the camera started rotating.');
+        this.crStarted = false;
+      }
       this.crEnded = true;
-    } else if (tick > end && this.crEnded) {
-      this.logRecord('- The camera rotation has finished.');
-      this.crEnded = false;
+      const ratio = (tick - start) / (end - start);
+      this.progressBarControl('rotation', ratio);
+    } else if (tick >= end) {
+      if (this.crEnded) {
+        this.logRecord('- the camera rotation has finished.');
+        this.crEnded = false;
+      }
+      this.progressBarControl('rotation', 1);
     }
   }
 
@@ -628,113 +709,66 @@ export default class Kageigeta {
     if (tick < start) {
       opaPer = 0.0;
       traPer = 100;
+      this.daStarted = true;
+      this.progressBarControl('description', 0);
     } else if (tick >= start && tick < end) {
       opaPer = THREE.MathUtils.damp(0.0, 1.0, 5, percent);
       traPer = THREE.MathUtils.damp(100,   0, 5, percent);
+      if (this.daStarted) {
+        this.logRecord('- the description display animation has started.');
+        this.daStarted = false;
+      }
+      this.daEnded = true;
+      const ratio = (tick - start) / (end - start);
+      this.progressBarControl('description', ratio);
     } else if (tick >= end) {
       opaPer = 1.0;
       traPer = 0;
+      if (this.daEnded) {
+        this.logRecord('- the description display animation has ended.');
+        this.daEnded = false;
+      }
+      this.progressBarControl('description', 1);
     }
     this.jpName.style = "opacity: " + opaPer + ";transform: translateX(-" + traPer +"%);"
     this.jpDesc.style = "opacity: " + opaPer + ";transform: translateY( " + traPer +"%);"
     this.enName.style = "opacity: " + opaPer + ";transform: translateX( " + traPer +"%);"
     this.enDesc.style = "opacity: " + opaPer + ";transform: translateY( " + traPer +"%);"
-    if (tick <= start) {
-      this.daStarted = true;
-    } else if (tick > start && this.daStarted) {
-      this.logRecord('- The explanation display animation has started.');
-      this.daStarted = false;
-    } else if (tick <= end) {
-      this.daEnded = true;
-    } else if (tick > end && this.daEnded) {
-      this.logRecord('- The explanation display animation has ended.');
-      this.daEnded = false;
-    }
+    // if (tick <= start) {
+    //   this.daStarted = true;
+    // } else if (tick > start && this.daStarted) {
+    //   this.logRecord('- The explanation display animation has started.');
+    //   this.daStarted = false;
+    // } else if (tick <= end) {
+    //   this.daEnded = true;
+    // } else if (tick > end && this.daEnded) {
+    //   this.logRecord('- The explanation display animation has ended.');
+    //   this.daEnded = false;
+    // }
   }
 
+  //ログを記録する
   logRecord = (text) => {
-    // console.log(text);
     const arrText = text.split('');
-    // console.log(arrText);
     const divElm = document.createElement('div');
     this.logger.appendChild(divElm);
     for (var i = 0;i <= arrText.length - 1;i ++) {
-      // const num = i;
       setTimeout((i) => {
-        // console.log(num);
         divElm.innerHTML += arrText[i];
-        // this.logger.innerHTML += arrText[i];
-        // if (i == arrText.length - 1) divElm.innerHTML += '<br>';
         var bottom = this.logger.scrollHeight - this.logger.clientHeight;
         this.logger.scroll(0, bottom);
-    }, i * 10, i);
-
+      }, i * 20, i);
     }
-    // arrText.forEach((letter) => {
-    //   setTimeout(() => {
-    //     this.logger.innerHTML += letter;
-    //   }, 1000);
-    //   // var element = document.documentElement;
-    //   // var bottom = this.logger.scrollHeight - this.logger.clientHeight;
-    //   // this.easeScroll(bottom);
-    //   // this.logger.scroll(0, bottom);
-    // })
-    // this.logger.innerHTML += '<br>';
   }
 
-  // toExecutableOnce = (f) => {
-  //   this.called = false;
-  //   var result = undefined;
-  //   return () => {
-  //     if(!this.called){
-  //       result = f.apply(this, arguments);
-  //       this.called = true;
-  //     }
-  //     return result;
-  //   };
-  // };
-
-
-  // // イージング関数を定義
-  // easingFunction = (t) => (
-  //   t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
-  // );
-
-  // // アニメーションスクロール関数の定義
-  // easeScroll = (target, duration = 1000) => {
-  //   const initialPosition = this.logger.scrollY;
-  //   const targetPosition = target;
-  //   const animationStart = performance.now();
-
-  //   const performAnimation = (currentTime) => {
-  //     const elapsedTime = currentTime - animationStart;
-  //     const progress = elapsedTime / duration;
-
-  //     if (progress < 1) {
-  //       const easedProgress = this.easingFunction(progress);
-  //       const currentPosition = initialPosition +
-  //         ((targetPosition - initialPosition) * easedProgress);
-  //       this.logger.scrollTo(0, currentPosition);
-  //       requestAnimationFrame(performAnimation);
-  //     } else {
-  //       this.logger.scrollTo(0, targetPosition);
-  //     }
-  //   };
-
-  //   requestAnimationFrame(performAnimation);
-  // };
-
   render = () => {
-    // 次のフレームを要求
-    requestAnimationFrame(() => this.render());
-
     // const sec = performance.now();
 
     const tick = this.scrollY / this.scrollerH;
     // console.log(tick);
 
     // プログレスバーのアニメーション制御
-    this.progressBarControl(tick);
+    this.progressBarControl('overall', tick);
 
     // ガイドラインの表示アニメーション制御
     this.guidelineDrawAnimeControl(tick);
@@ -759,5 +793,8 @@ export default class Kageigeta {
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
+
+    // 次のフレームを要求
+    requestAnimationFrame(this.render);
   }
 }
