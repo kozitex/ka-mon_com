@@ -36,7 +36,6 @@ canvas {
 }
 
 #guide.hide {
-  /* opacity: 0.0; */
   animation-iteration-count: 0;
 }
 
@@ -63,7 +62,7 @@ body.light #guide {
 #scroller {
   position: relative;
   width: 100%;
-  height: 3000vh;
+  /* height: 3000vh; */
 }
 
 #themeChanger {

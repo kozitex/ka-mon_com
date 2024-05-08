@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Grid from './grid.js';
 
-export default class Kageigeta {
+export default class HidariFutatsuDomoe {
   constructor() {
 
     // 基本カラー
@@ -16,7 +16,7 @@ export default class Kageigeta {
     this.h = window.innerHeight
 
     // カメラのZ位置
-    this.camZ = 3000;
+    this.camZ = 4000;
 
     // スクローラーの高さ
     const scrollerHeight = 3000;
@@ -113,7 +113,7 @@ export default class Kageigeta {
     this.generateGuideline();
 
     // 図形の頂点を取得
-    this.getVertices();
+    // this.getVertices();
 
     // 本線の作成
     this.generateMainLine();
@@ -128,9 +128,9 @@ export default class Kageigeta {
     this.enDesc = document.getElementById('enDesc');
 
     this.jpName.textContent = '陰井桁';
-    this.jpDesc.innerHTML = '井戸を真上から見た形状をモチーフにした家紋です。<br>実際の井戸は、地上の木組み部分を「井桁」、地下の円筒状の部分を「井筒」と呼びますが、家紋においては、正方形のものが「井筒」、菱形のものが「井桁」と呼ばれています。<br>苗字に「井」のつく家の家紋として使われることが多いです。';
+    this.jpDesc.textContent = '井筒・井桁紋とは、井戸をモチーフとした家紋。井戸の地上部分を囲むように囲まれた井の字型の木組を「井桁」、また円形のものを「井筒」というが、紋章では正方形のものを井筒、菱形のものを井桁と呼ぶ。';
     this.enName.textContent = 'Kage-Igeta';
-    this.enDesc.innerHTML = 'This family crest is based on the shape of a well seen from directly above.<br>In actual wells, the wood-framed part above ground is called "Igeta", and the cylindrical part underground is called "Izutsu", but in the family crest, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".<br>It is often used as a family crest for families with an "I" in their last name.';
+    this.enDesc.textContent = 'The Izutsu/Igeta crest is a family crest with a well motif. The well-shaped wooden structure surrounding the above-ground part of the well is called "Igeta", and the circular one is called "Izutsu", but in the coat of arms, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".';
 
     // 描画ループ開始
     this.render();
@@ -141,59 +141,102 @@ export default class Kageigeta {
     this.scrollY = y;
   }
 
+  // 円の方程式
+  circle = (a, b, r, s) => {
+    return {x: a + r * Math.cos(s), y: b + r * Math.sin(s)};
+  }
+
+  
+
   // ガイドラインを作成
   generateGuideline = () => {
-    const a = 0.8;
-    const bs = [400, 500, 960, 1060, 1180, 1280];
-    const divCount = 200;
-    bs.forEach((b) => {
-      const group = [];
-      for (var q = 0;q <= 3;q ++) {
-        var points = [];
-
-        var startX, endX, a1, b1, g1, g2;
-        if (q == 0) {
-          a1 = a, b1 = b, g1 = -this.size, g2 = this.size;
-          startX = g1;
-          endX   = (g2 - b1) / a1;
-        } else if (q == 1) {
-          a1 = -a, b1 = b, g1 = this.size, g2 = this.size;
-          startX = (g1 - b1) / a1;
-          endX   = g2;
-        } else if (q == 2) {
-          a1 = a, b1 = -b, g1 = this.size, g2 = -this.size;
-          startX = g1;
-          endX   = (g2 - b1) / a1;
-        } else if (q == 3) {
-          a1 = -a, b1 = -b, g1 = -this.size, g2 = -this.size;
-          startX = (g1 - b1) / a1;
-          endX   = g2;
-        }
-
-        for (var d = 0;d <= divCount - 1;d ++) {
-          const midX = THREE.MathUtils.damp(startX, endX, 10, d / divCount);
-          const mid = {x: midX, y: a1 * midX + b1};
-          points.push(new THREE.Vector3(mid.x, mid.y, 0));
-        }
-
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        geometry.setDrawRange(0, 0);
-        const material = new THREE.LineBasicMaterial({
-          color: this.guideColor,
-          transparent: true
-        });
-        const line = new THREE.Line(geometry, material);
-        group.push(line);
-        this.scene.add(line);
+    const circles = [
+      {a:    0, b:    0, r: 1600},
+      {a:    0, b:  825, r:  750},
+      {a:    0, b: -825, r:  750},
+      {a: -110, b:  490, r: 1100},
+      {a:  110, b: -490, r: 1100},
+      // {a:    0, b:    0, r: 1600},
+      // {a:    0, b:  800, r:  750},
+      // {a:    0, b: -800, r:  750},
+      // {a: -142, b:  480, r: 1100},
+      // {a:  142, b: -480, r: 1100},
+    ];
+    const divCount = 1000;
+    circles.forEach((circle) => {
+      const points = [];
+      const a = circle.a;
+      const b = circle.b;
+      const r = circle.r;
+      for (var i = 0;i <= divCount - 1;i ++) {
+        const deg = THREE.MathUtils.damp(90, 450, 10, i / (divCount - 1));
+        const s = deg * (Math.PI / 180);
+        const mid = this.circle(a, b, r, s);
+        points.push(new THREE.Vector3(mid.x, mid.y, 0));
       }
-      this.guidelines.push(group);
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      geometry.setDrawRange(0, 0);
+      const material = new THREE.LineBasicMaterial({
+        color: this.guideColor,
+        transparent: true
+      });
+      const line = new THREE.Line(geometry, material);
+      this.guidelines.push(line);
+      this.scene.add(line);
     })
 
     this.logRecord('- the guidelines have been generated.');
   }
 
-  // 本線を作成
+  // ３点の座標から角度を求める
+  getRadian = (a, b, c, d, e, f) => {
+    return Math.acos((c - a) * (e - a) + (d - b) * (f - b) / Math.sqrt((c - a) ** 2 + (d - b) ** 2) * Math.sqrt((e - a) ** 2 + (f - b) ** 2));
+  }
+
   generateMainLine = () => {
+    const circles = [
+      // {a:    0, b:    0, r: 1600, f: 288, t: 470},
+      // {a:    0, b:    0, r: 1600, f: 110, t: 290},
+      {a:    0, b:    0, r: 1600, f: 110, t: -72},
+      {a:    0, b:    0, r: 1600, f: 290, t: 108},
+      {a:    0, b:  825, r:  750, f: 218, t: 430},
+      {a:    0, b: -825, r:  750, f: 38, t: 250},
+      {a: -110, b:  490, r: 1100, f: 309, t: 470},
+      {a:  110, b: -490, r: 1100, f: 129, t: 290},
+    ];
+    const divCount = 1000;
+    circles.forEach((circle) => {
+
+      const gs = [0, 1, -1, 2, -2, 3, -3];
+      gs.forEach((g) => {
+        const points = [];
+        const a = circle.a;
+        const b = circle.b;
+        const r = circle.r + g;
+        const f = circle.f;
+        const t = circle.t;
+        for (var i = 0;i <= divCount - 1;i ++) {
+          const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
+          const s = deg * (Math.PI / 180);
+          const mid = this.circle(a, b, r, s);
+          points.push(new THREE.Vector3(mid.x, mid.y, 0));
+        }
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        geometry.setDrawRange(0, 0);
+        const material = new THREE.LineBasicMaterial({
+          color: this.frontColor,
+          transparent: true
+        });
+        const line = new THREE.Line(geometry, material);
+        this.mainlines.push(line);
+        this.scene.add(line);
+      })
+    })
+
+  }
+
+  // 本線を作成
+  generateMainLine2 = () => {
     const divCount = 200;
     var group = [];
     const vers = this.mainVers;
@@ -234,6 +277,80 @@ export default class Kageigeta {
 
   // 塗りつぶし図形を生成
   generateMainFill = () => {
+    const shape = new THREE.Shape();
+    const circle = {a:    0, b:    0, r: 1600};
+    const divCount = 2000;
+    const a = circle.a;
+    const b = circle.b;
+    const r = circle.r;
+    for (var i = 0;i <= divCount - 1;i ++) {
+      const deg = THREE.MathUtils.lerp(90, 450, i / (divCount - 1));
+      const s = deg * (Math.PI / 180);
+      const mid = this.circle(a, b, r, s);
+      if (i == 0) {
+        shape.moveTo(mid.x, mid.y);
+      } else {
+        shape.lineTo(mid.x, mid.y);
+      }
+    }
+
+    const path = new THREE.Path();
+    const circles = [
+      {a:    0, b:  825, r:  750, f:  218, t:  450, g: -3},
+      {a: -110, b:  490, r: 1100, f:   75, t:  -48, g:  3},
+      {a:    0, b: -825, r:  750, f:   38, t:  260, g: -3},
+      {a:  110, b: -490, r: 1100, f: -105, t: -228, g:  3},
+    ];
+    circles.forEach((circle) => {
+      // const gs = [0, 1, -1, 2, -2, 3, -3];
+      // gs.forEach((g) => {
+        // const points = [];
+        const a = circle.a;
+        const b = circle.b;
+        const r = circle.r + circle.g;
+        const f = circle.f;
+        const t = circle.t;
+        for (var i = 0;i <= divCount - 1;i ++) {
+          const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
+          const s = deg * (Math.PI / 180);
+          const mid = this.circle(a, b, r, s);
+          if (i == 0) {
+            path.moveTo(mid.x, mid.y);
+          } else {
+            path.lineTo(mid.x, mid.y);
+          }
+    
+          // points.push(new THREE.Vector3(mid.x, mid.y, 0));
+        }
+        // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        // geometry.setDrawRange(0, 0);
+        // const material = new THREE.LineBasicMaterial({
+        //   color: this.frontColor,
+        //   transparent: true
+        // });
+        // const line = new THREE.Line(geometry, material);
+        // this.mainlines.push(line);
+        // this.scene.add(line);
+      // })
+    })
+
+    shape.holes.push(path);
+
+    const material = new THREE.MeshBasicMaterial({
+      color: this.frontColor,
+      side: THREE.DoubleSide,
+      opacity: 0.0,
+      transparent: true
+    });
+    const geometry = new THREE.ShapeGeometry(shape);
+    const mesh = new THREE.Mesh(geometry, material);
+    this.mainfills.push(mesh);
+    this.scene.add(mesh);
+
+    this.logRecord('- the shapes have been generated.');
+  }
+
+  generateMainFill2 = () => {
     this.mainVers.forEach((figure) => {
       const shape = new THREE.Shape();
       const path = new THREE.Path();
@@ -433,23 +550,23 @@ export default class Kageigeta {
     })
 
     // ガイドラインの色を変更
-    this.guidelines.forEach((group) => {
-      group.forEach((line) => {
+    this.guidelines.forEach((line) => {
+      // group.forEach((line) => {
         line.material.color = new THREE.Color(this.guideColor);
-      })
+      // })
     })
 
     // 本線の色を変更
-    this.mainlines.forEach((group) => {
-      group.forEach((line) => {
-        line.material.color = new THREE.Color(this.frontColor);
-      })
-    })
+    // this.mainlines.forEach((group) => {
+    //   group.forEach((line) => {
+    //     line.material.color = new THREE.Color(this.frontColor);
+    //   })
+    // })
 
     // 図形の色を変更
-    this.mainfills.forEach((figure) => {
-      figure.material.color = new THREE.Color(this.frontColor);
-    })
+    // this.mainfills.forEach((figure) => {
+    //   figure.material.color = new THREE.Color(this.frontColor);
+    // })
 
     this.logRecord('- theme color is set to ' + theme + '.');
   }
@@ -467,25 +584,21 @@ export default class Kageigeta {
   guidelineDrawAnimeControl = (tick) => {
     const start = 0.05;
     const end   = 0.35;
+    const divCount = 1000;
     for (var i = 0;i <= this.guidelines.length - 1;i ++) {
-      const lines = this.guidelines[i];
-      const linesLen = lines.length;
+      const line = this.guidelines[i];
       const waiting = i * 0.05;
-      for(var j = 0;j <= linesLen - 1;j ++) {
-        const line = lines[j];
-        const delay = j * 0.01;
-        var count = 0;
-        if (tick <= start) {
-          count = 0;
-        } else if (tick > start && tick <= end) {
-          const adjust = waiting + delay;
-          const ratio = (tick - (start + adjust)) / (end - (start + adjust));
-          count = THREE.MathUtils.lerp(0, 200, ratio);
-        } else if (tick > end) {
-          count = 200;
-        }
-        line.geometry.setDrawRange(0, count);
+      var count = 0;
+      if (tick <= start) {
+        count = 0;
+      } else if (tick > start && tick <= end) {
+        const adjust = waiting;
+        const ratio = (tick - (start + adjust)) / (end - (start + adjust));
+        count = THREE.MathUtils.lerp(0, divCount, ratio);
+      } else if (tick > end) {
+        count = divCount;
       }
+      line.geometry.setDrawRange(0, count);
     }
     if (tick <= start) {
       this.gdStarted = true;
@@ -511,22 +624,24 @@ export default class Kageigeta {
   mainlineAnimeControl = (tick) => {
     const start = 0.35;
     const end   = 0.5;
+    const divCount = 1000;
     const ratio = (tick - start) / (end - start);
     for (var i = 0;i <= this.mainlines.length - 1;i ++) {
-      const lines = this.mainlines[i];
-      const linesLen = lines.length;
-      for(var j = 0;j <= linesLen - 1;j ++) {
+      const line = this.mainlines[i];
+      // const linesLen = lines.length;
+      // for(var j = 0;j <= linesLen - 1;j ++) {
         var count = 0;
-        const line = lines[j];
+        // const line = lines[j];
         if (tick <= start) {
           count = 0;
         } else if (tick > start && tick <= end) {
-          count = THREE.MathUtils.damp(0, 200, 10, ratio);
+          count = THREE.MathUtils.lerp(0, divCount, ratio);
+          // count = THREE.MathUtils.damp(0, divCount, 10, ratio);
         } else if (tick > end) {
-          count = 200;
+          count = divCount;
         }
         line.geometry.setDrawRange(0, count);
-      }
+      // }
     }
     if (tick <= start) {
       this.mdStarted = true;
@@ -587,23 +702,64 @@ export default class Kageigeta {
   guidelineFadeOutAnimeControl = (tick) => {
     const start = 0.45;
     const end   = 0.55;
-    this.guidelines.forEach((lines) => {
-      const num = lines.length - 1;
-      for (var i = 0;i <= num;i ++) {
-        const material = lines[i].material;
+    this.guidelines.forEach((line) => {
+      // const num = lines.length - 1;
+      // for (var i = 0;i <= num;i ++) {
+        const material = line.material;
         var ratio;
         if (tick <= start) {
           ratio = 0.0;
-          lines[i].visible = true;
+          line.visible = true;
         } else if (tick > start && tick <= end) {
-          lines[i].visible = true;
+          line.visible = true;
           ratio = (tick - start) / (end - start);
         } else if (tick > end) {
           ratio = 1.0;
-          lines[i].visible = false;
+          line.visible = false;
         }
         material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, ratio);
+      // }
+    });
+    if (tick <= start) {
+      this.gfStarted = true;
+    } else if (tick > start && tick <= end) {
+      if (this.gfStarted) {
+        this.logRecord('- the guidelines have begun to fade out.');
+        this.gfStarted = false;
       }
+      this.gfEnded = true;
+      const ratio = (tick - start) / (end - start) / 4;
+      this.progressBarControl('guidelines', 0.75 + ratio);
+    } else if (tick > end) {
+      if (this.gfEnded) {
+        this.logRecord('- the guidelines have finished fading out.');
+        this.gfEnded = false;
+      }
+      this.progressBarControl('guidelines', 1);
+    }
+  }
+
+  // メインラインのフェードアウトアニメーション制御
+  mainlineFadeOutAnimeControl = (tick) => {
+    const start = 0.45;
+    const end   = 0.55;
+    this.mainlines.forEach((line) => {
+      // const num = lines.length - 1;
+      // for (var i = 0;i <= num;i ++) {
+        const material = line.material;
+        var ratio;
+        if (tick <= start) {
+          ratio = 0.0;
+          line.visible = true;
+        } else if (tick > start && tick <= end) {
+          line.visible = true;
+          ratio = (tick - start) / (end - start);
+        } else if (tick > end) {
+          ratio = 1.0;
+          line.visible = false;
+        }
+        material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, ratio);
+      // }
     });
     if (tick <= start) {
       this.gfStarted = true;
@@ -719,7 +875,7 @@ export default class Kageigeta {
     const tick = this.scrollY / this.scrollerH;
 
     // プログレスバーのアニメーション制御
-    this.progressBarControl('overall', tick);
+    // this.progressBarControl('overall', tick);
 
     // ガイドラインの表示アニメーション制御
     this.guidelineDrawAnimeControl(tick);
@@ -733,14 +889,17 @@ export default class Kageigeta {
     // ガイドラインをフェードアウト
     this.guidelineFadeOutAnimeControl(tick);
 
+    // メインラインをフェードアウト
+    this.mainlineFadeOutAnimeControl(tick);
+
     // グリッドをフェードアウト
-    this.grid.fadeOut(tick, 0.35, 0.5);
+    // this.grid.fadeOut(tick, 0.35, 0.5);
 
     // 図形の周りを一回転
-    this.cameraRotateAnimeControl(tick);
+    // this.cameraRotateAnimeControl(tick);
 
     // descのアニメーションを制御
-    this.descAnimeControl(tick);
+    // this.descAnimeControl(tick);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);

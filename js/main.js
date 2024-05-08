@@ -1,19 +1,22 @@
 'use strict';
 import Kageigeta from './crests/kageigeta.js';
+import HidariFutatsuDomoe from './crests/hidari-futatsu-domoe.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
 });
 
 const init = () => {
+  let timeoutId = 0;
 
-  const kamon = new Kageigeta();
+  // const kamon = new Kageigeta();
+  const kamon = new HidariFutatsuDomoe();
 
   // テーマカラーを適用
   const changeTheme = (theme) => {
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
-    kamon.onChangeTheme(theme);
+    kamon.changeTheme(theme);
     localStorage.setItem('theme', theme);
   }
 
@@ -28,6 +31,7 @@ const init = () => {
   // スクロール量をキャンバスに渡す
   kamon.scrolled(window.scrollY);
 
+  // 画面スクロール時の処理
   window.addEventListener('scroll', () => {
     // スクロール量をキャンバスに渡す
     kamon.scrolled(window.scrollY);
@@ -42,6 +46,13 @@ const init = () => {
       backward.classList.remove('active');
     }
   });
+
+  // 画面リサイズ時の処理
+  window.addEventListener('resize', () => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(kamon.windowResize, 200);
+  });
+
 
   // テーマ名が保存されていたら適用
   const myTheme = localStorage.getItem('theme');

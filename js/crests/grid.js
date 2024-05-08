@@ -17,8 +17,6 @@ export default class Grid {
     // 色
     this.color     = color;
     this.thinColor = thinColor;
-    // this.gridColor     = 0x333333;
-    // this.gridThinColor = 0x1a1a1a;
 
     // メッシュグループ
     this.group = new THREE.Group();
@@ -115,16 +113,5 @@ export default class Grid {
       child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, count);
     });
   }
-
-  // fadeOut = (sec, delay, duration) => {
-  //   this.group.children.forEach((child) => {
-  //     child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, (sec - delay) / duration);
-  //     if (sec > delay + 1000) {
-  //       child.visible = false;
-  //     } else {
-  //       child.visible = true;
-  //     }
-  //   });
-  // }
 
 }
