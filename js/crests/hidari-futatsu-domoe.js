@@ -56,7 +56,7 @@ export default class HidariFutatsuDomoe {
     this.scene.background = new THREE.Color(this.backColor);
 
     this.progressArr = [
-      'overall', 'guidelines', 'mainlines', 'shapes', 'rotation', 'description'
+      'overall', 'guidelines', 'outlines', 'shapes', 'rotation', 'description'
     ];
 
     this.progressArr.forEach((id) => {
@@ -86,21 +86,24 @@ export default class HidariFutatsuDomoe {
 
     this.guidelines = [];
     this.mainVers = [];
-    this.mainlines = [];
-    this.mainfills = [];
+    this.outlines = [];
+    this.shapes = [];
     this.count = 0;
+    this.shapeGroup = new THREE.Group();
 
     // ログ記述用のフラグ
     this.gdStarted = true;
     this.gdEnded = true;
-    this.mdStarted = true;
-    this.mdEnded = true;
+    this.odStarted = true;
+    this.odEnded = true;
     this.sdStarted = true;
     this.sdEnded = true;
     this.gfStarted = true;
     this.gfEnded = true;
-    this.crStarted = true;
-    this.crEnded = true;
+    this.ofStarted = true;
+    this.ofEnded = true;
+    this.rtStarted = true;
+    this.rtEnded = true;
     this.daStarted = true;
     this.daEnded = true;
 
@@ -115,11 +118,11 @@ export default class HidariFutatsuDomoe {
     // 図形の頂点を取得
     // this.getVertices();
 
-    // 本線の作成
-    this.generateMainLine();
+    // アウトラインの作成
+    this.generateOutLine();
 
     // 塗りつぶし図形の描画
-    this.generateMainFill();
+    this.generateShape();
 
     // infoの準備
     this.jpName = document.getElementById('jpName');
@@ -127,9 +130,9 @@ export default class HidariFutatsuDomoe {
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
 
-    this.jpName.textContent = '陰井桁';
+    this.jpName.textContent = '左二つ巴';
     this.jpDesc.textContent = '井筒・井桁紋とは、井戸をモチーフとした家紋。井戸の地上部分を囲むように囲まれた井の字型の木組を「井桁」、また円形のものを「井筒」というが、紋章では正方形のものを井筒、菱形のものを井桁と呼ぶ。';
-    this.enName.textContent = 'Kage-Igeta';
+    this.enName.textContent = 'Hidari-Futatsu-Domoe';
     this.enDesc.textContent = 'The Izutsu/Igeta crest is a family crest with a well motif. The well-shaped wooden structure surrounding the above-ground part of the well is called "Igeta", and the circular one is called "Izutsu", but in the coat of arms, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".';
 
     // 描画ループ開始
@@ -146,8 +149,6 @@ export default class HidariFutatsuDomoe {
     return {x: a + r * Math.cos(s), y: b + r * Math.sin(s)};
   }
 
-  
-
   // ガイドラインを作成
   generateGuideline = () => {
     const circles = [
@@ -156,11 +157,6 @@ export default class HidariFutatsuDomoe {
       {a:    0, b: -825, r:  750},
       {a: -110, b:  490, r: 1100},
       {a:  110, b: -490, r: 1100},
-      // {a:    0, b:    0, r: 1600},
-      // {a:    0, b:  800, r:  750},
-      // {a:    0, b: -800, r:  750},
-      // {a: -142, b:  480, r: 1100},
-      // {a:  142, b: -480, r: 1100},
     ];
     const divCount = 1000;
     circles.forEach((circle) => {
@@ -188,21 +184,27 @@ export default class HidariFutatsuDomoe {
     this.logRecord('- the guidelines have been generated.');
   }
 
-  // ３点の座標から角度を求める
-  getRadian = (a, b, c, d, e, f) => {
-    return Math.acos((c - a) * (e - a) + (d - b) * (f - b) / Math.sqrt((c - a) ** 2 + (d - b) ** 2) * Math.sqrt((e - a) ** 2 + (f - b) ** 2));
-  }
+  // // ３点の座標から角度を求める
+  // getRadian = (a, b, c, d, e, f) => {
+  //   return Math.acos((c - a) * (e - a) + (d - b) * (f - b) / Math.sqrt((c - a) ** 2 + (d - b) ** 2) * Math.sqrt((e - a) ** 2 + (f - b) ** 2));
+  // }
 
-  generateMainLine = () => {
+  // アウトラインを作成
+  generateOutLine = () => {
     const circles = [
-      // {a:    0, b:    0, r: 1600, f: 288, t: 470},
-      // {a:    0, b:    0, r: 1600, f: 110, t: 290},
-      {a:    0, b:    0, r: 1600, f: 110, t: -72},
-      {a:    0, b:    0, r: 1600, f: 290, t: 108},
-      {a:    0, b:  825, r:  750, f: 218, t: 430},
-      {a:    0, b: -825, r:  750, f: 38, t: 250},
-      {a: -110, b:  490, r: 1100, f: 309, t: 470},
-      {a:  110, b: -490, r: 1100, f: 129, t: 290},
+      {a:    0, b:    0, r: 1600, f: -72, t: 110},
+      {a:    0, b:    0, r: 1600, f: 108, t: 290},
+      {a:    0, b:  825, r:  750, f: 421, t: 218},
+      {a:    0, b: -825, r:  750, f: 240, t:  38},
+      {a: -110, b:  490, r: 1100, f: 470, t: 309},
+      {a:  110, b: -490, r: 1100, f: 290, t: 129},
+
+      // {a:    0, b:    0, r: 1600, f: 110, t: -72},
+      // {a:    0, b:    0, r: 1600, f: 290, t: 108},
+      // {a:    0, b:  825, r:  750, f: 218, t: 421},
+      // {a:    0, b: -825, r:  750, f:  38, t: 240},
+      // {a: -110, b:  490, r: 1100, f: 309, t: 470},
+      // {a:  110, b: -490, r: 1100, f: 129, t: 290},
     ];
     const divCount = 1000;
     circles.forEach((circle) => {
@@ -228,155 +230,86 @@ export default class HidariFutatsuDomoe {
           transparent: true
         });
         const line = new THREE.Line(geometry, material);
-        this.mainlines.push(line);
+        this.outlines.push(line);
         this.scene.add(line);
       })
     })
 
   }
 
-  // 本線を作成
-  generateMainLine2 = () => {
-    const divCount = 200;
-    var group = [];
-    const vers = this.mainVers;
-    vers.forEach((figure) => {
-      figure.forEach((vers) => {
-        for (var i = 0;i <= vers.length - 2;i ++) {
-          const gs = [0, 1, -1, 2, -2, 3, -3];
-          gs.forEach((g) => {
-            const startX = vers[i].x + g;
-            const startY = vers[i].y;
-            const endX   = vers[i + 1].x + g;
-            const endY   = vers[i + 1].y;
-            const a1 = (startY - endY) / (startX - endX);
-            const b1 = (startX * endY - endX * startY) / (startX - endX);
-            const points = [];
-            if (startX == endX && startY == endY) return;
-            for (var d = 0;d <= divCount - 1;d ++) {
-              const midX = THREE.MathUtils.lerp(startX, endX, d / divCount);
-              const mid = {x: midX, y: a1 * midX + b1};
-              points.push(new THREE.Vector3(mid.x, mid.y, 1));
-            }
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            geometry.setDrawRange(0, 0);
-            const material = new THREE.LineBasicMaterial({
-              color: this.frontColor,
-              side: THREE.DoubleSide,
-            });
-            const line = new THREE.Line(geometry, material);
-            group.push(line);
-            this.scene.add(line);
-            this.mainlines.push(group);
-          })
-        }
-      })
-    })
-    this.logRecord('- the mainlines have been generated.');
-  }
+  // アウトラインを作成
+  // generateOutLine2 = () => {
+  //   const divCount = 200;
+  //   var group = [];
+  //   const vers = this.mainVers;
+  //   vers.forEach((figure) => {
+  //     figure.forEach((vers) => {
+  //       for (var i = 0;i <= vers.length - 2;i ++) {
+  //         const gs = [0, 1, -1, 2, -2, 3, -3];
+  //         gs.forEach((g) => {
+  //           const startX = vers[i].x + g;
+  //           const startY = vers[i].y;
+  //           const endX   = vers[i + 1].x + g;
+  //           const endY   = vers[i + 1].y;
+  //           const a1 = (startY - endY) / (startX - endX);
+  //           const b1 = (startX * endY - endX * startY) / (startX - endX);
+  //           const points = [];
+  //           if (startX == endX && startY == endY) return;
+  //           for (var d = 0;d <= divCount - 1;d ++) {
+  //             const midX = THREE.MathUtils.lerp(startX, endX, d / divCount);
+  //             const mid = {x: midX, y: a1 * midX + b1};
+  //             points.push(new THREE.Vector3(mid.x, mid.y, 1));
+  //           }
+  //           const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //           geometry.setDrawRange(0, 0);
+  //           const material = new THREE.LineBasicMaterial({
+  //             color: this.frontColor,
+  //             side: THREE.DoubleSide,
+  //           });
+  //           const line = new THREE.Line(geometry, material);
+  //           group.push(line);
+  //           this.scene.add(line);
+  //           this.outlines.push(group);
+  //         })
+  //       }
+  //     })
+  //   })
+  //   this.logRecord('- the outlines have been generated.');
+  // }
 
   // 塗りつぶし図形を生成
-  generateMainFill = () => {
-    const shape = new THREE.Shape();
-    const circle = {a:    0, b:    0, r: 1600};
-    const divCount = 2000;
-    const a = circle.a;
-    const b = circle.b;
-    const r = circle.r;
-    for (var i = 0;i <= divCount - 1;i ++) {
-      const deg = THREE.MathUtils.lerp(90, 450, i / (divCount - 1));
-      const s = deg * (Math.PI / 180);
-      const mid = this.circle(a, b, r, s);
-      if (i == 0) {
-        shape.moveTo(mid.x, mid.y);
-      } else {
-        shape.lineTo(mid.x, mid.y);
-      }
-    }
-
-    const path = new THREE.Path();
-    const circles = [
-      {a:    0, b:  825, r:  750, f:  218, t:  450, g: -3},
-      {a: -110, b:  490, r: 1100, f:   75, t:  -48, g:  3},
-      {a:    0, b: -825, r:  750, f:   38, t:  260, g: -3},
-      {a:  110, b: -490, r: 1100, f: -105, t: -228, g:  3},
+  generateShape = () => {
+    const figures = [
+      [
+        {a:    0, b:  825, r:  750, f:  218, t:  420, g: -6},
+        {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
+        {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
+        {a:  110, b: -490, r: 1100, f:  -95, t: -228, g:  6},
+      ],
+      [
+        {a:    0, b: -825, r:  750, f:   38, t:  240, g: -6},
+        {a:  110, b: -490, r: 1100, f:  250, t:  290, g: -6},
+        {a:    0, b:    0, r: 1600, f:  280, t:  450, g: -6},
+        {a: -110, b:  490, r: 1100, f:   85, t:  -48, g:  6},
+      ]
     ];
-    circles.forEach((circle) => {
-      // const gs = [0, 1, -1, 2, -2, 3, -3];
-      // gs.forEach((g) => {
-        // const points = [];
-        const a = circle.a;
-        const b = circle.b;
-        const r = circle.r + circle.g;
-        const f = circle.f;
-        const t = circle.t;
+    const divCount = 2000;
+    figures.forEach((figure) => {
+      const points = [];
+      figure.forEach((arc) => {
+        const a  = arc.a;
+        const b  = arc.b;
+        const r  = arc.r + arc.g;
+        const f  = arc.f;
+        const t  = arc.t;
         for (var i = 0;i <= divCount - 1;i ++) {
           const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
           const s = deg * (Math.PI / 180);
           const mid = this.circle(a, b, r, s);
-          if (i == 0) {
-            path.moveTo(mid.x, mid.y);
-          } else {
-            path.lineTo(mid.x, mid.y);
-          }
-    
-          // points.push(new THREE.Vector3(mid.x, mid.y, 0));
+          points.push(new THREE.Vector2(mid.x, mid.y));
         }
-        // const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        // geometry.setDrawRange(0, 0);
-        // const material = new THREE.LineBasicMaterial({
-        //   color: this.frontColor,
-        //   transparent: true
-        // });
-        // const line = new THREE.Line(geometry, material);
-        // this.mainlines.push(line);
-        // this.scene.add(line);
-      // })
-    })
-
-    shape.holes.push(path);
-
-    const material = new THREE.MeshBasicMaterial({
-      color: this.frontColor,
-      side: THREE.DoubleSide,
-      opacity: 0.0,
-      transparent: true
-    });
-    const geometry = new THREE.ShapeGeometry(shape);
-    const mesh = new THREE.Mesh(geometry, material);
-    this.mainfills.push(mesh);
-    this.scene.add(mesh);
-
-    this.logRecord('- the shapes have been generated.');
-  }
-
-  generateMainFill2 = () => {
-    this.mainVers.forEach((figure) => {
-      const shape = new THREE.Shape();
-      const path = new THREE.Path();
-      for (var i = 0;i <= figure.length - 1;i ++) {
-        const vers = figure[i];
-        if (i == 1) {
-          for (var j = 0;j <= vers.length - 1;j ++) {
-            const ver = vers[j];
-            if (j == 0) {
-              shape.moveTo(ver.x, ver.y);
-            } else {
-              shape.lineTo(ver.x, ver.y);
-            }
-          }
-        } else {
-          for (var j = 0;j <= vers.length - 1;j ++) {
-            const ver = vers[j];
-            if (j == 0) {
-              path.moveTo(ver.x, ver.y);
-            } else {
-              path.lineTo(ver.x, ver.y);
-            }
-          }
-        }
-      }
-      shape.holes.push(path);
+      })
+      const shape = new THREE.Shape(points);
 
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
@@ -386,121 +319,166 @@ export default class HidariFutatsuDomoe {
       });
       const geometry = new THREE.ShapeGeometry(shape);
       const mesh = new THREE.Mesh(geometry, material);
-      this.mainfills.push(mesh);
-      this.scene.add(mesh);
-    });
+      this.shapes.push(mesh);
+      this.shapeGroup.add(mesh);
+      // this.scene.add(mesh);
+  
+    })
+    this.scene.add(this.shapeGroup);
     this.logRecord('- the shapes have been generated.');
   }
 
-  // ２直線の交点を求める式
-  getIntersect = (a1, b1, a2, b2) => {
-    const interX = (b2 - b1) / (a1 - a2);
-    const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
-    return {x: interX, y: interY};
-  }
+  // generateShape2 = () => {
+  //   this.mainVers.forEach((figure) => {
+  //     const shape = new THREE.Shape();
+  //     const path = new THREE.Path();
+  //     for (var i = 0;i <= figure.length - 1;i ++) {
+  //       const vers = figure[i];
+  //       if (i == 1) {
+  //         for (var j = 0;j <= vers.length - 1;j ++) {
+  //           const ver = vers[j];
+  //           if (j == 0) {
+  //             shape.moveTo(ver.x, ver.y);
+  //           } else {
+  //             shape.lineTo(ver.x, ver.y);
+  //           }
+  //         }
+  //       } else {
+  //         for (var j = 0;j <= vers.length - 1;j ++) {
+  //           const ver = vers[j];
+  //           if (j == 0) {
+  //             path.moveTo(ver.x, ver.y);
+  //           } else {
+  //             path.lineTo(ver.x, ver.y);
+  //           }
+  //         }
+  //       }
+  //     }
+  //     shape.holes.push(path);
 
-  // 図形の頂点を取得
-  getVertices = () => {
-    var vs = [];
-    for (var i = 0;i <= 1;i ++) {
-      const arr = [];
-      var b;
-      if (i == 0) {
-        b = 400;
-      } else {
-        b = 500;
-      }
-      arr.push(this.getIntersect( 0.8,  b, -0.8, -b));
-      arr.push(this.getIntersect( 0.8,  b, -0.8,  b));
-      arr.push(this.getIntersect(-0.8,  b,  0.8, -b));
-      arr.push(this.getIntersect( 0.8, -b, -0.8, -b));
-      arr.push(this.getIntersect(-0.8, -b,  0.8,  b));
-      vs.push(arr);
-    }
-    this.mainVers.push(vs);
+  //     const material = new THREE.MeshBasicMaterial({
+  //       color: this.frontColor,
+  //       side: THREE.DoubleSide,
+  //       opacity: 0.0,
+  //       transparent: true
+  //     });
+  //     const geometry = new THREE.ShapeGeometry(shape);
+  //     const mesh = new THREE.Mesh(geometry, material);
+  //     this.shapes.push(mesh);
+  //     this.scene.add(mesh);
+  //   });
+  //   this.logRecord('- the shapes have been generated.');
+  // }
 
-    vs = [];
-    const arr1 = [];
-    arr1.push(this.getIntersect(-0.8,  -960,  0.8,   960));
-    arr1.push(this.getIntersect(-0.8,  -960,  0.8,  1180));
-    arr1.push(this.getIntersect( 0.8,  1180, -0.8,  -500));
-    arr1.push(this.getIntersect(-0.8,  -500,  0.8,   960));
-    arr1.push(this.getIntersect( 0.8,   960, -0.8,   500));
-    arr1.push(this.getIntersect(-0.8,   500,  0.8,  1180));
-    arr1.push(this.getIntersect( 0.8,  1180, -0.8,   960));
-    arr1.push(this.getIntersect(-0.8,   960,  0.8,   960));
+  // // ２直線の交点を求める式
+  // getIntersect = (a1, b1, a2, b2) => {
+  //   const interX = (b2 - b1) / (a1 - a2);
+  //   const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
+  //   return {x: interX, y: interY};
+  // }
 
-    arr1.push(this.getIntersect( 0.8,   960, -0.8,   960));
-    arr1.push(this.getIntersect( 0.8,   960, -0.8,  1180));
-    arr1.push(this.getIntersect(-0.8,  1180,  0.8,   500));
-    arr1.push(this.getIntersect( 0.8,   500, -0.8,   960));
-    arr1.push(this.getIntersect(-0.8,   960,  0.8,  -500));
-    arr1.push(this.getIntersect( 0.8,  -500, -0.8,  1180));
-    arr1.push(this.getIntersect(-0.8,  1180,  0.8,  -960));
-    arr1.push(this.getIntersect( 0.8,  -960, -0.8,   960));
+  // // 図形の頂点を取得
+  // getVertices = () => {
+  //   var vs = [];
+  //   for (var i = 0;i <= 1;i ++) {
+  //     const arr = [];
+  //     var b;
+  //     if (i == 0) {
+  //       b = 400;
+  //     } else {
+  //       b = 500;
+  //     }
+  //     arr.push(this.getIntersect( 0.8,  b, -0.8, -b));
+  //     arr.push(this.getIntersect( 0.8,  b, -0.8,  b));
+  //     arr.push(this.getIntersect(-0.8,  b,  0.8, -b));
+  //     arr.push(this.getIntersect( 0.8, -b, -0.8, -b));
+  //     arr.push(this.getIntersect(-0.8, -b,  0.8,  b));
+  //     vs.push(arr);
+  //   }
+  //   this.mainVers.push(vs);
 
-    arr1.push(this.getIntersect(-0.8,   960,  0.8,  -960));
-    arr1.push(this.getIntersect(-0.8,   960,  0.8, -1180));
-    arr1.push(this.getIntersect( 0.8, -1180, -0.8,   500));
-    arr1.push(this.getIntersect(-0.8,   500,  0.8,  -960));
-    arr1.push(this.getIntersect( 0.8,  -960, -0.8,  -500));
-    arr1.push(this.getIntersect(-0.8,  -500,  0.8, -1180));
-    arr1.push(this.getIntersect( 0.8, -1180, -0.8,  -960));
-    arr1.push(this.getIntersect(-0.8,  -960,  0.8,  -960));
+  //   vs = [];
+  //   const arr1 = [];
+  //   arr1.push(this.getIntersect(-0.8,  -960,  0.8,   960));
+  //   arr1.push(this.getIntersect(-0.8,  -960,  0.8,  1180));
+  //   arr1.push(this.getIntersect( 0.8,  1180, -0.8,  -500));
+  //   arr1.push(this.getIntersect(-0.8,  -500,  0.8,   960));
+  //   arr1.push(this.getIntersect( 0.8,   960, -0.8,   500));
+  //   arr1.push(this.getIntersect(-0.8,   500,  0.8,  1180));
+  //   arr1.push(this.getIntersect( 0.8,  1180, -0.8,   960));
+  //   arr1.push(this.getIntersect(-0.8,   960,  0.8,   960));
 
-    arr1.push(this.getIntersect( 0.8,  -960, -0.8,  -960));
-    arr1.push(this.getIntersect( 0.8,  -960, -0.8, -1180));
-    arr1.push(this.getIntersect(-0.8, -1180,  0.8,  -500));
-    arr1.push(this.getIntersect( 0.8,  -500, -0.8,  -960));
-    arr1.push(this.getIntersect(-0.8,  -960,  0.8,   500));
-    arr1.push(this.getIntersect( 0.8,   500, -0.8, -1180));
-    arr1.push(this.getIntersect(-0.8, -1180,  0.8,   960));
-    arr1.push(this.getIntersect( 0.8,   960, -0.8,  -960));
+  //   arr1.push(this.getIntersect( 0.8,   960, -0.8,   960));
+  //   arr1.push(this.getIntersect( 0.8,   960, -0.8,  1180));
+  //   arr1.push(this.getIntersect(-0.8,  1180,  0.8,   500));
+  //   arr1.push(this.getIntersect( 0.8,   500, -0.8,   960));
+  //   arr1.push(this.getIntersect(-0.8,   960,  0.8,  -500));
+  //   arr1.push(this.getIntersect( 0.8,  -500, -0.8,  1180));
+  //   arr1.push(this.getIntersect(-0.8,  1180,  0.8,  -960));
+  //   arr1.push(this.getIntersect( 0.8,  -960, -0.8,   960));
 
-    vs.push(arr1);
+  //   arr1.push(this.getIntersect(-0.8,   960,  0.8,  -960));
+  //   arr1.push(this.getIntersect(-0.8,   960,  0.8, -1180));
+  //   arr1.push(this.getIntersect( 0.8, -1180, -0.8,   500));
+  //   arr1.push(this.getIntersect(-0.8,   500,  0.8,  -960));
+  //   arr1.push(this.getIntersect( 0.8,  -960, -0.8,  -500));
+  //   arr1.push(this.getIntersect(-0.8,  -500,  0.8, -1180));
+  //   arr1.push(this.getIntersect( 0.8, -1180, -0.8,  -960));
+  //   arr1.push(this.getIntersect(-0.8,  -960,  0.8,  -960));
 
-    const arr2 = [];
-    arr2.push(this.getIntersect(-0.8, -1060,  0.8,  1060));
-    arr2.push(this.getIntersect(-0.8, -1060,  0.8,  1280));
-    arr2.push(this.getIntersect( 0.8,  1280, -0.8,  -400));
-    arr2.push(this.getIntersect(-0.8,  -400,  0.8,  1060));
-    arr2.push(this.getIntersect( 0.8,  1060, -0.8,   400));
-    arr2.push(this.getIntersect(-0.8,   400,  0.8,  1280));
-    arr2.push(this.getIntersect( 0.8,  1280, -0.8,  1060));
-    arr2.push(this.getIntersect(-0.8,  1060,  0.8,  1060));
+  //   arr1.push(this.getIntersect( 0.8,  -960, -0.8,  -960));
+  //   arr1.push(this.getIntersect( 0.8,  -960, -0.8, -1180));
+  //   arr1.push(this.getIntersect(-0.8, -1180,  0.8,  -500));
+  //   arr1.push(this.getIntersect( 0.8,  -500, -0.8,  -960));
+  //   arr1.push(this.getIntersect(-0.8,  -960,  0.8,   500));
+  //   arr1.push(this.getIntersect( 0.8,   500, -0.8, -1180));
+  //   arr1.push(this.getIntersect(-0.8, -1180,  0.8,   960));
+  //   arr1.push(this.getIntersect( 0.8,   960, -0.8,  -960));
 
-    arr2.push(this.getIntersect( 0.8,  1060, -0.8,  1060));
-    arr2.push(this.getIntersect( 0.8,  1060, -0.8,  1280));
-    arr2.push(this.getIntersect(-0.8,  1280,  0.8,   400));
-    arr2.push(this.getIntersect( 0.8,   400, -0.8,  1060));
-    arr2.push(this.getIntersect(-0.8,  1060,  0.8,  -400));
-    arr2.push(this.getIntersect( 0.8,  -400, -0.8,  1280));
-    arr2.push(this.getIntersect(-0.8,  1280,  0.8, -1060));
-    arr2.push(this.getIntersect( 0.8, -1060, -0.8,  1060));
+  //   vs.push(arr1);
 
-    arr2.push(this.getIntersect(-0.8,  1060,  0.8, -1060));
-    arr2.push(this.getIntersect(-0.8,  1060,  0.8, -1280));
-    arr2.push(this.getIntersect( 0.8, -1280, -0.8,   400));
-    arr2.push(this.getIntersect(-0.8,   400,  0.8, -1060));
-    arr2.push(this.getIntersect( 0.8, -1060, -0.8,  -400));
-    arr2.push(this.getIntersect(-0.8,  -400,  0.8, -1280));
-    arr2.push(this.getIntersect( 0.8, -1280, -0.8, -1060));
-    arr2.push(this.getIntersect(-0.8, -1060,  0.8, -1060));
+  //   const arr2 = [];
+  //   arr2.push(this.getIntersect(-0.8, -1060,  0.8,  1060));
+  //   arr2.push(this.getIntersect(-0.8, -1060,  0.8,  1280));
+  //   arr2.push(this.getIntersect( 0.8,  1280, -0.8,  -400));
+  //   arr2.push(this.getIntersect(-0.8,  -400,  0.8,  1060));
+  //   arr2.push(this.getIntersect( 0.8,  1060, -0.8,   400));
+  //   arr2.push(this.getIntersect(-0.8,   400,  0.8,  1280));
+  //   arr2.push(this.getIntersect( 0.8,  1280, -0.8,  1060));
+  //   arr2.push(this.getIntersect(-0.8,  1060,  0.8,  1060));
 
-    arr2.push(this.getIntersect( 0.8, -1060, -0.8, -1060));
-    arr2.push(this.getIntersect( 0.8, -1060, -0.8, -1280));
-    arr2.push(this.getIntersect(-0.8, -1280,  0.8,  -400));
-    arr2.push(this.getIntersect( 0.8,  -400, -0.8, -1060));
-    arr2.push(this.getIntersect(-0.8, -1060,  0.8,   400));
-    arr2.push(this.getIntersect( 0.8,   400, -0.8, -1280));
-    arr2.push(this.getIntersect(-0.8, -1280,  0.8,  1060));
-    arr2.push(this.getIntersect( 0.8,  1060, -0.8, -1060));
+  //   arr2.push(this.getIntersect( 0.8,  1060, -0.8,  1060));
+  //   arr2.push(this.getIntersect( 0.8,  1060, -0.8,  1280));
+  //   arr2.push(this.getIntersect(-0.8,  1280,  0.8,   400));
+  //   arr2.push(this.getIntersect( 0.8,   400, -0.8,  1060));
+  //   arr2.push(this.getIntersect(-0.8,  1060,  0.8,  -400));
+  //   arr2.push(this.getIntersect( 0.8,  -400, -0.8,  1280));
+  //   arr2.push(this.getIntersect(-0.8,  1280,  0.8, -1060));
+  //   arr2.push(this.getIntersect( 0.8, -1060, -0.8,  1060));
 
-    vs.push(arr2);
-    this.mainVers.push(vs);
+  //   arr2.push(this.getIntersect(-0.8,  1060,  0.8, -1060));
+  //   arr2.push(this.getIntersect(-0.8,  1060,  0.8, -1280));
+  //   arr2.push(this.getIntersect( 0.8, -1280, -0.8,   400));
+  //   arr2.push(this.getIntersect(-0.8,   400,  0.8, -1060));
+  //   arr2.push(this.getIntersect( 0.8, -1060, -0.8,  -400));
+  //   arr2.push(this.getIntersect(-0.8,  -400,  0.8, -1280));
+  //   arr2.push(this.getIntersect( 0.8, -1280, -0.8, -1060));
+  //   arr2.push(this.getIntersect(-0.8, -1060,  0.8, -1060));
 
-    this.logRecord('- the vertices have been calculated.');
-  }
+  //   arr2.push(this.getIntersect( 0.8, -1060, -0.8, -1060));
+  //   arr2.push(this.getIntersect( 0.8, -1060, -0.8, -1280));
+  //   arr2.push(this.getIntersect(-0.8, -1280,  0.8,  -400));
+  //   arr2.push(this.getIntersect( 0.8,  -400, -0.8, -1060));
+  //   arr2.push(this.getIntersect(-0.8, -1060,  0.8,   400));
+  //   arr2.push(this.getIntersect( 0.8,   400, -0.8, -1280));
+  //   arr2.push(this.getIntersect(-0.8, -1280,  0.8,  1060));
+  //   arr2.push(this.getIntersect( 0.8,  1060, -0.8, -1060));
+
+  //   vs.push(arr2);
+  //   this.mainVers.push(vs);
+
+  //   this.logRecord('- the vertices have been calculated.');
+  // }
 
   // ウィンドウサイズ変更
   windowResize = () => {
@@ -551,22 +529,18 @@ export default class HidariFutatsuDomoe {
 
     // ガイドラインの色を変更
     this.guidelines.forEach((line) => {
-      // group.forEach((line) => {
-        line.material.color = new THREE.Color(this.guideColor);
-      // })
+      line.material.color = new THREE.Color(this.guideColor);
     })
 
-    // 本線の色を変更
-    // this.mainlines.forEach((group) => {
-    //   group.forEach((line) => {
-    //     line.material.color = new THREE.Color(this.frontColor);
-    //   })
-    // })
+    // アウトラインの色を変更
+    this.outlines.forEach((line) => {
+      line.material.color = new THREE.Color(this.frontColor);
+    })
 
     // 図形の色を変更
-    // this.mainfills.forEach((figure) => {
-    //   figure.material.color = new THREE.Color(this.frontColor);
-    // })
+    this.shapes.forEach((figure) => {
+      figure.material.color = new THREE.Color(this.frontColor);
+    })
 
     this.logRecord('- theme color is set to ' + theme + '.');
   }
@@ -620,55 +594,51 @@ export default class HidariFutatsuDomoe {
     }
   }
 
-  // 本線の表示アニメーション制御
-  mainlineAnimeControl = (tick) => {
+  // アウトラインの表示アニメーション制御
+  outlineAnimeControl = (tick) => {
     const start = 0.35;
     const end   = 0.5;
     const divCount = 1000;
     const ratio = (tick - start) / (end - start);
-    for (var i = 0;i <= this.mainlines.length - 1;i ++) {
-      const line = this.mainlines[i];
-      // const linesLen = lines.length;
-      // for(var j = 0;j <= linesLen - 1;j ++) {
-        var count = 0;
-        // const line = lines[j];
-        if (tick <= start) {
-          count = 0;
-        } else if (tick > start && tick <= end) {
-          count = THREE.MathUtils.lerp(0, divCount, ratio);
-          // count = THREE.MathUtils.damp(0, divCount, 10, ratio);
-        } else if (tick > end) {
-          count = divCount;
-        }
-        line.geometry.setDrawRange(0, count);
-      // }
+    for (var i = 0;i <= this.outlines.length - 1;i ++) {
+      const line = this.outlines[i];
+      var count = 0;
+      if (tick <= start) {
+        count = 0;
+      } else if (tick > start && tick <= end) {
+        count = THREE.MathUtils.lerp(0, divCount, ratio);
+      } else if (tick > end) {
+        count = divCount;
+      }
+      line.geometry.setDrawRange(0, count);
     }
     if (tick <= start) {
-      this.mdStarted = true;
-      this.progressBarControl('mainlines', 0);
+      this.odStarted = true;
+      this.progressBarControl('outlines', 0);
     } else if (tick > start && tick <= end) {
-      if (this.mdStarted) {
-        this.logRecord('- drawing of the mainlines has started.');
-        this.mdStarted = false;
+      if (this.odStarted) {
+        this.logRecord('- drawing of the outlines has started.');
+        this.odStarted = false;
       }
-      this.mdEnded = true;
-      this.progressBarControl('mainlines', ratio);
+      this.odEnded = true;
+      const ratio = (tick - start) / (end - start + 0.05);
+      this.progressBarControl('outlines', ratio);
     } else if (tick > end) {
-      if (tick > end && this.mdEnded) {
-        this.logRecord('- drawing of the mainlines has ended.');
-        this.mdEnded = false;
+      if (this.odEnded) {
+        this.logRecord('- drawing of the outlines has ended.');
+        this.odEnded = false;
       }
-      this.progressBarControl('mainlines', 1);
+      this.progressBarControl('outlines', 0.75);
     }
   }
 
   // 塗りつぶし図形のアニメーション制御
-  mainfillAnimeControl = (tick) => {
+  shapeAnimeControl = (tick) => {
     const start = 0.5;
     const end   = 0.6;
-    for (var i = 0;i <= this.mainfills.length - 1;i ++) {
+    for (var i = 0;i <= this.shapes.length - 1;i ++) {
       var ratio;
-      const material = this.mainfills[i].material;
+      const material = this.shapes[i].material;
       if (tick <= start) {
         ratio = 0.0;
       } else if (tick > start && tick <= end) {
@@ -703,22 +673,19 @@ export default class HidariFutatsuDomoe {
     const start = 0.45;
     const end   = 0.55;
     this.guidelines.forEach((line) => {
-      // const num = lines.length - 1;
-      // for (var i = 0;i <= num;i ++) {
-        const material = line.material;
-        var ratio;
-        if (tick <= start) {
-          ratio = 0.0;
-          line.visible = true;
-        } else if (tick > start && tick <= end) {
-          line.visible = true;
-          ratio = (tick - start) / (end - start);
-        } else if (tick > end) {
-          ratio = 1.0;
-          line.visible = false;
-        }
-        material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, ratio);
-      // }
+      const material = line.material;
+      var ratio;
+      if (tick <= start) {
+        ratio = 0.0;
+        line.visible = true;
+      } else if (tick > start && tick <= end) {
+        line.visible = true;
+        ratio = (tick - start) / (end - start);
+      } else if (tick > end) {
+        ratio = 1.0;
+        line.visible = false;
+      }
+      material.opacity = THREE.MathUtils.lerp(1.0, 0.0, ratio);
     });
     if (tick <= start) {
       this.gfStarted = true;
@@ -739,44 +706,150 @@ export default class HidariFutatsuDomoe {
     }
   }
 
-  // メインラインのフェードアウトアニメーション制御
-  mainlineFadeOutAnimeControl = (tick) => {
-    const start = 0.45;
-    const end   = 0.55;
-    this.mainlines.forEach((line) => {
-      // const num = lines.length - 1;
-      // for (var i = 0;i <= num;i ++) {
-        const material = line.material;
-        var ratio;
-        if (tick <= start) {
-          ratio = 0.0;
-          line.visible = true;
-        } else if (tick > start && tick <= end) {
-          line.visible = true;
-          ratio = (tick - start) / (end - start);
-        } else if (tick > end) {
-          ratio = 1.0;
-          line.visible = false;
-        }
-        material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, ratio);
-      // }
+  // アウトラインのフェードアウトアニメーション制御
+  outlineFadeOutAnimeControl = (tick) => {
+    const start = 0.5;
+    const end   = 0.6;
+    this.outlines.forEach((line) => {
+      const material = line.material;
+      var ratio;
+      if (tick <= start) {
+        ratio = 0.0;
+        line.visible = true;
+      } else if (tick > start && tick <= end) {
+        line.visible = true;
+        ratio = (tick - start) / (end - start);
+      } else if (tick > end) {
+        ratio = 1.0;
+        line.visible = false;
+      }
+      material.opacity = THREE.MathUtils.lerp(1.0, 0.0, ratio);
     });
     if (tick <= start) {
-      this.gfStarted = true;
+      this.ofStarted = true;
     } else if (tick > start && tick <= end) {
-      if (this.gfStarted) {
-        this.logRecord('- the guidelines have begun to fade out.');
-        this.gfStarted = false;
+      if (this.ofStarted) {
+        this.logRecord('- the outlines have begun to fade out.');
+        this.ofStarted = false;
       }
-      this.gfEnded = true;
+      this.ofEnded = true;
       const ratio = (tick - start) / (end - start) / 4;
-      this.progressBarControl('guidelines', 0.75 + ratio);
+      this.progressBarControl('outlines', 0.75 + ratio);
     } else if (tick > end) {
-      if (this.gfEnded) {
-        this.logRecord('- the guidelines have finished fading out.');
-        this.gfEnded = false;
+      if (this.ofEnded) {
+        this.logRecord('- the outlines have finished fading out.');
+        this.ofEnded = false;
       }
-      this.progressBarControl('guidelines', 1);
+      this.progressBarControl('outlines', 1);
+    }
+  }
+
+  // 図形を回転させるアニメーション制御
+  shapeRotateAnimeControl = (tick) => {
+    const start = 0.6;
+    const end   = 1.0;
+    // var x, y, z;
+    // const group = new THREE.Group();
+    
+    for (var i = 0;i <= this.shapes.length - 1;i ++) {
+      const shape = this.shapes[i];
+    // this.shapes.forEach((shape) => {
+      // const material = line.material;
+      var ratio;
+      if (tick <= start) {
+        ratio = 0.0;
+        // line.visible = true;
+      } else if (tick > start && tick <= end) {
+        // line.visible = true;
+        ratio = (tick - start) / (end - start);
+      } else if (tick > end) {
+        ratio = 1.0;
+        // line.visible = false;
+      }
+      // const total = -360;
+      const rotX = THREE.MathUtils.damp(0, -360, 5, ratio);
+      // const rotY = THREE.MathUtils.damp(0, 0, 5, ratio);
+      const rotZ = THREE.MathUtils.damp(0, -720, 5, ratio);
+
+      // console.log(rotZ);
+
+      var pos = 0;
+      // if (ratio < 0.5) {
+      //   // pos = 1000 * ratio * 2;
+      //   // pos = THREE.MathUtils.damp(0, 1000, 5, ratio);
+      //   const posRatio = ratio * 2;
+      //   pos = THREE.MathUtils.lerp(0, 2000, posRatio);
+      // } else {
+      //   // pos = THREE.MathUtils.damp(0, 1000, 5, (1 - ratio));
+      //   // pos = 1000 * (1.0 - ratio) * 2;
+      //   const posRatio = (1 - ratio) * 2;
+      //   pos = THREE.MathUtils.lerp(0, 2000, posRatio);
+      // }
+      if (ratio < 0.35) {
+        // pos = 1000 * ratio * 2;
+        // pos = THREE.MathUtils.damp(0, 1000, 5, ratio);
+        const posRatio = ratio / 0.35;
+        pos = THREE.MathUtils.damp(0, 1500, 5, posRatio);
+      } else if (ratio <= 0.7) {
+        // pos = THREE.MathUtils.damp(0, 1000, 5, (1 - ratio));
+        // pos = 1000 * (1.0 - ratio) * 2;
+        const posRatio = (0.7 - ratio) / 0.35;
+        pos = THREE.MathUtils.damp(0, 1500, 10, posRatio);
+      } else {
+
+      }
+
+
+      console.log(tick, ratio, pos);
+
+      if (i == 0) {
+        shape.position.set(-pos, 0, 0);
+
+      } else {
+        shape.position.set(pos, 0, 0);
+      }
+
+
+      // shape.rotation.x = rotX * (Math.PI / 180);
+      // shape.rotation.y = rotY * (Math.PI / 180);
+      // shape.rotation.z = rotZ * (Math.PI / 180);
+      this.shapeGroup.rotation.x = rotX * (Math.PI / 180);
+      this.shapeGroup.rotation.z = rotZ * (Math.PI / 180);
+
+      // material.opacity = THREE.MathUtils.lerp(1.0, 0.0, ratio);
+    // });
+    }
+
+    // if (tick > start && tick <= end) {
+    //   const total = 360;
+    //   const ratio = (tick - start) / (end - start);
+    //   this.rot = THREE.MathUtils.damp(0, total, 5, ratio);
+    //   const radian = (this.rot * Math.PI) / 180;
+    //   x = this.camZ * Math.sin(radian);
+    //   z = this.camZ * Math.cos(radian);
+    // } else {
+    //   x = 0;
+    //   z = this.camZ;
+    // }
+    // this.camera.position.set(x, 0, z);
+    // this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    if (tick <= start) {
+      this.rtStarted = true;
+      this.progressBarControl('rotation', 0);
+    } else if (tick > start && tick <= end) {
+      if (this.rtStarted) {
+        this.logRecord('- the camera started rotating.');
+        this.rtStarted = false;
+      }
+      this.rtEnded = true;
+      const ratio = (tick - start) / (end - start);
+      this.progressBarControl('rotation', ratio);
+    } else if (tick >= end) {
+      if (this.rtEnded) {
+        this.logRecord('- the camera rotation has finished.');
+        this.rtEnded = false;
+      }
+      this.progressBarControl('rotation', 1);
     }
   }
 
@@ -784,7 +857,7 @@ export default class HidariFutatsuDomoe {
   cameraRotateAnimeControl = (tick) => {
     const start = 0.6;
     const end   = 1.0;
-    var x, z;
+    var x, y, z;
     if (tick > start && tick <= end) {
       const total = 360;
       const ratio = (tick - start) / (end - start);
@@ -799,20 +872,20 @@ export default class HidariFutatsuDomoe {
     this.camera.position.set(x, 0, z);
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
     if (tick <= start) {
-      this.crStarted = true;
+      this.rtStarted = true;
       this.progressBarControl('rotation', 0);
     } else if (tick > start && tick <= end) {
-      if (this.crStarted) {
+      if (this.rtStarted) {
         this.logRecord('- the camera started rotating.');
-        this.crStarted = false;
+        this.rtStarted = false;
       }
-      this.crEnded = true;
+      this.rtEnded = true;
       const ratio = (tick - start) / (end - start);
       this.progressBarControl('rotation', ratio);
     } else if (tick >= end) {
-      if (this.crEnded) {
+      if (this.rtEnded) {
         this.logRecord('- the camera rotation has finished.');
-        this.crEnded = false;
+        this.rtEnded = false;
       }
       this.progressBarControl('rotation', 1);
     }
@@ -875,31 +948,34 @@ export default class HidariFutatsuDomoe {
     const tick = this.scrollY / this.scrollerH;
 
     // プログレスバーのアニメーション制御
-    // this.progressBarControl('overall', tick);
+    this.progressBarControl('overall', tick);
 
     // ガイドラインの表示アニメーション制御
     this.guidelineDrawAnimeControl(tick);
 
-    // 本線の表示アニメーション制御
-    this.mainlineAnimeControl(tick);
+    // アウトラインの表示アニメーション制御
+    this.outlineAnimeControl(tick);
 
     // 塗りつぶし図形をフェードイン
-    this.mainfillAnimeControl(tick);
+    this.shapeAnimeControl(tick);
 
     // ガイドラインをフェードアウト
     this.guidelineFadeOutAnimeControl(tick);
 
-    // メインラインをフェードアウト
-    this.mainlineFadeOutAnimeControl(tick);
+    // アウトラインをフェードアウト
+    this.outlineFadeOutAnimeControl(tick);
 
     // グリッドをフェードアウト
-    // this.grid.fadeOut(tick, 0.35, 0.5);
+    this.grid.fadeOut(tick, 0.35, 0.5);
+
+    // 図形を回転
+    this.shapeRotateAnimeControl(tick);
 
     // 図形の周りを一回転
     // this.cameraRotateAnimeControl(tick);
 
     // descのアニメーションを制御
-    // this.descAnimeControl(tick);
+    this.descAnimeControl(tick);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);

@@ -27,12 +27,11 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Roboto";
-  font-size: 12px;
+  font-size: 40px;
+  color: #808080;
   z-index: 1;
   opacity: 0.0;
-  transition: opacity 5s cubic-bezier(0.215, 0.61, 0.355, 1);
-  animation: blink 5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+  animation: blink 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 #guide.hide {
@@ -40,34 +39,22 @@ canvas {
 }
 
 @keyframes blink {
-  50% {
-    opacity: 1.0;
-  }
+   50% { opacity: 1.0; }
+  100% { transform: translateY(40px); }
 }
 
 @keyframes softBlink {
-  50% {
-    opacity: 0.3;
-  }
-}
-
-body.dark #guide {
-  color: #ccc;
-}
-
-body.light #guide {
-  color: #111;
+  50% { opacity: 0.3; }
 }
 
 #scroller {
   position: relative;
   width: 100%;
-  /* height: 3000vh; */
 }
 
 #themeChanger {
   position: fixed;
-  top: 32px;
+  top: 96px;
   right: 32px;
   width: 60px;
   display: flex;
@@ -117,7 +104,6 @@ body.light #themeChanger .wrapper:hover {
   cursor: pointer;
 }
 
-
 #themeChanger input[type="radio"]:checked + .wrapper {
   border: 1px solid transparent;
 }
@@ -133,6 +119,94 @@ body.light #themeChanger .wrapper:hover {
 #light + .wrapper label {
   background-color: #fff;
 }
+
+#langChanger {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  z-index: 1;
+}
+
+#langChanger .switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#langChanger .caption {
+  font-family: "Roboto";
+  font-size: 10px;
+  text-align: center;
+  color: #808080;
+}
+
+#langChanger .wrapper {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#langChanger .wrapper:hover {
+  border: 1px solid #808080;
+}
+
+/* body.dark #langChanger .wrapper:hover {
+  border: 1px solid #ccc;
+}
+
+body.light #langChanger .wrapper:hover {
+  border: 1px solid #333;
+} */
+
+#langChanger input[type="radio"] {
+  display: none;
+}
+
+#langChanger label {
+  display: block;
+  width: 20px;
+  height: 20px;
+  font-family: "Roboto";
+  font-size: 11px;
+  color: #808080;
+  text-align: center;
+  border: 1px solid #808080;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#langChanger input[type="radio"]:checked + .wrapper {
+  border: 1px solid transparent;
+}
+
+#langChanger input[type="radio"]:checked + .wrapper label {
+  cursor: default;
+  background-color: #808080;
+}
+
+body.dark #langChanger input[type="radio"]:checked + .wrapper label {
+  color: #000;
+}
+
+body.light #langChanger input[type="radio"]:checked + .wrapper label {
+  color: #fff;
+}
+
+/* #jp + .wrapper label {
+  background-color: #111;
+}
+
+#en + .wrapper label {
+  background-color: #fff;
+} */
+
 
 #info .jp, #info .en {
   position: fixed;
@@ -151,7 +225,6 @@ body.light #themeChanger .wrapper:hover {
 }
 
 #info .name {
-  /* font-family: "Zen Old Mincho"; */
   font-family: "Zen Kaku Gothic New";
   font-weight: 400;
   font-style: normal;
@@ -173,17 +246,12 @@ body.light #info .name {
 }
 
 #info .jp .name {
-  /* font-family: "Zen Old Mincho"; */
-  /* font-family: "Zen Kaku Gothic New"; */
   letter-spacing: 4px;
   opacity: 0.0;
   transform: translateX(-100%);
 }
 
 #info .en .name {
-  /* font-family: "Zen Old Mincho"; */
-  /* font-family: "Zen Kaku Gothic New"; */
-  /* letter-spacing: 2px; */
   opacity: 0.0;
   transform: translateX(100%);
 }
@@ -193,7 +261,6 @@ body.light #info .name {
   font-style: normal;
   font-size: 14px;
   line-height: 1.8;
-  color: #ccc;
   animation-duration: 1000ms;
   animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
   animation-fill-mode: both;
@@ -222,7 +289,6 @@ body.light #info .desc {
 }
 
 #progress {
-  /* width: 300px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -242,30 +308,13 @@ body.light #info .desc {
 .progress .label {
   width: 52px;
   text-align: right;
-}
-
-body.dark .progress .label {
-  color: #ccc;
-}
-
-body.light .progress .label {
-  color: #111;
+  color: #808080;
 }
 
 .progress .rate {
-  /* font-family: "Roboto"; */
-  /* font-size: 10px; */
   width: 36px;
   text-align: right;
-  /* text-align: center; */
-}
-
-body.dark .progress .rate {
-  color: #ccc;
-}
-
-body.light .progress .rate {
-  color: #111;
+  color: #808080;
 }
 
 .progress .barWrap {
@@ -276,11 +325,11 @@ body.light .progress .rate {
 }
 
 body.dark .progress .barWrap {
-  background-color: #ffffff4d;
+  background-color: #333333;
 }
 
 body.light .progress .barWrap {
-  background-color: #1111114d;
+  background-color: #cccccc;
 }
 
 .progress .bar {
@@ -289,22 +338,15 @@ body.light .progress .barWrap {
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #808080;
   transform: translateX(-100%);
   transition: all  cubic-bezier(0.215, 0.610, 0.355, 1);
   z-index: 0;
 }
 
-body.dark .progress .bar {
-  background-color: #fff;
-}
-
-body.light .progress .bar {
-  background-color: #111;
-}
-
 #auto {
   position: fixed;
-  top: 96px;
+  top: 160px;
   right: 40px;
   display: flex;
   flex-direction: column;
@@ -334,20 +376,11 @@ body.light .progress .bar {
 
 #auto .icon i.fa-light {
   opacity: 1.0;
-  /* display: block; */
-  /* animation: fadeIn 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
 }
 
 #auto .icon i.fa-solid {
   opacity: 0.0;
-  /* display: none; */
-  /* animation: fadeOut 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
 }
-
-/* #forward:hover,
-#backward:hover {
-  color: #ccc;
-} */
 
 #forward,
 #backward {
@@ -360,7 +393,6 @@ body.light .progress .bar {
 
 #forward.active,
 #backward.active {
-  /* color: #ccc; */
   opacity: 1.0;
   animation: softBlink 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
@@ -370,8 +402,6 @@ body.light .progress .bar {
 #forward:hover i.fa-light,
 #backward:hover i.fa-light {
   opacity: 0.0;
-  /* display: none; */
-  /* animation: fadeOut 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
 }
 
 #forward.active i.fa-solid,
@@ -379,47 +409,17 @@ body.light .progress .bar {
 #forward:hover i.fa-solid,
 #backward:hover i.fa-solid {
   opacity: 1.0;
-  /* display: block; */
-  /* animation: fadeIn 0.5s cubic-bezier(0.215, 0.61, 0.355, 1); */
-}
-
-/* @keyframes fadeIn {
-  0% {opacity: 0;}
-100% {opacity: 1;}
-}
-
-@keyframes fadeOut {
-  0% {opacity: 1;}
-100% {opacity: 0;display: none;}
-} */
-
-body.dark #forward.active,
-body.dark #backward.active,
-body.dark #forward:hover,
-body.dark #backward:hover {
-  color: #ccc;
-}
-
-body.light #forward.active,
-body.light #backward.active,
-body.light #forward:hover,
-body.light #backward:hover {
-  color: #333;
 }
 
 #stats {
   position: fixed;
   left: 32px;
   bottom: 32px;
-  /* width: 320px; */
-  /* height: 160px; */
-  /* padding: 8px; */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
   gap: 12px;
-  /* border: 1px solid #ffffff1a; */
   font-family: "Roboto";
   font-size: 10px;
   z-index: 1;
@@ -455,14 +455,7 @@ body.light #backward:hover {
 #logger {
   width: 100%;
   height: 80px;
+  color: #808080;
   padding-left: 8px;
   overflow: auto;
-}
-
-body.dark #logger {
-  color: #ccc;
-}
-
-body.light #logger {
-  color: #333;
 }

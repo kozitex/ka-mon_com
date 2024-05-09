@@ -51,6 +51,7 @@ const init = () => {
   window.addEventListener('resize', () => {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = setTimeout(kamon.windowResize, 200);
+    terminus = scroller.scrollHeight - window.innerHeight;
   });
 
 
@@ -78,10 +79,12 @@ const init = () => {
     const initialPosition = window.scrollY;
     const targetPosition = target;
     const animationStart = performance.now();
+    const adjustDur = Math.abs(initialPosition - targetPosition) / terminus * duration;
+    // console.log(initialPosition, targetPosition, terminus, adjustDur);
 
     const performAnimation = (currentTime) => {
       const elapsedTime = currentTime - animationStart;
-      const progress = elapsedTime / duration;
+      const progress = elapsedTime / adjustDur;
 
       if (progress < 1) {
         // const easedProgress = easingFunction(progress);
@@ -99,7 +102,7 @@ const init = () => {
 
   // forward、backwardボタンの制御
   const scroller = document.getElementById('scroller');
-  const terminus = scroller.scrollHeight - window.innerHeight;
+  var terminus = scroller.scrollHeight - window.innerHeight;
 
   const forward = document.getElementById('forward');
   forward.addEventListener('click', () => {

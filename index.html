@@ -33,7 +33,7 @@
 </head>
 <body class="dark">
   <div id="guide" class="hide">
-    please scroll down&nbsp;<i class="fa-light fa-angles-down"></i>
+    <i class="fa-light fa-angles-down"></i>
   </div>
   <div id="info">
     <div class="jp">
@@ -44,6 +44,19 @@
       <div id="enName" class="name"></div>
       <div id="enDesc" class="desc"></div>
     </div>
+  </div>
+  <div id="langChanger">
+    <div class="switch">
+      <input type="radio" id="jp" name="langChanger" value="jp" checked>
+      <div class="wrapper">
+        <label for="jp" title="japanese">jp</label>
+      </div>
+      <input type="radio" id="en" name="langChanger" value="en">
+      <div class="wrapper">
+        <label for="en" title="english">en</label>
+      </div>
+    </div>
+    <div class="caption">language</div>
   </div>
   <div id="themeChanger">
     <div class="switch">
@@ -62,14 +75,14 @@
     <div id="forward">
       <div class="icon">
         <i class="fa-light fa-forward"></i>
-        <i class="fa-solid fa-forward"></i>  
+        <i class="fa-solid fa-forward"></i>
       </div>
       <div>forward</div>
     </div>
     <div id="backward">
       <div class="icon">
         <i class="fa-light fa-backward"></i>
-        <i class="fa-solid fa-backward"></i>  
+        <i class="fa-solid fa-backward"></i>
       </div>
       <div>backward</div>
     </div>
@@ -83,65 +96,8 @@
     </div>
     <div id="progress">
       <div class="label">progress :</div>
-      <div class="content">
-        <!-- <div id="overall" class="progress">
-          <div class="label">overall</div>
-          <div class="barWrap">
-            <div class="bar"></div>
-          </div>
-          <div class="rate">0.0%</div>
-        </div>
-        <div id="guidelines" class="progress">
-          <div class="label">guidelines</div>
-          <div class="barWrap">
-            <div class="bar"></div>
-          </div>
-          <div class="rate">0.0%</div>
-        </div>
-        <div id="mainlines" class="progress">
-          <div class="label">mainlines</div>
-          <div class="barWrap">
-            <div class="bar"></div>
-          </div>
-          <div class="rate">0.0%</div>
-        </div>
-        <div id="shapes" class="progress">
-          <div class="label">shapes</div>
-          <div class="barWrap">
-            <div class="bar"></div>
-          </div>
-          <div class="rate">0.0%</div>
-        </div>
-        <div id="rotation" class="progress">
-          <div class="label">rotation</div>
-          <div class="barWrap">
-            <div class="bar"></div>
-          </div>
-          <div class="rate">0.0%</div>
-        </div>
-        <div id="description" class="progress">
-          <div class="label">description</div>
-          <div class="barWrap">
-            <div class="bar"></div>
-          </div>
-          <div class="rate">0.0%</div>
-        </div> -->
-
-        <!-- <div id="barWrap">
-          <div id="bar"></div>
-        </div>
-        <div id="rate"></div> -->
-      </div>
+      <div class="content"></div>
     </div>
-  
-    <!-- <div>
-      <div>progress: 100.0%</div>
-      <div></div>
-    </div>
-    <div>
-      <div>progress rate:</div>
-      <div></div>
-    </div> -->
   </div>
   <div id="scroller"></div>
 </body>
