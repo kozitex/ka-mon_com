@@ -1,3 +1,8 @@
+html, body {
+  width: 100vw;
+  font-size: 0.520833333vw;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -11,6 +16,16 @@ body.light {
   background-color: #fff;
 }
 
+/* body.jp .jp,
+body.en .en {
+  display: block;
+}
+
+body.jp .en,
+body.en .jp {
+  display: none;
+} */
+
 canvas {
   position: fixed;
   top: 0;
@@ -18,20 +33,44 @@ canvas {
   z-index: 0;
 }
 
+
+
+
+#scroller {
+  position: relative;
+  width: 100%;
+}
+
+
+
+
+
 #guide {
   position: fixed;
-  top: 0;
+  bottom: 6.4rem;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  margin: 0 auto;
+  width: 20.0rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 40px;
+  gap: 0.4rem;
+  /* text-align: center; */
   color: #808080;
   z-index: 1;
   opacity: 0.0;
-  animation: blink 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+  animation: blink 2400ms infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#guide .text {
+  font-family: "Roboto";
+  font-size: 1.5rem;
+}
+
+#guide i {
+  font-size: 3.2rem;
 }
 
 #guide.hide {
@@ -40,172 +79,11 @@ canvas {
 
 @keyframes blink {
    50% { opacity: 1.0; }
-  100% { transform: translateY(40px); }
+  100% { transform: translateY(4.0rem); }
 }
 
-@keyframes softBlink {
-  50% { opacity: 0.3; }
-}
 
-#scroller {
-  position: relative;
-  width: 100%;
-}
 
-#themeChanger {
-  position: fixed;
-  top: 96px;
-  right: 32px;
-  width: 60px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  z-index: 1;
-}
-
-#themeChanger .switch {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-#themeChanger .caption {
-  font-family: "Roboto";
-  font-size: 10px;
-  text-align: center;
-  color: #808080;
-}
-
-#themeChanger .wrapper {
-  border: 1px solid transparent;
-  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-body.dark #themeChanger .wrapper:hover {
-  border: 1px solid #ccc;
-}
-
-body.light #themeChanger .wrapper:hover {
-  border: 1px solid #333;
-}
-
-#themeChanger input[type="radio"] {
-  display: none;
-}
-
-#themeChanger label {
-  display: block;
-  width: 20px;
-  height: 20px;
-  border: 1px solid #808080;
-  cursor: pointer;
-}
-
-#themeChanger input[type="radio"]:checked + .wrapper {
-  border: 1px solid transparent;
-}
-
-#themeChanger input[type="radio"]:checked + .wrapper label {
-  cursor: default;
-}
-
-#dark + .wrapper label {
-  background-color: #111;
-}
-
-#light + .wrapper label {
-  background-color: #fff;
-}
-
-#langChanger {
-  position: fixed;
-  top: 32px;
-  right: 32px;
-  width: 60px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  z-index: 1;
-}
-
-#langChanger .switch {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-#langChanger .caption {
-  font-family: "Roboto";
-  font-size: 10px;
-  text-align: center;
-  color: #808080;
-}
-
-#langChanger .wrapper {
-  border: 1px solid transparent;
-  border-radius: 4px;
-  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-#langChanger .wrapper:hover {
-  border: 1px solid #808080;
-}
-
-/* body.dark #langChanger .wrapper:hover {
-  border: 1px solid #ccc;
-}
-
-body.light #langChanger .wrapper:hover {
-  border: 1px solid #333;
-} */
-
-#langChanger input[type="radio"] {
-  display: none;
-}
-
-#langChanger label {
-  display: block;
-  width: 20px;
-  height: 20px;
-  font-family: "Roboto";
-  font-size: 11px;
-  color: #808080;
-  text-align: center;
-  border: 1px solid #808080;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#langChanger input[type="radio"]:checked + .wrapper {
-  border: 1px solid transparent;
-}
-
-#langChanger input[type="radio"]:checked + .wrapper label {
-  cursor: default;
-  background-color: #808080;
-}
-
-body.dark #langChanger input[type="radio"]:checked + .wrapper label {
-  color: #000;
-}
-
-body.light #langChanger input[type="radio"]:checked + .wrapper label {
-  color: #fff;
-}
-
-/* #jp + .wrapper label {
-  background-color: #111;
-}
-
-#en + .wrapper label {
-  background-color: #fff;
-} */
 
 
 #info .jp, #info .en {
@@ -237,12 +115,14 @@ body.light #langChanger input[type="radio"]:checked + .wrapper label {
 
 body.dark #info .name {
   color: #fff;
-  filter: drop-shadow(1px 1px 3px #000);
+  filter: drop-shadow(1px 1px 1px #000);
+  /* filter: drop-shadow(1px 1px 3px #000); */
 }
 
 body.light #info .name {
   color: #000;
-  filter: drop-shadow(1px 1px 3px #ccc);
+  filter: drop-shadow(1px 1px 1px #ccc);
+  /* filter: drop-shadow(1px 1px 3px #ccc); */
 }
 
 #info .jp .name {
@@ -288,130 +168,272 @@ body.light #info .desc {
   transform: translateY(100%);
 }
 
-#progress {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 8px;
-}
 
-.progress {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: "Roboto";
-  font-size: 10px;
-  gap: 8px;
-}
 
-.progress .label {
-  width: 52px;
-  text-align: right;
-  color: #808080;
-}
 
-.progress .rate {
-  width: 36px;
-  text-align: right;
-  color: #808080;
-}
 
-.progress .barWrap {
-  position: relative;
-  width: 120px;
-  height: 2px;
-  overflow: hidden;
-}
-
-body.dark .progress .barWrap {
-  background-color: #333333;
-}
-
-body.light .progress .barWrap {
-  background-color: #cccccc;
-}
-
-.progress .bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #808080;
-  transform: translateX(-100%);
-  transition: all  cubic-bezier(0.215, 0.610, 0.355, 1);
-  z-index: 0;
-}
-
-#auto {
+/* #langChanger {
   position: fixed;
-  top: 160px;
-  right: 40px;
+  top: 32px;
+  right: 32px;
+  width: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 4px;
+  z-index: 1;
+}
+
+#langChanger .switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#langChanger .caption {
   font-family: "Roboto";
   font-size: 10px;
   text-align: center;
   color: #808080;
-  gap: 20px;
+}
+
+#langChanger .wrapper {
+  border: 1px solid transparent;
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+
+#langChanger .wrapper:hover {
+  border: 1px solid #808080;
+}
+
+#langChanger input[type="radio"] {
+  display: none;
+}
+
+#langChanger label {
+  display: block;
+  width: 20px;
+  height: 20px;
+  font-family: "Roboto";
+  font-size: 11px;
+  color: #808080;
+  text-align: center;
+  border: 1px solid #808080;
   cursor: pointer;
+  background-color: #fff;
+}
+
+#langChanger input[type="radio"]:checked + .wrapper {
+  border: 1px solid transparent;
+}
+
+#langChanger input[type="radio"]:checked + .wrapper label {
+  cursor: default;
+  background-color: #808080;
+}
+
+body.dark #langChanger input[type="radio"]:checked + .wrapper label {
+  color: #000;
+}
+
+body.light #langChanger input[type="radio"]:checked + .wrapper label {
+  color: #fff;
+} */
+
+
+
+
+
+#themeChanger {
+  position: fixed;
+  top: 4.8rem;
+  right: 3.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
   z-index: 1;
 }
 
-#auto .icon {
-  position: relative;
-  width: 20px;
-  height: 20px;
+#themeChanger .switch {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.6rem;
 }
 
-#auto .icon i {
+#themeChanger .caption {
+  font-family: "Roboto";
+  font-size: 1.5rem;
+  text-align: center;
+  color: #808080;
+}
+
+#themeChanger .wrapper {
+  border: 1px solid transparent;
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+body.dark #themeChanger .wrapper:hover {
+  border: 1px solid #ccc;
+}
+
+body.light #themeChanger .wrapper:hover {
+  border: 1px solid #333;
+}
+
+#themeChanger input[type="radio"] {
+  display: none;
+}
+
+#themeChanger label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 6.4rem;
+  height: 4.8rem;
+  /* font-family: "Roboto"; */
+  /* font-size: 1.6rem; */
+  font-size: 3.2rem;
+  border-radius: 0.8rem;
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#themeChanger input[type="radio"]:checked + label {
+  background-color: #808080;
+}
+
+body.dark #themeChanger input[type="radio"]:checked + label {
+  color: #111111;
+}
+
+body.light #themeChanger input[type="radio"]:checked + label {
+  color: #ffffff;
+}
+
+#themeChanger input[type="radio"]:not(:checked) + label {
+  color: #808080;
+  border: 1px solid transparent;
+}
+
+#themeChanger input[type="radio"]:not(:checked) + label:hover {
+  border: 1px solid #808080;
+  cursor: pointer;
+}
+
+
+
+
+
+#auto {
+  position: fixed;
+  top: 17.6rem;
+  right: 3.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  /* cursor: pointer; */
+  z-index: 1;
+}
+
+#auto .button {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+#auto .button .icon {
+  /* position: relative; */
+  width: 6.4rem;
+  height: 4.8rem;
+  font-size: 3.2rem;
+  color: #808080;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#auto .button .icon:hover,
+#auto .button .icon.active {
+  /* background-color: #808080; */
+  border: 1px solid #808080;
+  cursor: pointer;
+}
+
+/* body.dark #auto .button .icon:hover, */
+body.dark #auto .button .icon.active {
+  color: #111;
+}
+
+/* body.light #auto .button .icon:hover, */
+body.light #auto .button .icon.active {
+  color: #fff;
+}
+
+#auto .caption {
+  font-family: "Roboto";
+  font-size: 1.5rem;
+  text-align: center;
+  color: #808080;
+}
+
+/* #auto .button .icon i {
   position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 20px;
-}
+} */
 
-#auto .icon i.fa-light {
-  opacity: 1.0;
-}
-
-#auto .icon i.fa-solid {
+/* #auto .button .icon i.fa-light {
   opacity: 0.0;
 }
 
-#forward,
+#auto .button .icon i.fa-solid {
+  opacity: 1.0;
+} */
+
+/* #forward,
 #backward {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
+} */
 
-#forward.active,
-#backward.active {
-  opacity: 1.0;
+/* #forward.active,
+#backward.active { */
+#auto .button .icon.active {
+  /* opacity: 1.0; */
+  background-color: #808080;
   animation: softBlink 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-#forward.active i.fa-light,
-#backward.active i.fa-light,
-#forward:hover i.fa-light,
-#backward:hover i.fa-light {
+@keyframes softBlink {
+  50% { opacity: 0.0; }
+}
+
+/* #auto .button .icon.active i.fa-light {
   opacity: 0.0;
-}
+} */
 
-#forward.active i.fa-solid,
-#backward.active i.fa-solid,
-#forward:hover i.fa-solid,
-#backward:hover i.fa-solid {
+/* #auto .button .icon.active i.fa-solid {
   opacity: 1.0;
-}
+} */
 
-#stats {
+
+
+
+
+/* #stats {
   position: fixed;
   left: 32px;
   bottom: 32px;
@@ -458,4 +480,72 @@ body.light .progress .barWrap {
   color: #808080;
   padding-left: 8px;
   overflow: auto;
+} */
+
+
+
+
+
+#progress {
+  position: fixed;
+  left: 4.8rem;
+  bottom: 4.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto";
+  font-size: 1.5rem;
+  color: #808080;
+  gap: 0.8rem;
+  z-index: 1;
+}
+
+/* .progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto";
+  font-size: 10px;
+  gap: 8px;
+} */
+
+#progress .label {
+  /* width: 6.4rem; */
+  /* text-align: right; */
+  color: #808080;
+  /* align-self: flex-start; */
+}
+
+#progress .rate {
+  /* width: 5.6rem; */
+  /* text-align: right; */
+  color: #808080;
+}
+
+#progress .barWrap {
+  position: relative;
+  width: 32.0rem;
+  height: 0.4rem;
+  overflow: hidden;
+}
+
+body.dark #progress .barWrap {
+  background-color: #333333;
+}
+
+body.light #progress .barWrap {
+  background-color: #cccccc;
+}
+
+#progress .bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #808080;
+  transform: translateX(-100%);
+  transition: all  cubic-bezier(0.215, 0.610, 0.355, 1);
+  z-index: 0;
 }

@@ -4,113 +4,111 @@ import * as THREE from 'three';
 
 export default class Grid {
 
-  constructor (color = 0x333333, thinColor = 0x1a1a1a) {
-
-    // フレームサイズ
-    this.size = 1600;
-
-    this.z = 0;
-
-    // グリッド間隔
-    this.interval = 100;
+  constructor (
+    edge = 1600,
+    interval = 100,
+    color = 0x333333,
+    thinColor = 0x1a1a1a
+  ) {
 
     // 色
     this.color     = color;
     this.thinColor = thinColor;
 
+    // Z軸の座標
+    this.z = 0;
+
+    // 頂点の座標
+    this.points = [];
+
     // メッシュグループ
     this.group = new THREE.Group();
-  }
 
-  // フレームの作成
-  createFrame = (size = this.size) => {
-    const points = [];
-    points.push(new THREE.Vector3(-size,  size, this.z));
-    points.push(new THREE.Vector3( size,  size, this.z));
-    points.push(new THREE.Vector3( size, -size, this.z));
-    points.push(new THREE.Vector3(-size, -size, this.z));
-    points.push(new THREE.Vector3(-size,  size, this.z));
+    const frames = [
+      [
+        new THREE.Vector3(- edge,   edge, this.z),
+        new THREE.Vector3(  edge,   edge, this.z),
+        new THREE.Vector3(  edge, - edge, this.z),
+        new THREE.Vector3(- edge, - edge, this.z),
+        new THREE.Vector3(- edge,   edge, this.z)
+      ],
+      [
+        new THREE.Vector3(     0,   edge, this.z),
+        new THREE.Vector3(     0, - edge, this.z)
+      ],
+      [
+        new THREE.Vector3(  edge,      0, this.z),
+        new THREE.Vector3(- edge,      0, this.z)
+      ]
+    ];
+    this.points.push(frames);
 
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const material = new THREE.LineBasicMaterial({
-      color: this.color,
-      side: THREE.DoubleSide,
-      transparent: true
-    });
-    const line = new THREE.Line(geometry, material);
-    this.group.add(line);
-  }
-
-  // センターラインの作成
-  createCenterLine = (size = this.size) => {
-    const points = [];
-    points.push(new THREE.Vector3(    0,  size, this.z));
-    points.push(new THREE.Vector3(    0, -size, this.z));
-    points.push(new THREE.Vector3(    0,     0, this.z));
-    points.push(new THREE.Vector3( size,     0, this.z));
-    points.push(new THREE.Vector3(-size,     0, this.z));
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const material = new THREE.LineBasicMaterial({
-      color: this.color,
-      side: THREE.DoubleSide,
-      transparent: true
-    });
-    const line = new THREE.Line(geometry, material);
-    this.group.add(line);
-  }
-
-  // グリッドの作成
-  createGrid = (size = this.size, interval = this.interval) => {
+    const grids = [];
     for (var i = 0;i <= 1;i ++) {
-      var axis = -size;
-      const num = (size / interval * 2) - 2;
+      var axis = - edge;
+      const num = (edge / interval * 2) - 2;
+      var line = [];
       for (var j = 0;j <= num;j ++) {
         axis += interval;
         if (axis == 0) continue;
-        const points = [];
         if (i == 0) {
-          points.push( new THREE.Vector3( axis,  size, this.z));
-          points.push( new THREE.Vector3( axis, -size, this.z));
+          line = [
+            new THREE.Vector3(  axis,   edge, this.z),
+            new THREE.Vector3(  axis, - edge, this.z)
+          ]
         } else {
-          points.push( new THREE.Vector3( size,  axis, this.z));
-          points.push( new THREE.Vector3(-size,  axis, this.z));
+          line = [
+            new THREE.Vector3(  edge,   axis, this.z),
+            new THREE.Vector3(- edge,   axis, this.z)
+          ];
         }
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        grids.push(line);
+      }
+    }
+    this.points.push(grids);
+  }
+
+  // 線を描画
+  draw = () => {
+    var index = 0;
+    this.points.forEach((groups) => {
+      const color = index == 0 ? this.color : this.thinColor;
+      groups.forEach((group) => {
+        const geometry = new THREE.BufferGeometry().setFromPoints(group);
         const material = new THREE.LineBasicMaterial({
-          color: this.thinColor,
+          color: color,
           side: THREE.DoubleSide,
           transparent: true
         });
         const line = new THREE.Line(geometry, material);
         this.group.add(line);
-      }
-    }
+      })
+      index ++;
+    });
+    return this.group;
   }
 
-  // 要素をグループ化して出力
-  generate = (size, interval) => {
-    this.createFrame(size);
-    this.createCenterLine(size);
-    this.createGrid(size, interval);
-    return this.group;
+  // 色を変更
+  changeTheme = (color, thinColor) => {
+    var index = 0;
+    this.group.children.forEach((line) => {
+      if (index <= 2) {
+        line.material.color = new THREE.Color(color);
+      } else {
+        line.material.color = new THREE.Color(thinColor);
+      }
+      index ++;
+    });
   }
 
   // フェードアウト
   fadeOut = (tick, start, end) => {
-    this.group.children.forEach((child) => {
-      var count;
-      if (tick <= start) {
-        count = 0.0;
-        child.visible = true;
-      } else if (tick > start && tick <= end) {
-        const ratio = (tick - start) / (end - start);
-        count = THREE.MathUtils.lerp(0, 1, ratio);
-      } else if (tick > end) {
-        count = 1.0;
-        child.visible = false;
-      }
-      child.material.opacity = THREE.MathUtils.damp(1.0, 0.0, 2, count);
+    const ratio = THREE.MathUtils.smoothstep(tick, start, end);
+
+    this.group.children.forEach((line) => {
+      line.visible = true;
+      if (ratio >= 1) line.visible = false;
+      line.material.opacity = 1.0 - ratio;
     });
   }
 

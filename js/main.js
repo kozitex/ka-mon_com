@@ -7,10 +7,18 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 const init = () => {
-  let timeoutId = 0;
+  let resizeTimeout = 0;
+  let guideTimeout = 0;
 
   // const kamon = new Kageigeta();
   const kamon = new HidariFutatsuDomoe();
+
+  // 表示言語を適用
+  // const changeLang = (language) => {
+  //   document.body.classList.remove('jp', 'en');
+  //   document.body.classList.add(language);
+  //   localStorage.setItem('theme', language);
+  // }
 
   // テーマカラーを適用
   const changeTheme = (theme) => {
@@ -22,7 +30,7 @@ const init = () => {
 
   // 読み込み後に動きがなければガイドを表示
   const guide = document.getElementById('guide');
-  setTimeout(() => {
+  guideTimeout = setTimeout(() => {
     if (window.scrollY <= 0) {
       guide.classList.remove('hide');
     }
@@ -33,6 +41,13 @@ const init = () => {
 
   // 画面スクロール時の処理
   window.addEventListener('scroll', () => {
+    if (guideTimeout) clearTimeout(guideTimeout);
+    guideTimeout = setTimeout(() => {
+      if (window.scrollY <= 0) {
+        guide.classList.remove('hide');
+      }
+    }, 10000);
+  
     // スクロール量をキャンバスに渡す
     kamon.scrolled(window.scrollY);
 
@@ -49,11 +64,18 @@ const init = () => {
 
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {
-    if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(kamon.windowResize, 200);
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(kamon.windowResize, 200);
     terminus = scroller.scrollHeight - window.innerHeight;
   });
 
+  // // 表示言語が保存されていたら適用
+  // const myLanguage = localStorage.getItem('language');
+  // if (myLanguage) {
+  //   changeTheme(myLanguage);
+  //   const target = document.getElementById(myLanguage);
+  //   target.checked = true;
+  // }
 
   // テーマ名が保存されていたら適用
   const myTheme = localStorage.getItem('theme');
@@ -62,6 +84,12 @@ const init = () => {
     const target = document.getElementById(myTheme);
     target.checked = true;
   }
+
+  // // ラジオボタンクリックで表示言語変更
+  // const langChangers = document.getElementsByName('langChanger');
+  // langChangers.forEach((langChanger) => {
+  //   langChanger.addEventListener('change', () => changeLang(langChanger.value));
+  // })
 
   // ラジオボタンクリックでテーマ変更
   const themeChangers = document.getElementsByName('themeChanger');
@@ -103,12 +131,13 @@ const init = () => {
   // forward、backwardボタンの制御
   const scroller = document.getElementById('scroller');
   var terminus = scroller.scrollHeight - window.innerHeight;
+  const scrollDur = kamon.scrollDur;
 
   const forward = document.getElementById('forward');
   forward.addEventListener('click', () => {
     if (window.scrollY < terminus) {
       forward.classList.add('active');
-      autoScroll(terminus, 7000);
+      autoScroll(terminus, scrollDur);
       kamon.logRecord('- the animation has started playing.');
     }
   });
@@ -117,7 +146,7 @@ const init = () => {
   backward.addEventListener('click', () => {
     if (window.scrollY > 0) {
       backward.classList.add('active');
-      autoScroll(0, 7000);
+      autoScroll(0, scrollDur);
       kamon.logRecord('- started playing the animation in reverse.');
     }
   });
