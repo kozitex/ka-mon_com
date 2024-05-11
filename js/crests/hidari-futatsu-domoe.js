@@ -27,6 +27,9 @@ export default class HidariFutatsuDomoe {
     // スクロール量
     this.scrollY = 0;
 
+    // マウス座標
+    this.mouse = new THREE.Vector2(0, 0);
+
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -50,55 +53,10 @@ export default class HidariFutatsuDomoe {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.backColor);
 
-    this.progressArr = [
-      'overall', 'guidelines', 'outlines', 'shapes', 'rotation', 'description'
-    ];
-
-    // this.progressArr.forEach((id) => {
-    //   const progressDiv = document.createElement('div');
-    //   const labelDiv = document.createElement('div');
-    //   const barWrapDiv = document.createElement('div');
-    //   const barDiv = document.createElement('div');
-    //   const rateDiv = document.createElement('div');
-
-    //   progressDiv.id = id;
-    //   progressDiv.classList.add('progress');
-    //   labelDiv.classList.add('label');
-    //   labelDiv.textContent = id;
-    //   barWrapDiv.classList.add('barWrap');
-    //   barDiv.classList.add('bar');
-    //   rateDiv.classList.add('rate');
-    //   rateDiv.textContent = '0.0%';
-
-    //   progressDiv.appendChild(labelDiv);
-    //   barWrapDiv.appendChild(barDiv);
-    //   progressDiv.appendChild(barWrapDiv);
-    //   progressDiv.appendChild(rateDiv);
-
-    //   const progress = document.querySelector('#progress .content');
-    //   progress.appendChild(progressDiv);
-    // })
-
     this.guidelines = [];
     this.mainVers = [];
     this.outlines = [];
     this.shapeGroup = new THREE.Group();
-
-    // ログ記述用のフラグ
-    this.gdStarted = true;
-    this.gdEnded = true;
-    this.odStarted = true;
-    this.odEnded = true;
-    this.sdStarted = true;
-    this.sdEnded = true;
-    this.gfStarted = true;
-    this.gfEnded = true;
-    this.ofStarted = true;
-    this.ofEnded = true;
-    this.rtStarted = true;
-    this.rtEnded = true;
-    this.daStarted = true;
-    this.daEnded = true;
 
     // フレーム・グリッドの描画
     this.grid = new Grid();
@@ -107,9 +65,6 @@ export default class HidariFutatsuDomoe {
 
     // ガイドラインの作成
     this.generateGuideline();
-
-    // 図形の頂点を取得
-    // this.getVertices();
 
     // アウトラインの作成
     this.generateOutLine();
@@ -133,13 +88,20 @@ export default class HidariFutatsuDomoe {
   }
 
   // 画面のスクロール量を取得
-  scrolled(y) {
+  scrolled = (y) => {
     this.scrollY = y;
+  }
+
+  // マウスの位置情報を取得
+  mouseMoved = (x, y) => {
+    this.mouse.x =  x - (this.w / 2);
+    this.mouse.y = -y + (this.h / 2);
   }
 
   // 円の方程式
   circle = (a, b, r, s) => {
-    return {x: a + r * Math.cos(s), y: b + r * Math.sin(s)};
+    return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
+    // return {x: a + r * Math.cos(s), y: b + r * Math.sin(s)};
   }
 
   // ガイドラインを作成
@@ -161,7 +123,8 @@ export default class HidariFutatsuDomoe {
         const deg = THREE.MathUtils.damp(90, 450, 10, i / (divCount - 1));
         const s = deg * (Math.PI / 180);
         const mid = this.circle(a, b, r, s);
-        points.push(new THREE.Vector3(mid.x, mid.y, 0));
+        points.push(mid);
+        // points.push(new THREE.Vector3(mid.x, mid.y, 0));
       }
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       geometry.setDrawRange(0, 0);
@@ -184,8 +147,8 @@ export default class HidariFutatsuDomoe {
       {a:    0, b:    0, r: 1600, f: 107, t: 290},
       {a:    0, b:  825, r:  750, f: 421, t: 218},
       {a:    0, b: -825, r:  750, f: 240, t:  38},
-      {a: -110, b:  490, r: 1100, f: 470, t: 309},
-      {a:  110, b: -490, r: 1100, f: 290, t: 129},
+      {a: -110, b:  490, r: 1100, f: 470, t: 309.5},
+      {a:  110, b: -490, r: 1100, f: 290, t: 129.5},
     ];
     const divCount = 1000;
     circles.forEach((circle) => {
@@ -202,7 +165,8 @@ export default class HidariFutatsuDomoe {
           const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
           const s = deg * (Math.PI / 180);
           const mid = this.circle(a, b, r, s);
-          points.push(new THREE.Vector3(mid.x, mid.y, 0));
+          points.push(mid);
+          // points.push(new THREE.Vector3(mid.x, mid.y, 0));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         geometry.setDrawRange(0, 0);
@@ -221,16 +185,16 @@ export default class HidariFutatsuDomoe {
   generateShape = () => {
     const figures = [
       [
-        {a:    0, b:  825, r:  750, f:  218, t:  420, g: -6},
+        {a:    0, b:  825, r:  750, f:  217, t:  420, g: -6},
         {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
         {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
-        {a:  110, b: -490, r: 1100, f:  -95, t: -228, g:  6},
+        {a:  110, b: -490, r: 1100, f:  -95, t: -231, g:  6},
       ],
       [
-        {a:    0, b: -825, r:  750, f:   38, t:  240, g: -6},
+        {a:    0, b: -825, r:  750, f:   37, t:  240, g: -6},
         {a:  110, b: -490, r: 1100, f:  250, t:  290, g: -6},
         {a:    0, b:    0, r: 1600, f:  280, t:  450, g: -6},
-        {a: -110, b:  490, r: 1100, f:   85, t:  -48, g:  6},
+        {a: -110, b:  490, r: 1100, f:   85, t:  -51, g:  6},
       ]
     ];
     const divCount = 2000;
@@ -246,7 +210,8 @@ export default class HidariFutatsuDomoe {
           const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
           const s = deg * (Math.PI / 180);
           const mid = this.circle(a, b, r, s);
-          points.push(new THREE.Vector2(mid.x, mid.y));
+          points.push(mid);
+          // points.push(new THREE.Vector2(mid.x, mid.y));
         }
       })
       const shape = new THREE.Shape(points);
@@ -330,7 +295,8 @@ export default class HidariFutatsuDomoe {
     const rate = document.querySelector('#' + id + ' .rate');
     const ratio = tick * 100;
     rate.textContent = ratio.toFixed(1) + '%';
-    bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
+    bar.style.strokeDashoffset = 283 * (1 - tick);
+    // bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
   }
 
   // ガイドラインの描画アニメーション制御
@@ -555,23 +521,39 @@ export default class HidariFutatsuDomoe {
   }
 
   //ログを記録する
-  logRecord = (text) => {
-    const arrText = text.split('');
-    const divElm = document.createElement('div');
-    this.logger.appendChild(divElm);
-    for (var i = 0;i <= arrText.length - 1;i ++) {
-      setTimeout((i) => {
-        divElm.innerHTML += arrText[i];
-        var bottom = this.logger.scrollHeight - this.logger.clientHeight;
-        this.logger.scroll(0, bottom);
-      }, i * 20, i);
-    }
+  // logRecord = (text) => {
+  //   const arrText = text.split('');
+  //   const divElm = document.createElement('div');
+  //   this.logger.appendChild(divElm);
+  //   for (var i = 0;i <= arrText.length - 1;i ++) {
+  //     setTimeout((i) => {
+  //       divElm.innerHTML += arrText[i];
+  //       var bottom = this.logger.scrollHeight - this.logger.clientHeight;
+  //       this.logger.scroll(0, bottom);
+  //     }, i * 20, i);
+  //   }
+  // }
+
+  moveCameraPosition = () => {
+    const range = 5;
+    const garden = (this.w - 1000) / 2;
+    const radX = THREE.MathUtils.mapLinear(this.mouse.x, -500, 500, - range, range);
+    const radY = THREE.MathUtils.mapLinear(this.mouse.y, -500, 500, - range, range);
+    // const radian = this.rot * Math.PI / 180;
+    // const radian = this.rot * Math.PI / 180;
+    const x = this.camZ * Math.sin(radX * Math.PI / 180);
+    const y = this.camZ * Math.sin(radY * Math.PI / 180);
+    const z = this.camZ;
+    this.camera.position.set(x, y, 4000);
+    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
 
   render = () => {
     // const sec = performance.now();
 
     const tick = this.scrollY / this.scrollerH;
+
+    this.moveCameraPosition();
 
     // プログレスバーのアニメーション制御
     this.progressBarControl('progress', tick);

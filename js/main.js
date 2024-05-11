@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
 const init = () => {
   let resizeTimeout = 0;
   let guideTimeout = 0;
+  let autoScrolling = false;
 
   // const kamon = new Kageigeta();
   const kamon = new HidariFutatsuDomoe();
@@ -41,6 +42,7 @@ const init = () => {
 
   // 画面スクロール時の処理
   window.addEventListener('scroll', () => {
+    // ガイド表示タイマーをクリア・リセット
     if (guideTimeout) clearTimeout(guideTimeout);
     guideTimeout = setTimeout(() => {
       if (window.scrollY <= 0) {
@@ -56,10 +58,27 @@ const init = () => {
       guide.classList.add('hide');
     }
 
-    if (window.scrollY == 0 || window.scrollY == terminus) {
-      forward.classList.remove('active');
-      backward.classList.remove('active');
+    // 画面の端に着いたらオートプレイボタンを初期化
+    if (window.scrollY == 0) {
+      autoScrolling = false;
+      forward.classList.remove('disabled');
+      backward.classList.add('disabled');
+      backward.classList.remove('running');
+    } else if (window.scrollY == terminus) {
+      autoScrolling = false;
+      backward.classList.remove('disabled');
+      forward.classList.add('disabled');
+      forward.classList.remove('running');
+    } else if (!autoScrolling) {
+      forward.classList.remove('disabled');
+      backward.classList.remove('disabled');
     }
+
+  });
+
+  // マウスを動かした時
+  window.addEventListener('mousemove', e => {
+    kamon.mouseMoved(e.clientX, e.clientY);
   });
 
   // 画面リサイズ時の処理
@@ -136,18 +155,22 @@ const init = () => {
   const forward = document.getElementById('forward');
   forward.addEventListener('click', () => {
     if (window.scrollY < terminus) {
-      forward.classList.add('active');
+      autoScrolling = true;
+      forward.classList.add('running');
+      backward.classList.add('disabled');
       autoScroll(terminus, scrollDur);
-      kamon.logRecord('- the animation has started playing.');
+      // kamon.logRecord('- the animation has started playing.');
     }
   });
 
   const backward = document.getElementById('backward');
   backward.addEventListener('click', () => {
     if (window.scrollY > 0) {
-      backward.classList.add('active');
+      autoScrolling = true;
+      forward.classList.add('disabled');
+      backward.classList.add('running');
       autoScroll(0, scrollDur);
-      kamon.logRecord('- started playing the animation in reverse.');
+      // kamon.logRecord('- started playing the animation in reverse.');
     }
   });
 

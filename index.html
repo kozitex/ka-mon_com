@@ -8,10 +8,7 @@
 	<!-- Google Fontsを読み込み -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-  <!-- <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+JP&display=swap" rel="stylesheet"> -->
 	<!-- FontAwesomeを読み込み -->
   <script src="https://kit.fontawesome.com/a2dc0bb3f8.js" crossorigin="anonymous"></script>
   <!-- スタイルシートを読み込み -->
@@ -48,98 +45,36 @@
     </div>
   </div>
   <div id="control">
-    <!-- <div id="langChanger">
-      <div class="switch">
-        <input type="radio" id="jp" name="langChanger" value="jp" checked>
-        <div class="wrapper">
-          <label for="jp" title="japanese">jp</label>
-        </div>
-        <input type="radio" id="en" name="langChanger" value="en">
-        <div class="wrapper">
-          <label for="en" title="english">en</label>
-        </div>
-      </div>
-      <div class="caption">language</div>
-    </div> -->
     <div id="themeChanger">
       <div class="switch">
         <input type="radio" id="dark" name="themeChanger" value="dark" checked>
         <label for="dark" title="dark"><i class="fa-solid fa-moon-stars"></i></label>
-          <!-- <label for="dark" title="dark">dark</label> -->
-        <!-- </div> -->
         <input type="radio" id="light" name="themeChanger" value="light">
-        <!-- <div class="wrapper"> -->
         <label for="light" title="light"><i class="fa-regular fa-sun-bright"></i></label>
-          <!-- <label for="light" title="light">light</label> -->
-        <!-- </div> -->
       </div>
-      <div class="caption">dark / light</div>
-
-      <!-- <div class="switch">
-        <input type="radio" id="dark" name="themeChanger" value="dark" checked>
-        <div class="wrapper">
-          <label for="dark" title="dark"></label>
-        </div>
-        <input type="radio" id="light" name="themeChanger" value="light">
-        <div class="wrapper">
-          <label for="light" title="light"></label>
-        </div>
-      </div>
-      <div class="caption">dark / light</div> -->
+      <div class="caption">Dark / Light</div>
     </div>
     <div id="auto">
       <div class="button">
         <div id="forward" class="icon">
-          <!-- <i class="fa-light fa-forward"></i> -->
           <i class="fa-solid fa-forward"></i>
         </div>
-        <!-- <div>forward</div> -->
-      <!-- </div>
-      <div > -->
-        <div id="backward" class="icon">
-          <!-- <i class="fa-light fa-backward"></i> -->
+        <div id="backward" class="icon disabled">
           <i class="fa-solid fa-backward"></i>
         </div>
-        <!-- <div>backward</div> -->
       </div>
-      <div class="caption">auto play</div>
+      <div class="caption">Auto play</div>
     </div>
-
-    <!-- <div id="auto">
-      <div id="forward">
-        <div class="icon">
-          <i class="fa-light fa-forward"></i>
-          <i class="fa-solid fa-forward"></i>
-        </div>
-        <div>forward</div>
-      </div>
-      <div id="backward">
-        <div class="icon">
-          <i class="fa-light fa-backward"></i>
-          <i class="fa-solid fa-backward"></i>
-        </div>
-        <div>backward</div>
-      </div>
-    </div> -->
     <div id="progress">
-      <div class="label">progress</div>
-      <div class="barWrap">
-        <div class="bar"></div>
+      <div class="label">Progress</div>
+      <div class="circleWrap">
+        <svg viewBox="0 0 100 100">
+          <circle class="bg" cx="50" cy="50" r="45"></circle>
+          <circle class="bar" cx="50" cy="50" r="45"></circle>
+        </svg>
+        <div class="rate">0.0%</div>
       </div>
-      <div class="rate">0.0%</div>
     </div>
-    <!-- <div id="stats">
-      <div id="log">
-        <div class="label">log :</div>
-        <div class="content">
-          <div id="logger"></div>
-        </div>
-      </div>
-      <div id="progress">
-        <div class="label">progress :</div>
-        <div class="content"></div>
-      </div>
-    </div>   -->
   </div>
 </body>
 </html>
