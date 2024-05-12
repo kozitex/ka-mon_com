@@ -30,6 +30,10 @@ export default class HidariFutatsuDomoe {
     // マウス座標
     this.mouse = new THREE.Vector2(0, 0);
 
+    // マウスボタン長押しの間増加する値
+    this.increment = - 1;
+    // this.accelAngle = 0;
+
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -39,7 +43,10 @@ export default class HidariFutatsuDomoe {
     this.renderer.setPixelRatio(window.devicePixelRatio);
   
     // DOMにレンダラーのcanvasを追加
-    document.body.appendChild(this.renderer.domElement);
+    this.crest = document.getElementById('crest');
+    this.crest.appendChild(this.renderer.domElement);
+    // document.body.prepend(this.renderer.domElement);
+    // document.body.appendChild(this.renderer.domElement);
 
     // カメラ
     this.camZ = 4000;
@@ -92,10 +99,56 @@ export default class HidariFutatsuDomoe {
     this.scrollY = y;
   }
 
-  // マウスの位置情報を取得
-  mouseMoved = (x, y) => {
-    this.mouse.x =  x - (this.w / 2);
-    this.mouse.y = -y + (this.h / 2);
+  // // マウスの位置情報を取得
+  // mouseMoved = (x, y) => {
+  //   this.mouse.x =  x - (this.w / 2);
+  //   this.mouse.y = -y + (this.h / 2);
+  // }
+
+  // マウスボタン長押しを検知
+  pointerLongPress = () => {
+    // var inc = 0;
+    // this.accelAngle = - (this.increment ** 2) * Math.PI / 180;
+    // this.increment ++;
+    this.increment = this.increment - 10;
+    // this.pressIncrement ++;
+    // console.log(this.pressIncrement);
+  }
+
+  gentleFlow = () => {
+    const angle = this.increment;
+    // console.log(inc, inc / 360);
+    // console.log(angle);
+    // console.log(Math.ceil(angle / 360));
+    const terminus = Math.floor(angle / 360) * 720;
+    // console.log(terminus);
+
+// console.log(ratio , terminus, this.increment);
+    // while(- (kamon.increment ** 1.5) > terminus) {
+    //   console.log(- (kamon.increment ** 1.5));
+    //   setTimeout(() => {
+      
+    //   // kamon.gentleFlow(kamon.pressIncrement);
+    //   kamon.increment ++;
+    //   }, 1);
+    // }
+    // kamon.increment = 0;
+
+    const sec = performance.now() / 1000;
+
+    var timer = setInterval(() => {
+      console.log(sec);
+      //do something
+      // console.log("do something");
+      if (this.increment <= terminus){
+        clearInterval(timer);
+        this.increment = -1;
+      }
+      const ratio = THREE.MathUtils.smoothstep(sec, sec, sec + 3);
+
+      this.increment = this.increment + ((terminus - angle) * ratio);
+        // kamon.increment = kamon.increment - 10;
+    }, 50);
   }
 
   // 円の方程式
@@ -470,7 +523,7 @@ export default class HidariFutatsuDomoe {
     }
 
     this.shapeGroup.rotation.x = -360 * ratio * (Math.PI / 180);
-    this.shapeGroup.rotation.z = -360 * ratio * (Math.PI / 180);
+    // this.shapeGroup.rotation.z = -360 * ratio * (Math.PI / 180);
 
     // if (ratio <= 0) {
     //   this.rtStarted = true;
@@ -489,6 +542,32 @@ export default class HidariFutatsuDomoe {
 
     // this.progressBarControl('rotation', ratio);
   }
+
+  // マウス長押しで図形を回転
+  shapeRotateAccelControl = () => {
+    // const start = 0.6;
+    // const end   = 1.0;
+    // const ratio = THREE.MathUtils.smoothstep(tick, start, end);
+
+    // for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
+      // const shape = this.shapeGroup.children[i];
+      // const posRatio = - 4 * ratio ** 2 + 4 * ratio;
+      // const pos = 1500 * posRatio;
+      // if (i == 0) {
+      //   shape.position.set(-pos, 0, 0);
+      // } else {
+      //   shape.position.set(pos, 0, 0);
+      // }
+    // }
+
+    // this.shapeGroup.rotation.x = -360 * ratio * (Math.PI / 180);
+    // console.log(- (num * num) * Math.PI / 180);
+    console.log(this.increment);
+    // console.log(- (this.increment ** 2) * Math.PI / 180);
+    this.shapeGroup.rotation.z = this.increment * Math.PI / 180;
+
+  }
+
 
   // descのアニメーション制御
   descAnimeControl = (tick) => {
@@ -534,26 +613,33 @@ export default class HidariFutatsuDomoe {
   //   }
   // }
 
-  moveCameraPosition = () => {
-    const range = 5;
-    const garden = (this.w - 1000) / 2;
-    const radX = THREE.MathUtils.mapLinear(this.mouse.x, -500, 500, - range, range);
-    const radY = THREE.MathUtils.mapLinear(this.mouse.y, -500, 500, - range, range);
-    // const radian = this.rot * Math.PI / 180;
-    // const radian = this.rot * Math.PI / 180;
-    const x = this.camZ * Math.sin(radX * Math.PI / 180);
-    const y = this.camZ * Math.sin(radY * Math.PI / 180);
-    const z = this.camZ;
-    this.camera.position.set(x, y, 4000);
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-  }
+  // moveCameraPosition = () => {
+  //   const range = 5;
+  //   const garden = (this.w - 1000) / 2;
+  //   const radX = THREE.MathUtils.mapLinear(this.mouse.x, -500, 500, - range, range);
+  //   const radY = THREE.MathUtils.mapLinear(this.mouse.y, -500, 500, - range, range);
+  //   // const radian = this.rot * Math.PI / 180;
+  //   // const radian = this.rot * Math.PI / 180;
+  //   const x = this.camZ * Math.sin(radX * Math.PI / 180);
+  //   const y = this.camZ * Math.sin(radY * Math.PI / 180);
+  //   const z = this.camZ;
+  //   this.camera.position.set(x, y, 4000);
+  //   this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+  // }
 
   render = () => {
     // const sec = performance.now();
 
     const tick = this.scrollY / this.scrollerH;
 
-    this.moveCameraPosition();
+    // if (tick >= 1.0) {
+    //   this.moveCameraPosition();
+    // } else {
+    //   this.camera.position.set(0, 0, this.camZ);
+    //   this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    // }
+
+    this.shapeRotateAccelControl();
 
     // プログレスバーのアニメーション制御
     this.progressBarControl('progress', tick);

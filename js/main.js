@@ -76,9 +76,71 @@ const init = () => {
 
   });
 
-  // マウスを動かした時
-  window.addEventListener('mousemove', e => {
-    kamon.mouseMoved(e.clientX, e.clientY);
+  // // マウスを動かした時
+  // window.addEventListener('mousemove', e => {
+  //   kamon.mouseMoved(e.clientX, e.clientY);
+  // });
+
+  // マウスをクリックした時
+  window.addEventListener('pointerdown', (e) => {
+    const canvas = document.getElementsByTagName('canvas')[0];
+    // console.log(e.target);
+    if (e.target != canvas) return;
+    const intervalId = setInterval(kamon.pointerLongPress, 50);
+
+    document.addEventListener('pointerup', () => {
+      clearInterval(intervalId);
+      kamon.gentleFlow();
+
+    //   const sec = performance.now() / 1000;
+    //   const angle = kamon.increment;
+    //   // console.log(inc, inc / 360);
+    //   // console.log(angle);
+    //   // console.log(Math.ceil(angle / 360));
+    //   const terminus = Math.floor(angle / 360) * 720;
+    //   // console.log(terminus);
+
+    //   const ratio = THREE.MathUtils.smoothstep(sec, 0, 3);
+
+    //   // while(- (kamon.increment ** 1.5) > terminus) {
+    //   //   console.log(- (kamon.increment ** 1.5));
+    //   //   setTimeout(() => {
+        
+    //   //   // kamon.gentleFlow(kamon.pressIncrement);
+    //   //   kamon.increment ++;
+    //   //   }, 1);
+    //   // }
+    //   // kamon.increment = 0;
+
+
+    //   var timer = setInterval(function(){
+    //     //do something
+    //     // console.log("do something");
+    //   if(kamon.increment <= terminus){
+    //     console.log(sec);
+    //         clearInterval(timer);
+    //         kamon.increment = -1;
+    //       }
+    //       kamon.increment = kamon.increment - ((terminus - angle) * ratio);
+    //       // kamon.increment = kamon.increment - 10;
+    // },50);
+
+    
+
+      // console.log(kamon.pressIncrement);
+      // while(kamon.pressIncrement > 0) {
+      //   console.log(kamon.pressIncrement);
+      //   setInterval(() => {
+      //     kamon.pressIncrement = kamon.pressIncrement ;
+      //   }, 500);
+      // }
+      // for (var i = 0;i <= 10;i ++) {
+      //   console.log(kamon.pressIncrement);
+      //   setTimeout(() => {
+      //     kamon.pressIncrement --;
+      //   }, 50);
+      // }
+    }, { once: true })
   });
 
   // 画面リサイズ時の処理
