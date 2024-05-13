@@ -70,7 +70,7 @@ const init = () => {
   });
 
   // マウスボタンをクリックした時
-  window.addEventListener('pointerdown', (e) => kamon.shapeAccelRotation(e));
+  // window.addEventListener('pointerdown', (e) => kamon.shapeAccelRotation(e));
 
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {

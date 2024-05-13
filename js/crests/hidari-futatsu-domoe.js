@@ -30,24 +30,24 @@ export default class HidariFutatsuDomoe {
     // マウス座標
     this.mouse = new THREE.Vector2(0, 0);
 
-    // マウスボタン長押しの間増加する値
-    this.increment = 0;
+    // // マウスボタン長押しの間増加する値
+    // this.increment = 0;
 
-    // 図形の回転角度
-    this.rad = 0;
+    // // 図形の回転角度
+    // this.rad = 0;
 
-    // 回転時の図形の位置
-    this.shapePosX = 0;
+    // // 回転時の図形の位置
+    // this.shapePosX = 0;
 
-    // 図形の回転加速度
-    this.accel = 0.2;
+    // // 図形の回転加速度
+    // this.accel = 0.2;
 
-    // 回転時の図形の最大位置
-    this.maxGap = 1000;
+    // // 回転時の図形の最大位置
+    // this.maxGap = 1000;
 
-    // 図形の加減速用のタイマー
-    this.accelTimer = 0;
-    this.gentleTImer = 0;
+    // // 図形の加減速用のタイマー
+    // this.accelTimer = 0;
+    // this.gentleTImer = 0;
 
 
     // レンダラー
@@ -100,9 +100,9 @@ export default class HidariFutatsuDomoe {
     this.enDesc = document.getElementById('enDesc');
 
     this.jpName.textContent = '左二つ巴';
-    this.jpDesc.textContent = '井筒・井桁紋とは、井戸をモチーフとした家紋。井戸の地上部分を囲むように囲まれた井の字型の木組を「井桁」、また円形のものを「井筒」というが、紋章では正方形のものを井筒、菱形のものを井桁と呼ぶ。';
+    this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説や、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様に取り入れられました。家紋だけではなく、神社の神紋などにも多く使用されています。';
     this.enName.textContent = 'Hidari-Futatsu-Domoe';
-    this.enDesc.textContent = 'The Izutsu/Igeta crest is a family crest with a well motif. The well-shaped wooden structure surrounding the above-ground part of the well is called "Igeta", and the circular one is called "Izutsu", but in the coat of arms, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".';
+    this.enDesc.textContent = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
 
     // 描画ループ開始
     this.render();
@@ -113,58 +113,58 @@ export default class HidariFutatsuDomoe {
     this.scrollY = y;
   }
 
-  // 図形を加速しながら回転
-  shapeAccelRotation = (e) => {
-    const canvas = document.getElementsByTagName('canvas')[0];
-    if (e.target != canvas) return;
-    const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
-    const memInc = Math.sqrt(- memRad * 2);
-    this.increment = memInc;
-    this.rad = 0;
-    this.shapePosX = 0;
-    clearInterval(this.accelTimer);
-    clearInterval(this.gentleTimer);
+  // // 図形を加速しながら回転
+  // shapeAccelRotation = (e) => {
+  //   const canvas = document.getElementsByTagName('canvas')[0];
+  //   if (e.target != canvas) return;
+  //   const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
+  //   const memInc = Math.sqrt(- memRad * 2);
+  //   this.increment = memInc;
+  //   this.rad = 0;
+  //   this.shapePosX = 0;
+  //   clearInterval(this.accelTimer);
+  //   clearInterval(this.gentleTimer);
 
-    this.accelTimer = setInterval(() => {
-      this.increment ++;
-      this.rad = - this.accel * this.increment ** 2;
-      if (this.shapePosX < this.maxGap) {
-        this.shapePosX = 0.1 * this.increment ** 2;
-      } else {
-        this.shapePosX = this.maxGap;
-      }
-    }, 50);
+  //   this.accelTimer = setInterval(() => {
+  //     this.increment ++;
+  //     this.rad = - this.accel * this.increment ** 2;
+  //     if (this.shapePosX < this.maxGap) {
+  //       this.shapePosX = 0.1 * this.increment ** 2;
+  //     } else {
+  //       this.shapePosX = this.maxGap;
+  //     }
+  //   }, 50);
 
-    document.addEventListener('pointerup', 
-      () => this.shapeGentleRotation(), { once: true }
-    )
-  }
+  //   document.addEventListener('pointerup', 
+  //     () => this.shapeGentleRotation(), { once: true }
+  //   )
+  // }
 
-  // 図形を減速しながら回転
-  shapeGentleRotation = () => {
-    const p = this.increment * 2;
-    const q = this.rad * 2;
-    clearInterval(this.accelTimer);
-    clearInterval(this.gentleTimer);
+  // // 図形を減速しながら回転
+  // shapeGentleRotation = () => {
+  //   const p = this.increment * 2;
+  //   const q = this.rad * 2;
+  //   clearInterval(this.accelTimer);
+  //   clearInterval(this.gentleTimer);
 
-    this.gentleTimer = setInterval(() => {
-      this.increment ++;
-      this.rad = this.accel * (this.increment - p) ** 2 + q;
-      const tempPosX = this.accel * (this.increment - p) ** 2;
-      if (tempPosX <= this.maxGap) {
-        this.shapePosX = this.accel * (this.increment - p) ** 2;
-      } else {
-        this.shapePosX = this.maxGap;
-      }
+  //   this.gentleTimer = setInterval(() => {
+  //     this.increment ++;
+  //     this.rad = this.accel * (this.increment - p) ** 2 + q;
+  //     const tempPosX = this.accel * (this.increment - p) ** 2;
+  //     if (tempPosX <= this.maxGap) {
+  //       this.shapePosX = this.accel * (this.increment - p) ** 2;
+  //     } else {
+  //       this.shapePosX = this.maxGap;
+  //     }
 
-      if(this.increment >= p){
-        clearInterval(this.gentleTimer);
-        const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
-        const memInc = Math.sqrt(- memRad * 2);
-        this.increment = memInc;
-      }
-    }, 50);
-  }
+  //     if(this.increment >= p){
+  //       clearInterval(this.gentleTimer);
+  //       const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
+  //       const memInc = Math.sqrt(- memRad * 2);
+  //       this.increment = memInc;
+  //     }
+  //   }, 50);
+  // }
 
   // 円の方程式
   circle = (a, b, r, s) => {
@@ -424,12 +424,12 @@ export default class HidariFutatsuDomoe {
     const end   = 1.0;
     const ratio = THREE.MathUtils.smoothstep(tick, start, end);
 
-    if (tick < end) {
-      this.increment = 0;
-      this.rad = 0;
-      this.shapePosX = 0;
-      clearInterval(this.accelTimer);
-      clearInterval(this.gentleTimer);
+    // if (tick < end) {
+      // this.increment = 0;
+      // this.rad = 0;
+      // this.shapePosX = 0;
+      // clearInterval(this.accelTimer);
+      // clearInterval(this.gentleTimer);
 
       for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
         const shape = this.shapeGroup.children[i];
@@ -443,18 +443,18 @@ export default class HidariFutatsuDomoe {
       }
       this.shapeGroup.rotation.x = -360 * ratio * (Math.PI / 180);
       this.shapeGroup.rotation.z = -360 * ratio * (Math.PI / 180);
-    } else {
-      for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
-        const shape = this.shapeGroup.children[i];
-        if (i == 0) {
-          shape.position.set(- this.shapePosX, 0, 0);
-        } else {
-          shape.position.set(  this.shapePosX, 0, 0);
-        }
-      }
-      this.shapeGroup.rotation.z = this.rad * Math.PI / 180;
-      console.log(this.increment, this.shapeGroup.rotation.z);
-    }
+    // } else {
+    //   for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
+    //     const shape = this.shapeGroup.children[i];
+    //     if (i == 0) {
+    //       shape.position.set(- this.shapePosX, 0, 0);
+    //     } else {
+    //       shape.position.set(  this.shapePosX, 0, 0);
+    //     }
+    //   }
+    //   this.shapeGroup.rotation.z = this.rad * Math.PI / 180;
+    //   console.log(this.increment, this.shapeGroup.rotation.z);
+    // }
   }
 
   // descのアニメーション制御
