@@ -61,8 +61,6 @@ export default class HidariFutatsuDomoe {
     // DOMにレンダラーのcanvasを追加
     this.crest = document.getElementById('crest');
     this.crest.appendChild(this.renderer.domElement);
-    // document.body.prepend(this.renderer.domElement);
-    // document.body.appendChild(this.renderer.domElement);
 
     // カメラ
     this.camZ = 4000;
@@ -115,28 +113,6 @@ export default class HidariFutatsuDomoe {
     this.scrollY = y;
   }
 
-  // // マウスの位置情報を取得
-  // mouseMoved = (x, y) => {
-  //   this.mouse.x =  x - (this.w / 2);
-  //   this.mouse.y = -y + (this.h / 2);
-  // }
-
-  // マウスボタン長押しを検知
-  // pointerLongPress = () => {
-  //   // var inc = 0;
-  //   // this.accelAngle = - (this.increment ** 2) * Math.PI / 180;
-  //   // this.increment = this.increment - 0.5;
-  //   this.increment ++;
-  //   this.rad = - 0.5 * this.increment ** 2;
-  //   console.log('A', this.increment, this.rad, this.rad * Math.PI / 180);
-  //   // this.rad = -(this.increment ** 2) + this.increment + 1;
-  //   // console.log(this.increment, this.rad, this.rad * Math.PI / 180);
-  //   // console.log(this.increment, this.rad);
-  //   // this.increment = this.increment - 10;
-  //   // this.pressIncrement ++;
-  //   // console.log(this.pressIncrement);
-  // }
-
   // 図形を加速しながら回転
   shapeAccelRotation = (e) => {
     const canvas = document.getElementsByTagName('canvas')[0];
@@ -157,7 +133,6 @@ export default class HidariFutatsuDomoe {
       } else {
         this.shapePosX = this.maxGap;
       }
-      // console.log(this.shapePosX);
     }, 50);
 
     document.addEventListener('pointerup', 
@@ -165,22 +140,8 @@ export default class HidariFutatsuDomoe {
     )
   }
 
-  // shapeAccelRotation = () => {
-  //   return setInterval(() => {
-  //     this.increment ++;
-  //     this.rad = - this.accel * this.increment ** 2;
-  //     if (this.shapePosX < this.maxGap) {
-  //       this.shapePosX = this.accel * this.increment ** 2;
-  //     } else {
-  //       this.shapePosX = this.maxGap;
-  //     }
-  //     console.log(this.shapePosX);
-  //   }, 50);
-  // }
-
   // 図形を減速しながら回転
   shapeGentleRotation = () => {
-    // console.log('change');
     const p = this.increment * 2;
     const q = this.rad * 2;
     clearInterval(this.accelTimer);
@@ -196,106 +157,18 @@ export default class HidariFutatsuDomoe {
         this.shapePosX = this.maxGap;
       }
 
-      // console.log(this.shapePosX);
-
-      // kamon.gentleFlow(p, q);
       if(this.increment >= p){
         clearInterval(this.gentleTimer);
         const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
         const memInc = Math.sqrt(- memRad * 2);
         this.increment = memInc;
-        // console.log('end');
       }
     }, 50);
-
   }
-
-//   gentleFlow = (p, q) => {
-//     // this.rad = -(this.increment ** 2) - this.increment * 2 + 2;
-//     // this.increment = this.increment + 0.5;
-//     this.increment ++;
-//     this.rad = 0.5 * (this.increment - p) ** 2 + q;
-//     console.log('B', this.increment, this.rad, this.rad * Math.PI / 180);
-//     // this.rad = (this.increment ** 2) - this.increment - 1;
-//     // console.log(this.increment, this.rad, this.rad * Math.PI / 180);
-//     // console.log(this.increment, this.rad);
-
-//     // const angle = this.rad;
-//     // console.log(inc, inc / 360);
-//     // console.log(angle);
-//     // console.log(Math.ceil(angle / 360));
-//     // const terminus = Math.floor(angle / 360) * 720;
-//     // console.log(terminus);
-
-// // console.log(ratio , terminus, this.increment);
-//     // while(- (kamon.increment ** 1.5) > terminus) {
-//     //   console.log(- (kamon.increment ** 1.5));
-//     //   setTimeout(() => {
-      
-//     //   // kamon.gentleFlow(kamon.pressIncrement);
-//     //   kamon.increment ++;
-//     //   }, 1);
-//     // }
-//     // kamon.increment = 0;
-
-//     // const sec = performance.now() / 1000;
-
-//     // var timer = setInterval(() => {
-//     //   // console.log(sec);
-//     //   //do something
-//     //   // console.log("do something");
-//     //   if (this.increment <= 0){
-//     //     clearInterval(timer);
-//     //     this.increment = 0;
-//     //   }
-//     //   // const ratio = THREE.MathUtils.smoothstep(sec, sec, sec + 3);
-
-//     //   this.rad = this.rad + ((terminus - angle) * ratio);
-//     //     // kamon.increment = kamon.increment - 10;
-//     // }, 50);
-//   }
-
-
-//   gentleFlow = () => {
-//     const angle = this.rad;
-//     // console.log(inc, inc / 360);
-//     // console.log(angle);
-//     // console.log(Math.ceil(angle / 360));
-//     const terminus = Math.floor(angle / 360) * 720;
-//     // console.log(terminus);
-
-// // console.log(ratio , terminus, this.increment);
-//     // while(- (kamon.increment ** 1.5) > terminus) {
-//     //   console.log(- (kamon.increment ** 1.5));
-//     //   setTimeout(() => {
-      
-//     //   // kamon.gentleFlow(kamon.pressIncrement);
-//     //   kamon.increment ++;
-//     //   }, 1);
-//     // }
-//     // kamon.increment = 0;
-
-//     const sec = performance.now() / 1000;
-
-//     var timer = setInterval(() => {
-//       // console.log(sec);
-//       //do something
-//       // console.log("do something");
-//       if (this.rad <= terminus){
-//         clearInterval(timer);
-//         this.increment = 0;
-//       }
-//       const ratio = THREE.MathUtils.smoothstep(sec, sec, sec + 3);
-
-//       this.rad = this.rad + ((terminus - angle) * ratio);
-//         // kamon.increment = kamon.increment - 10;
-//     }, 50);
-//   }
 
   // 円の方程式
   circle = (a, b, r, s) => {
     return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
-    // return {x: a + r * Math.cos(s), y: b + r * Math.sin(s)};
   }
 
   // ガイドラインを作成
@@ -318,7 +191,6 @@ export default class HidariFutatsuDomoe {
         const s = deg * (Math.PI / 180);
         const mid = this.circle(a, b, r, s);
         points.push(mid);
-        // points.push(new THREE.Vector3(mid.x, mid.y, 0));
       }
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       geometry.setDrawRange(0, 0);
@@ -330,8 +202,6 @@ export default class HidariFutatsuDomoe {
       this.guidelines.push(line);
       this.scene.add(line);
     })
-
-    // this.logRecord('- the guidelines have been generated.');
   }
 
   // アウトラインを作成
@@ -360,7 +230,6 @@ export default class HidariFutatsuDomoe {
           const s = deg * (Math.PI / 180);
           const mid = this.circle(a, b, r, s);
           points.push(mid);
-          // points.push(new THREE.Vector3(mid.x, mid.y, 0));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
         geometry.setDrawRange(0, 0);
@@ -405,7 +274,6 @@ export default class HidariFutatsuDomoe {
           const s = deg * (Math.PI / 180);
           const mid = this.circle(a, b, r, s);
           points.push(mid);
-          // points.push(new THREE.Vector2(mid.x, mid.y));
         }
       })
       const shape = new THREE.Shape(points);
@@ -419,11 +287,9 @@ export default class HidariFutatsuDomoe {
       const geometry = new THREE.ShapeGeometry(shape);
       const mesh = new THREE.Mesh(geometry, material);
       this.shapeGroup.add(mesh);
-      // this.scene.add(mesh);
   
     })
     this.scene.add(this.shapeGroup);
-    // this.logRecord('- the shapes have been generated.');
   }
 
   // ウィンドウサイズ変更
@@ -437,8 +303,6 @@ export default class HidariFutatsuDomoe {
     this.renderer.setSize(this.w, this.h);
 
     this.scrollerH = this.scroller.scrollHeight - this.h;
-
-    // this.logRecord('- window has been resized.');
 
     this.render();
   }
@@ -480,7 +344,6 @@ export default class HidariFutatsuDomoe {
       figure.material.color = new THREE.Color(this.frontColor);
     })
 
-    // this.logRecord('- theme color is set to ' + theme + '.');
   }
 
   // プログレスバーのアニメーション制御
@@ -490,7 +353,6 @@ export default class HidariFutatsuDomoe {
     const ratio = tick * 100;
     rate.textContent = ratio.toFixed(1) + '%';
     bar.style.strokeDashoffset = 283 * (1 - tick);
-    // bar.style = 'transform: translateX(-' + (100 - ratio) + '%);';
   }
 
   // ガイドラインの描画アニメーション制御
@@ -505,23 +367,6 @@ export default class HidariFutatsuDomoe {
       var delay = i * 0.05;
       line.geometry.setDrawRange(0, divCount * (ratio - delay));
     }
-
-    // if (ratio <= 0) {
-    //   this.gdStarted = true;
-    // } else if (ratio >= 1) {
-    //   if (this.gdEnded) {
-    //     this.logRecord('- drawing of the guidelines has ended.');
-    //     this.gdEnded = false;
-    //   }
-    // } else {
-    //   if (this.gdStarted) {
-    //     this.logRecord('- drawing of the guidelines has started.');
-    //     this.gdStarted = false;
-    //   }
-    //   this.gdEnded = true;
-    // }
-    // // console.log(ratio);
-    // this.progressBarControl('guidelines', ratio * 0.75);
   }
 
   // アウトラインの表示アニメーション制御
@@ -534,24 +379,6 @@ export default class HidariFutatsuDomoe {
     this.outlines.forEach((outline) => {
       outline.geometry.setDrawRange(0, divCount * ratio);
     });
-
-    // if (ratio <= 0) {
-    //   this.odStarted = true;
-    //   // this.progressBarControl('outlines', 0);
-    // } else if (ratio >= 1) {
-    //   if (this.odEnded) {
-    //     this.logRecord('- drawing of the outlines has ended.');
-    //     this.odEnded = false;
-    //   }
-    // } else {
-    //   if (this.odStarted) {
-    //     this.logRecord('- drawing of the outlines has started.');
-    //     this.odStarted = false;
-    //   }
-    //   this.odEnded = true;
-    // }
-
-    // this.progressBarControl('outlines', ratio * 0.75);
   }
 
   // 塗りつぶし図形のアニメーション制御
@@ -563,23 +390,6 @@ export default class HidariFutatsuDomoe {
     this.shapeGroup.children.forEach((shape) => {
       shape.material.opacity = ratio;
     });
-
-    // if (ratio <= 0) {
-    //   this.sdStarted = true;
-    // } else if (ratio >= 1) {
-    //   if (this.sdEnded) {
-    //     this.logRecord('- drawing of the shapes has ended.');
-    //     this.sdEnded = false;
-    //   }
-    // } else {
-    //   if (this.sdStarted) {
-    //     this.logRecord('- drawing of the shapes has started.');
-    //     this.sdStarted = false;
-    //   }
-    //   this.sdEnded = true;
-    // }
-
-    // this.progressBarControl('shapes', ratio);
   }
 
   // ガイドラインのフェードアウトアニメーション制御
@@ -593,25 +403,6 @@ export default class HidariFutatsuDomoe {
       if (ratio >= 1) line.visible = false;
       line.material.opacity = 1.0 - ratio;
     });
-
-    // if (ratio <= 0) {
-    //   this.gfStarted = true;
-    // } else if (ratio >= 1) {
-    //   if (this.gfEnded) {
-    //     this.logRecord('- the guidelines have finished fading out.');
-    //     this.gfEnded = false;
-    //   }
-    // } else {
-    //   if (this.gfStarted) {
-    //     this.logRecord('- the guidelines have begun to fade out.');
-    //     this.gfStarted = false;
-    //   }
-    //   this.gfEnded = true;
-    // }
-
-    // if (ratio > 0) {
-    //   this.progressBarControl('guidelines', 0.75 + ratio / 4);
-    // }
   }
 
   // アウトラインのフェードアウトアニメーション制御
@@ -625,25 +416,6 @@ export default class HidariFutatsuDomoe {
       if (ratio >= 1) line.visible = false;
       line.material.opacity = 1.0 - ratio;
     });
-
-    // if (ratio <= 0) {
-    //   this.ofStarted = true;
-    // } else if (ratio >= 1) {
-    //   if (this.ofEnded) {
-    //     this.logRecord('- the outlines have finished fading out.');
-    //     this.ofEnded = false;
-    //   }
-    // } else {
-    //   if (this.ofStarted) {
-    //     this.logRecord('- the outlines have begun to fade out.');
-    //     this.ofStarted = false;
-    //   }
-    //   this.ofEnded = true;
-    // }
-
-    // if (ratio > 0) {
-    //   this.progressBarControl('outlines', 0.75 + ratio / 4);
-    // }
   }
 
   // 図形を回転させるアニメーション制御
@@ -674,8 +446,6 @@ export default class HidariFutatsuDomoe {
     } else {
       for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
         const shape = this.shapeGroup.children[i];
-        // const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-        // const pos = 1500 * posRatio;
         if (i == 0) {
           shape.position.set(- this.shapePosX, 0, 0);
         } else {
@@ -685,53 +455,7 @@ export default class HidariFutatsuDomoe {
       this.shapeGroup.rotation.z = this.rad * Math.PI / 180;
       console.log(this.increment, this.shapeGroup.rotation.z);
     }
-
-
-
-    // if (ratio <= 0) {
-    //   this.rtStarted = true;
-    // } else if (ratio >= 1) {
-    //   if (this.rtEnded) {
-    //     this.logRecord('- the shapes rotation has finished.');
-    //     this.rtEnded = false;
-    //   }
-    // } else {
-    //   if (this.rtStarted) {
-    //     this.logRecord('- the shapes started rotating.');
-    //     this.rtStarted = false;
-    //   }
-    //   this.rtEnded = true;
-    // }
-
-    // this.progressBarControl('rotation', ratio);
   }
-
-  // // マウス長押しで図形を回転
-  // shapeRotateAccelControl = () => {
-  //   // const start = 0.6;
-  //   // const end   = 1.0;
-  //   // const ratio = THREE.MathUtils.smoothstep(tick, start, end);
-
-  //   // for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
-  //     // const shape = this.shapeGroup.children[i];
-  //     // const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-  //     // const pos = 1500 * posRatio;
-  //     // if (i == 0) {
-  //     //   shape.position.set(-pos, 0, 0);
-  //     // } else {
-  //     //   shape.position.set(pos, 0, 0);
-  //     // }
-  //   // }
-
-  //   // this.shapeGroup.rotation.x = -360 * ratio * (Math.PI / 180);
-  //   // console.log(- (num * num) * Math.PI / 180);
-  //   // console.log(this.increment);
-  //   // console.log(this.increment, this.rad, this.rad * Math.PI / 180);
-  //   // this.shapeGroup.rotation.x = this.rad / 2 * Math.PI / 180;
-  //   this.shapeGroup.rotation.z = this.rad * Math.PI / 180;
-
-  // }
-
 
   // descのアニメーション制御
   descAnimeControl = (tick) => {
@@ -744,66 +468,12 @@ export default class HidariFutatsuDomoe {
     this.jpDesc.style = "opacity: " + ratio + ";transform: translateY( " + trRatio +"%);"
     this.enName.style = "opacity: " + ratio + ";transform: translateX( " + trRatio +"%);"
     this.enDesc.style = "opacity: " + ratio + ";transform: translateY( " + trRatio +"%);"
-
-    // if (tick < start) {
-    //   this.daStarted = true;
-    // } else if (tick >= start && tick < end) {
-    //   if (this.daStarted) {
-    //     this.logRecord('- the description display animation has started.');
-    //     this.daStarted = false;
-    //   }
-    //   this.daEnded = true;
-    // } else if (tick >= end) {
-    //   if (this.daEnded) {
-    //     this.logRecord('- the description display animation has ended.');
-    //     this.daEnded = false;
-    //   }
-    // }
-
-    // this.progressBarControl('description', ratio);
   }
-
-  //ログを記録する
-  // logRecord = (text) => {
-  //   const arrText = text.split('');
-  //   const divElm = document.createElement('div');
-  //   this.logger.appendChild(divElm);
-  //   for (var i = 0;i <= arrText.length - 1;i ++) {
-  //     setTimeout((i) => {
-  //       divElm.innerHTML += arrText[i];
-  //       var bottom = this.logger.scrollHeight - this.logger.clientHeight;
-  //       this.logger.scroll(0, bottom);
-  //     }, i * 20, i);
-  //   }
-  // }
-
-  // moveCameraPosition = () => {
-  //   const range = 5;
-  //   const garden = (this.w - 1000) / 2;
-  //   const radX = THREE.MathUtils.mapLinear(this.mouse.x, -500, 500, - range, range);
-  //   const radY = THREE.MathUtils.mapLinear(this.mouse.y, -500, 500, - range, range);
-  //   // const radian = this.rot * Math.PI / 180;
-  //   // const radian = this.rot * Math.PI / 180;
-  //   const x = this.camZ * Math.sin(radX * Math.PI / 180);
-  //   const y = this.camZ * Math.sin(radY * Math.PI / 180);
-  //   const z = this.camZ;
-  //   this.camera.position.set(x, y, 4000);
-  //   this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-  // }
 
   render = () => {
     // const sec = performance.now();
 
     const tick = this.scrollY / this.scrollerH;
-
-    // if (tick >= 1.0) {
-    //   this.moveCameraPosition();
-    // } else {
-    //   this.camera.position.set(0, 0, this.camZ);
-    //   this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-    // }
-
-    // this.shapeRotateAccelControl();
 
     // プログレスバーのアニメーション制御
     this.progressBarControl('progress', tick);

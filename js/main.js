@@ -14,13 +14,6 @@ const init = () => {
   // const kamon = new Kageigeta();
   const kamon = new HidariFutatsuDomoe();
 
-  // 表示言語を適用
-  // const changeLang = (language) => {
-  //   document.body.classList.remove('jp', 'en');
-  //   document.body.classList.add(language);
-  //   localStorage.setItem('theme', language);
-  // }
-
   // テーマカラーを適用
   const changeTheme = (theme) => {
     document.body.classList.remove('light', 'dark');
@@ -76,42 +69,8 @@ const init = () => {
 
   });
 
-  // // マウスを動かした時
-  // window.addEventListener('mousemove', e => {
-  //   kamon.mouseMoved(e.clientX, e.clientY);
-  // });
-
   // マウスボタンをクリックした時
   window.addEventListener('pointerdown', (e) => kamon.shapeAccelRotation(e));
-
-  // window.addEventListener('pointerdown', (e) => {
-  //   const canvas = document.getElementsByTagName('canvas')[0];
-  //   if (e.target != canvas) return;
-  //   // console.log('start');
-  //   const accelTimer = kamon.shapeAccelRotation();
-  //   // const intervalId = setInterval(kamon.pointerLongPress, 50);
-
-  //   document.addEventListener('pointerup', () => {
-  //     kamon.shapeGentleRotation(accelTimer);
-
-  //     // console.log('change');
-  //     // const p = kamon.increment * 2;
-  //     // const q = kamon.rad * 2;
-  //     // clearInterval(intervalId);
-
-  //     // var timer = setInterval(() => {
-  //     //   kamon.gentleFlow(p, q);
-  //     //   if(kamon.increment >= p){
-  //     //     clearInterval(timer);
-  //     //     const memRad = kamon.rad - (Math.trunc(kamon.rad / 360) * 360);
-  //     //     const memInc = Math.sqrt(- memRad * 2);
-  //     //     kamon.increment = memInc;
-  //     //     console.log('end');
-  //     //   }
-  //     // }, 50);
-
-  //   }, { once: true })
-  // });
 
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {
@@ -119,14 +78,6 @@ const init = () => {
     resizeTimeout = setTimeout(kamon.windowResize, 200);
     terminus = scroller.scrollHeight - window.innerHeight;
   });
-
-  // // 表示言語が保存されていたら適用
-  // const myLanguage = localStorage.getItem('language');
-  // if (myLanguage) {
-  //   changeTheme(myLanguage);
-  //   const target = document.getElementById(myLanguage);
-  //   target.checked = true;
-  // }
 
   // テーマ名が保存されていたら適用
   const myTheme = localStorage.getItem('theme');
@@ -136,22 +87,11 @@ const init = () => {
     target.checked = true;
   }
 
-  // // ラジオボタンクリックで表示言語変更
-  // const langChangers = document.getElementsByName('langChanger');
-  // langChangers.forEach((langChanger) => {
-  //   langChanger.addEventListener('change', () => changeLang(langChanger.value));
-  // })
-
   // ラジオボタンクリックでテーマ変更
   const themeChangers = document.getElementsByName('themeChanger');
   themeChangers.forEach((themeChanger) => {
     themeChanger.addEventListener('change', () => changeTheme(themeChanger.value));
   })
-
-  // イージング関数を定義
-  // const easingFunction = (t) => (
-  //   t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
-  // );
 
   // アニメーションスクロール関数の定義
   const autoScroll = (target, duration = 10000) => {
@@ -159,14 +99,12 @@ const init = () => {
     const targetPosition = target;
     const animationStart = performance.now();
     const adjustDur = Math.abs(initialPosition - targetPosition) / terminus * duration;
-    // console.log(initialPosition, targetPosition, terminus, adjustDur);
 
     const performAnimation = (currentTime) => {
       const elapsedTime = currentTime - animationStart;
       const progress = elapsedTime / adjustDur;
 
       if (progress < 1) {
-        // const easedProgress = easingFunction(progress);
         const easedProgress = progress;
         const currentPosition = initialPosition +
           ((targetPosition - initialPosition) * easedProgress);
@@ -191,7 +129,6 @@ const init = () => {
       forward.classList.add('running');
       backward.classList.add('disabled');
       autoScroll(terminus, scrollDur);
-      // kamon.logRecord('- the animation has started playing.');
     }
   });
 
@@ -202,7 +139,6 @@ const init = () => {
       forward.classList.add('disabled');
       backward.classList.add('running');
       autoScroll(0, scrollDur);
-      // kamon.logRecord('- started playing the animation in reverse.');
     }
   });
 
