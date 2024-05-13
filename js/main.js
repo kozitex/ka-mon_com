@@ -81,67 +81,37 @@ const init = () => {
   //   kamon.mouseMoved(e.clientX, e.clientY);
   // });
 
-  // マウスをクリックした時
-  window.addEventListener('pointerdown', (e) => {
-    const canvas = document.getElementsByTagName('canvas')[0];
-    // console.log(e.target);
-    if (e.target != canvas) return;
-    const intervalId = setInterval(kamon.pointerLongPress, 50);
+  // マウスボタンをクリックした時
+  window.addEventListener('pointerdown', (e) => kamon.shapeAccelRotation(e));
 
-    document.addEventListener('pointerup', () => {
-      clearInterval(intervalId);
-      kamon.gentleFlow();
+  // window.addEventListener('pointerdown', (e) => {
+  //   const canvas = document.getElementsByTagName('canvas')[0];
+  //   if (e.target != canvas) return;
+  //   // console.log('start');
+  //   const accelTimer = kamon.shapeAccelRotation();
+  //   // const intervalId = setInterval(kamon.pointerLongPress, 50);
 
-    //   const sec = performance.now() / 1000;
-    //   const angle = kamon.increment;
-    //   // console.log(inc, inc / 360);
-    //   // console.log(angle);
-    //   // console.log(Math.ceil(angle / 360));
-    //   const terminus = Math.floor(angle / 360) * 720;
-    //   // console.log(terminus);
+  //   document.addEventListener('pointerup', () => {
+  //     kamon.shapeGentleRotation(accelTimer);
 
-    //   const ratio = THREE.MathUtils.smoothstep(sec, 0, 3);
+  //     // console.log('change');
+  //     // const p = kamon.increment * 2;
+  //     // const q = kamon.rad * 2;
+  //     // clearInterval(intervalId);
 
-    //   // while(- (kamon.increment ** 1.5) > terminus) {
-    //   //   console.log(- (kamon.increment ** 1.5));
-    //   //   setTimeout(() => {
-        
-    //   //   // kamon.gentleFlow(kamon.pressIncrement);
-    //   //   kamon.increment ++;
-    //   //   }, 1);
-    //   // }
-    //   // kamon.increment = 0;
+  //     // var timer = setInterval(() => {
+  //     //   kamon.gentleFlow(p, q);
+  //     //   if(kamon.increment >= p){
+  //     //     clearInterval(timer);
+  //     //     const memRad = kamon.rad - (Math.trunc(kamon.rad / 360) * 360);
+  //     //     const memInc = Math.sqrt(- memRad * 2);
+  //     //     kamon.increment = memInc;
+  //     //     console.log('end');
+  //     //   }
+  //     // }, 50);
 
-
-    //   var timer = setInterval(function(){
-    //     //do something
-    //     // console.log("do something");
-    //   if(kamon.increment <= terminus){
-    //     console.log(sec);
-    //         clearInterval(timer);
-    //         kamon.increment = -1;
-    //       }
-    //       kamon.increment = kamon.increment - ((terminus - angle) * ratio);
-    //       // kamon.increment = kamon.increment - 10;
-    // },50);
-
-    
-
-      // console.log(kamon.pressIncrement);
-      // while(kamon.pressIncrement > 0) {
-      //   console.log(kamon.pressIncrement);
-      //   setInterval(() => {
-      //     kamon.pressIncrement = kamon.pressIncrement ;
-      //   }, 500);
-      // }
-      // for (var i = 0;i <= 10;i ++) {
-      //   console.log(kamon.pressIncrement);
-      //   setTimeout(() => {
-      //     kamon.pressIncrement --;
-      //   }, 50);
-      // }
-    }, { once: true })
-  });
+  //   }, { once: true })
+  // });
 
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {
