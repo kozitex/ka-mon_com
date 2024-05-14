@@ -25,6 +25,13 @@ canvas {
 
 
 
+#video {
+  display: none;
+}
+
+
+
+
 #scroller {
   position: relative;
   width: 100%;
@@ -79,20 +86,32 @@ canvas {
 }
 
 #info .jp {
+  /* font-family: "Noto Sans JP"; */
+  /* font-size: 52px; */
+  /* font-weight: 500; */
   top: 32px;
   left : 32px;
 }
 
 #info .en {
+  /* font-family: "Zen Kaku Gothic New"; */
+  /* font-family: "Roboto"; */
+  /* font-family: "Noto Sans JP"; */
+  /* font-size: 60px; */
+  /* font-weight: 400; */
   right: 32px;
   bottom : 32px;
 }
 
 #info .name {
-  font-family: "Zen Kaku Gothic New";
-  font-weight: 400;
-  font-style: normal;
+  font-family: "Noto Sans JP";
   font-size: 52px;
+  font-weight: 400;
+  /* font-family: "Zen Kaku Gothic New"; */
+  /* font-family: "Noto Sans JP";
+  font-weight: 400; */
+  font-style: normal;
+  /* font-size: 52px; */
   margin: 0 0 10px;
   animation-duration: 1000ms;
   animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
@@ -121,6 +140,7 @@ body.light #info .name {
 }
 
 #info .desc {
+  font-family: "Noto Serif JP";
   font-weight: 400;
   font-style: normal;
   font-size: 14px;
@@ -141,13 +161,13 @@ body.light #info .desc {
 }
 
 #info .jp .desc {
-  font-family: "Noto Serif JP";
+  /* font-family: "Noto Serif JP"; */
   opacity: 0.0;
   transform: translateY(-100%);
 }
 
 #info .en .desc {
-  font-family: "Noto Serif JP";
+  /* font-family: "Noto Serif JP"; */
   opacity: 0.0;
   transform: translateY(100%);
 }

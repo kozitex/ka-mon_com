@@ -16,13 +16,13 @@ export default class HidariFutatsuDomoe {
     this.h = window.innerHeight
 
     // スクローラーの高さ
-    const scrollerHeight = 3000;
+    const scrollerHeight = 2000;
     this.scroller = document.getElementById('scroller');
     this.scroller.style = 'height: ' + scrollerHeight + 'vh;'
     this.scrollerH = this.scroller.scrollHeight - this.h;
 
     // スクロールの所要時間
-    this.scrollDur = 7000;
+    this.scrollDur = 10000;
 
     // スクロール量
     this.scrollY = 0;
@@ -84,6 +84,37 @@ export default class HidariFutatsuDomoe {
     this.gridGroup = this.grid.draw();
     this.scene.add(this.gridGroup);
 
+    // // 動画の準備
+    // this.currentNum = 0;
+    // this.videoArr = [
+    //   '',
+    //   '/img/water01.mov',
+    //   '/img/water02.mov',
+    //   '/img/water03.mov',
+    //   '/img/water04.mov',
+    //   '/img/water05.mov',
+    //   '/img/water06.mov',
+    //   '/img/water07.mov',
+    //   '/img/water08.mov',
+    //   '/img/water09.mov',
+    //   '/img/water10.mov',
+    //   '/img/water11.mov',
+    //   '/img/water12.mov',
+    //   '/img/water13.mov',
+    // ]
+    // const video = document.getElementById('video');
+    // // video.srcObject = stream;
+    // video.src = "/img/water01.mov";
+    // video.load();
+    // video.loop = true;
+    // video.play();
+    // video.autoplay = true;
+    // this.videoTexture = new THREE.VideoTexture(video);
+    // this.videoTexture.magFilter = THREE.LinearFilter;
+    // this.videoTexture.minFilter = THREE.LinearFilter;
+    // this.videoTexture.format = THREE.RGBFormat;
+    // this.videoTexture.minFilter = THREE.LinearFilter;
+
     // ガイドラインの作成
     this.generateGuideline();
 
@@ -93,6 +124,8 @@ export default class HidariFutatsuDomoe {
     // 塗りつぶし図形の描画
     this.generateShape();
 
+    // this.textureTest();
+
     // infoの準備
     this.jpName = document.getElementById('jpName');
     this.jpDesc = document.getElementById('jpDesc');
@@ -100,9 +133,10 @@ export default class HidariFutatsuDomoe {
     this.enDesc = document.getElementById('enDesc');
 
     this.jpName.textContent = '左二つ巴';
-    this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説や、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様に取り入れられました。家紋だけではなく、神社の神紋などにも多く使用されています。';
+    this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様にも取り入れられました。家紋だけでなく、神社の神紋などにも多く使用されています。';
     this.enName.textContent = 'Hidari-Futatsu-Domoe';
     this.enDesc.textContent = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
+
 
     // 描画ループ開始
     this.render();
@@ -112,6 +146,60 @@ export default class HidariFutatsuDomoe {
   scrolled = (y) => {
     this.scrollY = y;
   }
+
+  // addTexToShape = (e) => {
+  //   const canvas = document.getElementsByTagName('canvas')[0];
+  //   if (e.target != canvas) return;
+
+  //   // this.texTimer = setInterval(() => {
+  //     this.shapeGroup.children.forEach((shape) => {
+  //       shape.material.map = this.videoTexture;
+  //     })
+  //     // this.increment ++;
+  //     // this.rad = - this.accel * this.increment ** 2;
+  //     // if (this.shapePosX < this.maxGap) {
+  //     //   this.shapePosX = 0.1 * this.increment ** 2;
+  //     // } else {
+  //     //   this.shapePosX = this.maxGap;
+  //     // }
+  //   // }, 50);
+
+  //   document.addEventListener('pointerup', () => {
+  //     this.shapeGroup.children.forEach((shape) => {
+  //       shape.material.map = '';
+  //     })
+  //   })
+
+  // }
+
+  // changeShapeTexture = (e) => {
+  //   const canvas = document.getElementsByTagName('canvas')[0];
+  //   if (e.target != canvas) return;
+
+  //   if (this.currentNum == this.videoArr.length - 1) {
+  //     this.currentNum = 0;
+  //   } else {
+  //     this.currentNum ++;
+  //   }
+
+  //   const video = document.getElementById('video');
+
+  //   if (this.videoArr[this.currentNum] == '') {
+  //     this.videoTexture = '';
+  //   } else {
+  //     video.src = this.videoArr[this.currentNum];
+  //     video.load();
+  //     video.loop = true;
+  //     video.play();
+  //     video.autoplay = true;
+  //     this.videoTexture = new THREE.VideoTexture(video);
+  //   }
+
+  //   this.shapeGroup.children.forEach((shape) => {
+  //     shape.material.map = this.videoTexture;
+  //   })
+
+  // }
 
   // // 図形を加速しながら回転
   // shapeAccelRotation = (e) => {
@@ -278,18 +366,56 @@ export default class HidariFutatsuDomoe {
       })
       const shape = new THREE.Shape(points);
 
+      // const loader = new THREE.TextureLoader();
+      // const texture = loader.load('/img/05.jpg');
+      // texture.wrapS = THREE.RepeatWrapping;
+      // texture.wrapT = THREE.RepeatWrapping;
+      // texture.offset.set(1,1000000000000000);
+      // texture.repeat.set( 40, 40 );
+      
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
         side: THREE.DoubleSide,
         opacity: 0.0,
-        transparent: true
+        transparent: true,
+        // map: texture,
+        // map: this.videoTexture,
       });
       const geometry = new THREE.ShapeGeometry(shape);
+      // geometry.scale(1,1,1)
+
+      // function setUV(geometry){
+        // let pos = geometry.attributes.position;
+        // let b3 = new THREE.Box3().setFromBufferAttribute(pos);
+        // let size = new THREE.Vector3();
+        // b3.getSize(size);
+        // let uv = [];
+        // let v3 = new THREE.Vector2();
+        // for(let i = 0; i < pos.count; i++){
+        //   v3.fromBufferAttribute(pos, i);
+        //   v3.sub(b3.min).divide(size);
+        //   uv.push(v3.x, v3.y);
+        // }
+        // geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+      // }
+      
       const mesh = new THREE.Mesh(geometry, material);
       this.shapeGroup.add(mesh);
   
     })
     this.scene.add(this.shapeGroup);
+  }
+
+  textureTest = () => {
+    const side = Math.min(this.w, this.h) / 1;
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('/img/05.jpg');
+    // const geometry = new THREE.BoxBufferGeometry(side, side, side);
+    const geometry = new THREE.BoxGeometry(800, 450, 100);
+    const material = new THREE.MeshBasicMaterial({map: texture});
+    const cube = new THREE.Mesh(geometry, material);
+    this.scene.add(cube);
+
   }
 
   // ウィンドウサイズ変更
