@@ -1,6 +1,6 @@
 'use strict';
-import Kageigeta from './crests/kageigeta.js';
-import HidariFutatsuDomoe from './crests/hidari-futatsu-domoe.js';
+// import Kageigeta from './kamon/kageigeta.js';
+import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
@@ -8,7 +8,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 const init = () => {
   let resizeTimeout = 0;
-  let guideTimeout = 0;
+  let promptTimeout = 0;
   let autoScrolling = false;
 
   // const kamon = new Kageigeta();
@@ -23,10 +23,10 @@ const init = () => {
   }
 
   // 読み込み後に動きがなければガイドを表示
-  const guide = document.getElementById('guide');
-  guideTimeout = setTimeout(() => {
+  const prompt = document.getElementById('prompt');
+  promptTimeout = setTimeout(() => {
     if (window.scrollY <= 0) {
-      guide.classList.remove('hide');
+      prompt.classList.remove('hide');
     }
   }, 10000);
 
@@ -36,10 +36,10 @@ const init = () => {
   // 画面スクロール時の処理
   window.addEventListener('scroll', () => {
     // ガイド表示タイマーをクリア・リセット
-    if (guideTimeout) clearTimeout(guideTimeout);
-    guideTimeout = setTimeout(() => {
+    if (promptTimeout) clearTimeout(promptTimeout);
+    promptTimeout = setTimeout(() => {
       if (window.scrollY <= 0) {
-        guide.classList.remove('hide');
+        prompt.classList.remove('hide');
       }
     }, 10000);
   
@@ -48,7 +48,7 @@ const init = () => {
 
     // ガイドを非表示
     if (window.scrollY > 0) {
-      guide.classList.add('hide');
+      prompt.classList.add('hide');
     }
 
     // 画面の端に着いたらオートプレイボタンを初期化
@@ -69,16 +69,11 @@ const init = () => {
 
   });
 
-  // マウスボタンをクリックした時
-  // window.addEventListener('pointerdown', (e) => kamon.addTexToShape(e));
-
-  // window.addEventListener('click', (e) => kamon.changeShapeTexture(e));
-
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {
     if (resizeTimeout) clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(kamon.windowResize, 200);
-    terminus = scroller.scrollHeight - window.innerHeight;
+    terminus = roll.scrollHeight - window.innerHeight;
   });
 
   // テーマ名が保存されていたら適用
@@ -120,8 +115,8 @@ const init = () => {
   };
 
   // forward、backwardボタンの制御
-  const scroller = document.getElementById('scroller');
-  var terminus = scroller.scrollHeight - window.innerHeight;
+  const roll = document.getElementById('roll');
+  var terminus = roll.scrollHeight - window.innerHeight;
   const scrollDur = kamon.scrollDur;
 
   const forward = document.getElementById('forward');

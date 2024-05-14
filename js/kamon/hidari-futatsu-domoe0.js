@@ -1,7 +1,7 @@
 'use strict';
 
 import * as THREE from 'three';
-import Grid from './grid.js';
+import Grid from '../grid.js';
 
 export default class HidariFutatsuDomoe {
   constructor() {
@@ -27,29 +27,6 @@ export default class HidariFutatsuDomoe {
     // スクロール量
     this.scrollY = 0;
 
-    // マウス座標
-    this.mouse = new THREE.Vector2(0, 0);
-
-    // // マウスボタン長押しの間増加する値
-    // this.increment = 0;
-
-    // // 図形の回転角度
-    // this.rad = 0;
-
-    // // 回転時の図形の位置
-    // this.shapePosX = 0;
-
-    // // 図形の回転加速度
-    // this.accel = 0.2;
-
-    // // 回転時の図形の最大位置
-    // this.maxGap = 1000;
-
-    // // 図形の加減速用のタイマー
-    // this.accelTimer = 0;
-    // this.gentleTImer = 0;
-
-
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -67,9 +44,6 @@ export default class HidariFutatsuDomoe {
     this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 1, 10000);
     this.camera.position.set(0, 0, this.camZ);
 
-    // ロガーのDOMを取得
-    this.logger = document.getElementById('logger');
-
     // シーン
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.backColor);
@@ -84,37 +58,6 @@ export default class HidariFutatsuDomoe {
     this.gridGroup = this.grid.draw();
     this.scene.add(this.gridGroup);
 
-    // // 動画の準備
-    // this.currentNum = 0;
-    // this.videoArr = [
-    //   '',
-    //   '/img/water01.mov',
-    //   '/img/water02.mov',
-    //   '/img/water03.mov',
-    //   '/img/water04.mov',
-    //   '/img/water05.mov',
-    //   '/img/water06.mov',
-    //   '/img/water07.mov',
-    //   '/img/water08.mov',
-    //   '/img/water09.mov',
-    //   '/img/water10.mov',
-    //   '/img/water11.mov',
-    //   '/img/water12.mov',
-    //   '/img/water13.mov',
-    // ]
-    // const video = document.getElementById('video');
-    // // video.srcObject = stream;
-    // video.src = "/img/water01.mov";
-    // video.load();
-    // video.loop = true;
-    // video.play();
-    // video.autoplay = true;
-    // this.videoTexture = new THREE.VideoTexture(video);
-    // this.videoTexture.magFilter = THREE.LinearFilter;
-    // this.videoTexture.minFilter = THREE.LinearFilter;
-    // this.videoTexture.format = THREE.RGBFormat;
-    // this.videoTexture.minFilter = THREE.LinearFilter;
-
     // ガイドラインの作成
     this.generateGuideline();
 
@@ -123,8 +66,6 @@ export default class HidariFutatsuDomoe {
 
     // 塗りつぶし図形の描画
     this.generateShape();
-
-    // this.textureTest();
 
     // infoの準備
     this.jpName = document.getElementById('jpName');
@@ -137,7 +78,6 @@ export default class HidariFutatsuDomoe {
     this.enName.textContent = 'Hidari-Futatsu-Domoe';
     this.enDesc.textContent = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
 
-
     // 描画ループ開始
     this.render();
   }
@@ -146,113 +86,6 @@ export default class HidariFutatsuDomoe {
   scrolled = (y) => {
     this.scrollY = y;
   }
-
-  // addTexToShape = (e) => {
-  //   const canvas = document.getElementsByTagName('canvas')[0];
-  //   if (e.target != canvas) return;
-
-  //   // this.texTimer = setInterval(() => {
-  //     this.shapeGroup.children.forEach((shape) => {
-  //       shape.material.map = this.videoTexture;
-  //     })
-  //     // this.increment ++;
-  //     // this.rad = - this.accel * this.increment ** 2;
-  //     // if (this.shapePosX < this.maxGap) {
-  //     //   this.shapePosX = 0.1 * this.increment ** 2;
-  //     // } else {
-  //     //   this.shapePosX = this.maxGap;
-  //     // }
-  //   // }, 50);
-
-  //   document.addEventListener('pointerup', () => {
-  //     this.shapeGroup.children.forEach((shape) => {
-  //       shape.material.map = '';
-  //     })
-  //   })
-
-  // }
-
-  // changeShapeTexture = (e) => {
-  //   const canvas = document.getElementsByTagName('canvas')[0];
-  //   if (e.target != canvas) return;
-
-  //   if (this.currentNum == this.videoArr.length - 1) {
-  //     this.currentNum = 0;
-  //   } else {
-  //     this.currentNum ++;
-  //   }
-
-  //   const video = document.getElementById('video');
-
-  //   if (this.videoArr[this.currentNum] == '') {
-  //     this.videoTexture = '';
-  //   } else {
-  //     video.src = this.videoArr[this.currentNum];
-  //     video.load();
-  //     video.loop = true;
-  //     video.play();
-  //     video.autoplay = true;
-  //     this.videoTexture = new THREE.VideoTexture(video);
-  //   }
-
-  //   this.shapeGroup.children.forEach((shape) => {
-  //     shape.material.map = this.videoTexture;
-  //   })
-
-  // }
-
-  // // 図形を加速しながら回転
-  // shapeAccelRotation = (e) => {
-  //   const canvas = document.getElementsByTagName('canvas')[0];
-  //   if (e.target != canvas) return;
-  //   const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
-  //   const memInc = Math.sqrt(- memRad * 2);
-  //   this.increment = memInc;
-  //   this.rad = 0;
-  //   this.shapePosX = 0;
-  //   clearInterval(this.accelTimer);
-  //   clearInterval(this.gentleTimer);
-
-  //   this.accelTimer = setInterval(() => {
-  //     this.increment ++;
-  //     this.rad = - this.accel * this.increment ** 2;
-  //     if (this.shapePosX < this.maxGap) {
-  //       this.shapePosX = 0.1 * this.increment ** 2;
-  //     } else {
-  //       this.shapePosX = this.maxGap;
-  //     }
-  //   }, 50);
-
-  //   document.addEventListener('pointerup', 
-  //     () => this.shapeGentleRotation(), { once: true }
-  //   )
-  // }
-
-  // // 図形を減速しながら回転
-  // shapeGentleRotation = () => {
-  //   const p = this.increment * 2;
-  //   const q = this.rad * 2;
-  //   clearInterval(this.accelTimer);
-  //   clearInterval(this.gentleTimer);
-
-  //   this.gentleTimer = setInterval(() => {
-  //     this.increment ++;
-  //     this.rad = this.accel * (this.increment - p) ** 2 + q;
-  //     const tempPosX = this.accel * (this.increment - p) ** 2;
-  //     if (tempPosX <= this.maxGap) {
-  //       this.shapePosX = this.accel * (this.increment - p) ** 2;
-  //     } else {
-  //       this.shapePosX = this.maxGap;
-  //     }
-
-  //     if(this.increment >= p){
-  //       clearInterval(this.gentleTimer);
-  //       const memRad = this.rad - (Math.trunc(this.rad / 360) * 360);
-  //       const memInc = Math.sqrt(- memRad * 2);
-  //       this.increment = memInc;
-  //     }
-  //   }, 50);
-  // }
 
   // 円の方程式
   circle = (a, b, r, s) => {
@@ -365,57 +198,17 @@ export default class HidariFutatsuDomoe {
         }
       })
       const shape = new THREE.Shape(points);
-
-      // const loader = new THREE.TextureLoader();
-      // const texture = loader.load('/img/05.jpg');
-      // texture.wrapS = THREE.RepeatWrapping;
-      // texture.wrapT = THREE.RepeatWrapping;
-      // texture.offset.set(1,1000000000000000);
-      // texture.repeat.set( 40, 40 );
-      
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
         side: THREE.DoubleSide,
         opacity: 0.0,
         transparent: true,
-        // map: texture,
-        // map: this.videoTexture,
       });
       const geometry = new THREE.ShapeGeometry(shape);
-      // geometry.scale(1,1,1)
-
-      // function setUV(geometry){
-        // let pos = geometry.attributes.position;
-        // let b3 = new THREE.Box3().setFromBufferAttribute(pos);
-        // let size = new THREE.Vector3();
-        // b3.getSize(size);
-        // let uv = [];
-        // let v3 = new THREE.Vector2();
-        // for(let i = 0; i < pos.count; i++){
-        //   v3.fromBufferAttribute(pos, i);
-        //   v3.sub(b3.min).divide(size);
-        //   uv.push(v3.x, v3.y);
-        // }
-        // geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
-      // }
-      
       const mesh = new THREE.Mesh(geometry, material);
       this.shapeGroup.add(mesh);
-  
     })
     this.scene.add(this.shapeGroup);
-  }
-
-  textureTest = () => {
-    const side = Math.min(this.w, this.h) / 1;
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('/img/05.jpg');
-    // const geometry = new THREE.BoxBufferGeometry(side, side, side);
-    const geometry = new THREE.BoxGeometry(800, 450, 100);
-    const material = new THREE.MeshBasicMaterial({map: texture});
-    const cube = new THREE.Mesh(geometry, material);
-    this.scene.add(cube);
-
   }
 
   // ウィンドウサイズ変更
@@ -469,7 +262,6 @@ export default class HidariFutatsuDomoe {
     this.shapeGroup.children.forEach((figure) => {
       figure.material.color = new THREE.Color(this.frontColor);
     })
-
   }
 
   // プログレスバーのアニメーション制御
@@ -550,37 +342,18 @@ export default class HidariFutatsuDomoe {
     const end   = 1.0;
     const ratio = THREE.MathUtils.smoothstep(tick, start, end);
 
-    // if (tick < end) {
-      // this.increment = 0;
-      // this.rad = 0;
-      // this.shapePosX = 0;
-      // clearInterval(this.accelTimer);
-      // clearInterval(this.gentleTimer);
-
-      for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
-        const shape = this.shapeGroup.children[i];
-        const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-        const pos = 1500 * posRatio;
-        if (i == 0) {
-          shape.position.set(-pos, 0, 0);
-        } else {
-          shape.position.set(pos, 0, 0);
-        }
+    for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
+      const shape = this.shapeGroup.children[i];
+      const posRatio = - 4 * ratio ** 2 + 4 * ratio;
+      const pos = 1500 * posRatio;
+      if (i == 0) {
+        shape.position.set(-pos, 0, 0);
+      } else {
+        shape.position.set(pos, 0, 0);
       }
-      this.shapeGroup.rotation.x = -360 * ratio * (Math.PI / 180);
-      this.shapeGroup.rotation.z = -360 * ratio * (Math.PI / 180);
-    // } else {
-    //   for (var i = 0;i <= this.shapeGroup.children.length - 1;i ++) {
-    //     const shape = this.shapeGroup.children[i];
-    //     if (i == 0) {
-    //       shape.position.set(- this.shapePosX, 0, 0);
-    //     } else {
-    //       shape.position.set(  this.shapePosX, 0, 0);
-    //     }
-    //   }
-    //   this.shapeGroup.rotation.z = this.rad * Math.PI / 180;
-    //   console.log(this.increment, this.shapeGroup.rotation.z);
-    // }
+    }
+    this.shapeGroup.rotation.x = -360 * ratio * (Math.PI / 180);
+    this.shapeGroup.rotation.z = -360 * ratio * (Math.PI / 180);
   }
 
   // descのアニメーション制御

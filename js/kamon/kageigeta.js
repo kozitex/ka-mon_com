@@ -1,7 +1,7 @@
 'use strict';
 
 import * as THREE from 'three';
-import Grid from './grid.js';
+import Grid from '../grid.js';
 
 export default class Kageigeta {
   constructor() {
@@ -15,23 +15,17 @@ export default class Kageigeta {
     this.w = window.innerWidth;
     this.h = window.innerHeight
 
-    // カメラのZ位置
-    this.camZ = 3000;
-
     // スクローラーの高さ
-    const scrollerHeight = 3000;
+    const scrollerHeight = 2000;
     this.scroller = document.getElementById('scroller');
     this.scroller.style = 'height: ' + scrollerHeight + 'vh;'
     this.scrollerH = this.scroller.scrollHeight - this.h;
 
+    // スクロールの所要時間
+    this.scrollDur = 10000;
+
     // スクロール量
     this.scrollY = 0;
-
-    // フレームのサイズ
-    this.size = 3200;
-
-    // カメラの回転量
-    this.rot = 0;
 
     // レンダラー
     this.renderer = new THREE.WebGLRenderer({
@@ -42,47 +36,17 @@ export default class Kageigeta {
     this.renderer.setPixelRatio(window.devicePixelRatio);
   
     // DOMにレンダラーのcanvasを追加
-    document.body.appendChild(this.renderer.domElement);
+    this.crest = document.getElementById('crest');
+    this.crest.appendChild(this.renderer.domElement);
 
     // カメラ
+    this.camZ = 4000;
     this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 1, 10000);
     this.camera.position.set(0, 0, this.camZ);
-
-    // ロガーのDOMを取得
-    this.logger = document.getElementById('logger');
 
     // シーン
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.backColor);
-
-    this.progressArr = [
-      'overall', 'guidelines', 'mainlines', 'shapes', 'rotation', 'description'
-    ];
-
-    this.progressArr.forEach((id) => {
-      const progressDiv = document.createElement('div');
-      const labelDiv = document.createElement('div');
-      const barWrapDiv = document.createElement('div');
-      const barDiv = document.createElement('div');
-      const rateDiv = document.createElement('div');
-
-      progressDiv.id = id;
-      progressDiv.classList.add('progress');
-      labelDiv.classList.add('label');
-      labelDiv.textContent = id;
-      barWrapDiv.classList.add('barWrap');
-      barDiv.classList.add('bar');
-      rateDiv.classList.add('rate');
-      rateDiv.textContent = '0.0%';
-
-      progressDiv.appendChild(labelDiv);
-      barWrapDiv.appendChild(barDiv);
-      progressDiv.appendChild(barWrapDiv);
-      progressDiv.appendChild(rateDiv);
-
-      const progress = document.querySelector('#progress .content');
-      progress.appendChild(progressDiv);
-    })
 
     this.guidelines = [];
     this.mainVers = [];
@@ -90,23 +54,9 @@ export default class Kageigeta {
     this.mainfills = [];
     this.count = 0;
 
-    // ログ記述用のフラグ
-    this.gdStarted = true;
-    this.gdEnded = true;
-    this.mdStarted = true;
-    this.mdEnded = true;
-    this.sdStarted = true;
-    this.sdEnded = true;
-    this.gfStarted = true;
-    this.gfEnded = true;
-    this.crStarted = true;
-    this.crEnded = true;
-    this.daStarted = true;
-    this.daEnded = true;
-
     // フレーム・グリッドの描画
     this.grid = new Grid();
-    this.gridGroup = this.grid.generate();
+    this.gridGroup = this.grid.draw();
     this.scene.add(this.gridGroup);
 
     // ガイドラインの作成
@@ -188,8 +138,6 @@ export default class Kageigeta {
       }
       this.guidelines.push(group);
     })
-
-    this.logRecord('- the guidelines have been generated.');
   }
 
   // 本線を作成
@@ -229,7 +177,6 @@ export default class Kageigeta {
         }
       })
     })
-    this.logRecord('- the mainlines have been generated.');
   }
 
   // 塗りつぶし図形を生成
@@ -272,7 +219,6 @@ export default class Kageigeta {
       this.mainfills.push(mesh);
       this.scene.add(mesh);
     });
-    this.logRecord('- the shapes have been generated.');
   }
 
   // ２直線の交点を求める式
@@ -381,8 +327,6 @@ export default class Kageigeta {
 
     vs.push(arr2);
     this.mainVers.push(vs);
-
-    this.logRecord('- the vertices have been calculated.');
   }
 
   // ウィンドウサイズ変更
@@ -396,8 +340,6 @@ export default class Kageigeta {
     this.renderer.setSize(this.w, this.h);
 
     this.scrollerH = this.scroller.scrollHeight - this.h;
-
-    this.logRecord('- window has been resized.');
 
     this.render();
   }
