@@ -16,6 +16,9 @@ export default class Kamon {
     this.w = window.innerWidth;
     this.h = window.innerHeight
 
+    // フレームのサイズ
+    this.edge = 3200;
+
     // スクローラーの高さ
     this.rollHeight = 2000;
     this.roll = document.getElementById('roll');
@@ -35,7 +38,7 @@ export default class Kamon {
     });
     this.renderer.setSize(this.w, this.h);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-  
+
     // DOMにレンダラーのcanvasを追加
     this.kamon = document.getElementById('kamon');
     this.kamon.appendChild(this.renderer.domElement);
@@ -47,8 +50,8 @@ export default class Kamon {
 
     // シーン
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(this.backColor);
 
+    // オブジェクト格納用のグループ
     this.guidelines = new THREE.Group();
     this.outlines = new THREE.Group();
     this.shapes = new THREE.Group();
@@ -58,25 +61,11 @@ export default class Kamon {
     this.grids = this.grid.draw();
     this.scene.add(this.grids);
 
-    // ガイドラインの作成
-    // this.generateGuidelines();
-
-    // アウトラインの作成
-    // this.generateOutLines();
-
-    // 塗りつぶし図形の描画
-    // this.generateShapes();
-
     // infoの準備
     this.jpName = document.getElementById('jpName');
     this.jpDesc = document.getElementById('jpDesc');
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
-
-    // this.jpName.textContent = '左二つ巴';
-    // this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様にも取り入れられました。家紋だけでなく、神社の神紋などにも多く使用されています。';
-    // this.enName.textContent = 'Hidari-Futatsu-Domoe';
-    // this.enDesc.textContent = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
 
     // 描画ループ開始
     this.render();
@@ -84,8 +73,6 @@ export default class Kamon {
 
   // 画面のスクロール量を取得
   scrolled = (y) => {
-    // this.scrollY = y;
-    // console.log(y);
     this.progRatio = y / this.rollLength;
   }
 
@@ -95,6 +82,7 @@ export default class Kamon {
     this.h = window.innerHeight
     this.camera.aspect = this.w / this.h;
     this.camera.updateProjectionMatrix();
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.w, this.h);
     this.rollLength = this.roll.scrollHeight - this.h;
     this.render();
@@ -138,134 +126,20 @@ export default class Kamon {
     })
   }
 
-  // 円の方程式
+  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, 半径, 角度）
   circle(a, b, r, s) {
     return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
   }
 
-  // ガイドラインを作成
-  // generateGuidelines() {
-    // const circles = [
-    //   {a:    0, b:    0, r: 1600},
-    //   {a:    0, b:  825, r:  750},
-    //   {a:    0, b: -825, r:  750},
-    //   {a: -110, b:  490, r: 1100},
-    //   {a:  110, b: -490, r: 1100},
-    // ];
-    // const divCount = 1000;
-    // circles.forEach((circle) => {
-    //   const points = [];
-    //   const a = circle.a;
-    //   const b = circle.b;
-    //   const r = circle.r;
-    //   for (var i = 0;i <= divCount - 1;i ++) {
-    //     const deg = THREE.MathUtils.damp(90, 450, 10, i / (divCount - 1));
-    //     const s = deg * (Math.PI / 180);
-    //     const mid = this.circle(a, b, r, s);
-    //     points.push(mid);
-    //   }
-    //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    //   geometry.setDrawRange(0, 0);
-    //   const material = new THREE.LineBasicMaterial({
-    //     color: this.guideColor,
-    //     transparent: true
-    //   });
-    //   const line = new THREE.Line(geometry, material);
-    //   this.guidelines.push(line);
-    //   this.scene.add(line);
-    // })
-  // }
-
-  // アウトラインを作成
-  // generateOutLines() {
-    // const circles = [
-    //   {a:    0, b:    0, r: 1600, f: -73, t: 110},
-    //   {a:    0, b:    0, r: 1600, f: 107, t: 290},
-    //   {a:    0, b:  825, r:  750, f: 421, t: 218},
-    //   {a:    0, b: -825, r:  750, f: 240, t:  38},
-    //   {a: -110, b:  490, r: 1100, f: 470, t: 309.5},
-    //   {a:  110, b: -490, r: 1100, f: 290, t: 129.5},
-    // ];
-    // const divCount = 1000;
-    // circles.forEach((circle) => {
-
-    //   const gs = [0, 1, -1, 2, -2, 3, -3];
-    //   gs.forEach((g) => {
-    //     const points = [];
-    //     const a = circle.a;
-    //     const b = circle.b;
-    //     const r = circle.r + g;
-    //     const f = circle.f;
-    //     const t = circle.t;
-    //     for (var i = 0;i <= divCount - 1;i ++) {
-    //       const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-    //       const s = deg * (Math.PI / 180);
-    //       const mid = this.circle(a, b, r, s);
-    //       points.push(mid);
-    //     }
-    //     const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    //     geometry.setDrawRange(0, 0);
-    //     const material = new THREE.LineBasicMaterial({
-    //       color: this.frontColor,
-    //       transparent: true
-    //     });
-    //     const line = new THREE.Line(geometry, material);
-    //     this.outlines.push(line);
-    //     this.scene.add(line);
-    //   })
-    // })
-  // }
-
-  // 塗りつぶし図形を生成
-  // generateShapes = () => {
-    // const figures = [
-    //   [
-    //     {a:    0, b:  825, r:  750, f:  217, t:  420, g: -6},
-    //     {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
-    //     {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
-    //     {a:  110, b: -490, r: 1100, f:  -95, t: -231, g:  6},
-    //   ],
-    //   [
-    //     {a:    0, b: -825, r:  750, f:   37, t:  240, g: -6},
-    //     {a:  110, b: -490, r: 1100, f:  250, t:  290, g: -6},
-    //     {a:    0, b:    0, r: 1600, f:  280, t:  450, g: -6},
-    //     {a: -110, b:  490, r: 1100, f:   85, t:  -51, g:  6},
-    //   ]
-    // ];
-    // const divCount = 2000;
-    // figures.forEach((figure) => {
-    //   const points = [];
-    //   figure.forEach((arc) => {
-    //     const a  = arc.a;
-    //     const b  = arc.b;
-    //     const r  = arc.r + arc.g;
-    //     const f  = arc.f;
-    //     const t  = arc.t;
-    //     for (var i = 0;i <= divCount - 1;i ++) {
-    //       const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-    //       const s = deg * (Math.PI / 180);
-    //       const mid = this.circle(a, b, r, s);
-    //       points.push(mid);
-    //     }
-    //   })
-    //   const shape = new THREE.Shape(points);
-    //   const material = new THREE.MeshBasicMaterial({
-    //     color: this.frontColor,
-    //     side: THREE.DoubleSide,
-    //     opacity: 0.0,
-    //     transparent: true,
-    //   });
-    //   const geometry = new THREE.ShapeGeometry(shape);
-    //   const mesh = new THREE.Mesh(geometry, material);
-    //   this.shapeGroup.add(mesh);
-    // })
-    // this.scene.add(this.shapeGroup);
-  // }
-
+  // ２直線の交点を求める式
+  getIntersect(a1, b1, a2, b2) {
+    const interX = (b2 - b1) / (a1 - a2);
+    const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
+    return {x: interX, y: interY};
+  }
 
   // プログレスバーのアニメーション制御
   progressBarControl() {
-    // console.log(this.progRatio);
     const bar = document.querySelector('#progress .bar');
     const rate = document.querySelector('#progress .rate');
     const ratio = this.progRatio * 100;
@@ -274,25 +148,17 @@ export default class Kamon {
   }
 
   // ガイドラインの描画アニメーション制御
-  guidelinesDrawControl = (start, end, divCount) => {
-    // console.log(this.guidelines.children);
-    // const divCount = 1333;
-    // const start = 0.05;
-    // const end   = 0.35;
+  guidelinesDrawControl = (start, end, divCount, delayFactor) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     for (var i = 0;i <= this.guidelines.children.length - 1;i ++) {
       const line = this.guidelines.children[i];
-      // console.log(line)
-      var delay = i * 0.05;
+      var delay = i * delayFactor;
       line.geometry.setDrawRange(0, divCount * (ratio - delay));
     }
   }
 
   // アウトラインの表示アニメーション制御
   outlinesDrawControl = (start, end, divCount) => {
-    // const divCount = 1000;
-    // const start = 0.35;
-    // const end   = 0.5;
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.outlines.children.forEach((outline) => {
       outline.geometry.setDrawRange(0, divCount * ratio);
@@ -301,8 +167,6 @@ export default class Kamon {
 
   // 塗りつぶし図形のアニメーション制御
   shapesDrawControl = (start, end) => {
-    // const start = 0.5;
-    // const end   = 0.6;
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.shapes.children.forEach((shape) => {
       shape.material.opacity = ratio;
@@ -311,8 +175,6 @@ export default class Kamon {
 
   // ガイドラインのフェードアウトアニメーション制御
   guidelinesFadeoutControl = (start, end) => {
-    // const start = 0.45;
-    // const end   = 0.55;
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.guidelines.children.forEach((line) => {
       line.visible = true;
@@ -323,39 +185,17 @@ export default class Kamon {
 
   // アウトラインのフェードアウトアニメーション制御
   outlinesFadeoutControl = (start, end) => {
-    // const start = 0.5;
-    // const end   = 0.6;
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.outlines.children.forEach((line) => {
+      // console.log(line)
       line.visible = true;
       if (ratio >= 1) line.visible = false;
       line.material.opacity = 1.0 - ratio;
     });
   }
 
-  // 図形を回転させるアニメーション制御
-  shapesRotationControl = (start, end) => {
-    // const start = 0.6;
-    // const end   = 1.0;
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-      const shape = this.shapes.children[i];
-      const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-      const pos = 1500 * posRatio;
-      if (i == 0) {
-        shape.position.set(-pos, 0, 0);
-      } else {
-        shape.position.set(pos, 0, 0);
-      }
-    }
-    this.shapes.rotation.x = -360 * ratio * (Math.PI / 180);
-    this.shapes.rotation.z = -360 * ratio * (Math.PI / 180);
-  }
-
   // descのアニメーション制御
   descSlideinControl = (start, end) => {
-    // const start = 0.8;
-    // const end   = 0.9;
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     const trRatio = (1 - ratio) * 100;
     this.jpName.style = "opacity: " + ratio + ";transform: translateX(-" + trRatio +"%);"
@@ -364,45 +204,15 @@ export default class Kamon {
     this.enDesc.style = "opacity: " + ratio + ";transform: translateY( " + trRatio +"%);"
   }
 
-  render () {
-    // const sec = performance.now();
-
-    // const progRatio = this.scrollY / this.rollLength;
-    // console.log(this.progRatio);
+  render() {
 
     // プログレスバーのアニメーション制御
     this.progressBarControl();
-    // this.progressBarControl;
-
-    // // ガイドラインの表示アニメーション制御
-    // this.guidelineDrawAnimeControl(progRatio);
-
-    // // アウトラインの表示アニメーション制御
-    // this.outlineDrawAnimeControl(progRatio);
-
-    // // 塗りつぶし図形をフェードイン
-    // this.shapeAnimeControl(progRatio);
-
-    // // ガイドラインをフェードアウト
-    // this.guidelineFadeOutAnimeControl(progRatio);
-
-    // // アウトラインをフェードアウト
-    // this.outlineFadeOutAnimeControl(progRatio);
-
-    // // グリッドをフェードアウト
-    // this.grid.fadeOut(progRatio, 0.35, 0.5);
-
-    // // 図形を回転
-    // this.shapeRotateAnimeControl(progRatio);
-
-    // // descのアニメーションを制御
-    // this.descAnimeControl(progRatio);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
 
     // 次のフレームを要求
     requestAnimationFrame(() => this.render());
-    // requestAnimationFrame(this.render);
   }
 }

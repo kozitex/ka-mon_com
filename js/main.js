@@ -1,5 +1,5 @@
 'use strict';
-// import Kageigeta from './kamon/kageigeta.js';
+import Kageigeta from './kamon/kageigeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -11,8 +11,8 @@ const init = () => {
   let promptTimeout = 0;
   let autoScrolling = false;
 
-  // const kamon = new Kageigeta();
-  const kamon = new HidariFutatsuDomoe();
+  const kamon = new Kageigeta();
+  // const kamon = new HidariFutatsuDomoe();
 
   // テーマカラーを適用
   const changeTheme = (theme) => {
