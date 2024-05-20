@@ -143,6 +143,31 @@ export default class Kamon {
     }
   }
 
+  // 直線と円の交点を求める
+  interLineCircle = (r, h, k, m, n) => {
+    var a = 1 + Math.pow(m, 2);
+    var b = -2 * h + 2 * m * (n - k);
+    var c = Math.pow(h, 2) + Math.pow((n - k), 2) - Math.pow(r, 2);
+    var D = Math.pow(b, 2) - 4 * a * c;
+  
+    var kouten = [];
+    if (D >= 0) {
+      var x1 = (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+      var x2 = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+      if (D == 0) {
+        //Dがゼロなら、1点だけが答え
+        kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
+        // kouten.push({ x: x1, y: m * x1 + n});
+      } else {
+        //Dがゼロより上なら、2点が答え
+        kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
+        kouten.push(new THREE.Vector3(x2, m * x2 + n, 0));
+        // kouten.push({ x: x1, y: m * x1 + n});
+        // kouten.push({ x: x2, y: m * x2 + n});
+      }
+    }
+    return kouten;
+  }
 
   // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, 半径, 角度）
   circle(a, b, r, s) {
