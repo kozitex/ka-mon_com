@@ -126,16 +126,42 @@ export default class Kamon {
     })
   }
 
+  // 直線の方程式
+  straight = (a, b, x, y) => {
+    if (x == undefined) {
+      return new THREE.Vector3((y - b) / a, y, 0);
+    } else if (y == undefined) {
+      return new THREE.Vector3(x, a * x + b, 0);
+    }
+  }
+
+  straight2 = (a, b, c, x, y) => {
+    if (x == undefined) {
+      return new THREE.Vector3((b * y - c) / a, y, 0);
+    } else if (y == undefined) {
+      return new THREE.Vector3(x, (a * x + c) / b, 0);
+    }
+  }
+
+
   // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, 半径, 角度）
   circle(a, b, r, s) {
     return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
+  }
+
+  // ２点の座標から方程式のa,bを取得
+  from2Points = (x1, y1, x2, y2) => {
+    const a = (y2 - y1) / (x2 - x1);
+    const b = (x2 * y1 - x1 * y2) / (x2 - x1);
+    return {a: a, b: b};
   }
 
   // ２直線の交点を求める式
   getIntersect(a1, b1, a2, b2) {
     const interX = (b2 - b1) / (a1 - a2);
     const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
-    return {x: interX, y: interY};
+    // return {x: interX, y: interY};
+    return new THREE.Vector3(interX, interY, 0);
   }
 
   // プログレスバーのアニメーション制御

@@ -279,19 +279,19 @@ export default class Kageigeta extends Kamon {
     this.outlinesDrawControl(0.35, 0.5, 1000);
 
     // ガイドラインをフェードアウト
-    this.guidelinesFadeoutControl(0.4, 0.5);
+    this.guidelinesFadeoutControl(0.5, 0.6);
 
     // 塗りつぶし図形をフェードイン
-    this.shapesDrawControl(0.55, 0.65);
+    this.shapesDrawControl(0.65, 0.75);
 
     // アウトラインをフェードアウト
-    this.outlinesFadeoutControl(0.55, 0.6);
+    this.outlinesFadeoutControl(0.65, 0.7);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 1.0);
+    this.shapesRotationControl(0.8, 1.0);
 
     // descのアニメーションを制御
-    this.descSlideinControl(0.8, 0.95);
+    this.descSlideinControl(0.85, 0.95);
 
     super.render();
   }
