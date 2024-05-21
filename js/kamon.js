@@ -149,7 +149,8 @@ export default class Kamon {
     var b = -2 * h + 2 * m * (n - k);
     var c = Math.pow(h, 2) + Math.pow((n - k), 2) - Math.pow(r, 2);
     var D = Math.pow(b, 2) - 4 * a * c;
-  
+    // console.log('D: ' + D)
+
     var kouten = [];
     if (D >= 0) {
       var x1 = (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
@@ -205,6 +206,7 @@ export default class Kamon {
       const line = this.guidelines.children[i];
       var delay = i * delayFactor;
       line.geometry.setDrawRange(0, divCount * (ratio - delay));
+      // console.log(divCount * (ratio - delay))
     }
   }
 
