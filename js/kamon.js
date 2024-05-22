@@ -137,7 +137,7 @@ export default class Kamon {
 
   straight2 = (a, b, c, x, y) => {
     if (x == undefined) {
-      return new THREE.Vector3((b * y - c) / a, y, 0);
+      return new THREE.Vector3((b * y + c) / a, y, 0);
     } else if (y == undefined) {
       return new THREE.Vector3(x, (a * x + c) / b, 0);
     }
