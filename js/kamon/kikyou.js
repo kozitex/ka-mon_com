@@ -292,16 +292,34 @@ export default class Kikyou extends Kamon {
         transparent: true,
       });
       const geometry = new THREE.ShapeGeometry(shape);
-      const mesh = new THREE.Mesh(geometry, material);
-      if (index == 1) {
+      // const mesh = new THREE.Mesh(geometry, material);
+      if (index == 0) {
+        const mesh = new THREE.Mesh(geometry, material);
+        this.shapes.add(mesh);
+      } else {
         for (var v = 0;v <= 9;v ++) {
-          const mesh = new THREE.Mesh(geometry, material);
-          mesh.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
-          if (v % 2 == 0) mesh.rotation.y = 180 * Math.PI / 180;
+          const materialC = material.clone();
+          const mesh = new THREE.Mesh(geometry, materialC);
+          mesh.material.color = new THREE.Color(0xffffff);
+
+          const num = Math.trunc(v / 2);
+          // mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
+
+          if (v % 2 != 0) {
+            // console.log(v);
+            mesh.rotation.y = 180 * Math.PI / 180;
+            mesh.rotation.z = ( (360 / this.verNum) * num) * Math.PI / 180;
+            // mesh.material.color = new THREE.Color(0xffcccc);
+          } else {
+            // mesh.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 245, 0));
+            mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
+          }
+
+          // mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
+
+          // if (v % 2 == 0) mesh.rotation.y = 180 * Math.PI / 180;
           this.shapes.add(mesh);
         }
-      } else {
-        this.shapes.add(mesh);
       }
       // })
       this.scene.add(this.shapes);
@@ -353,21 +371,116 @@ export default class Kikyou extends Kamon {
     // this.scene.add(this.shapes);
   }
 
-  // 図形を回転させるアニメーション制御
+  // 図形のアニメーション制御
   shapesRotationControl(start, end) {
-    // const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    // for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-    //   const shape = this.shapes.children[i];
-    //   const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-    //   const pos = 1500 * posRatio;
-    //   if (i == 0) {
-    //     shape.position.set(-pos, 0, 0);
-    //   } else {
-    //     shape.position.set(pos, 0, 0);
-    //   }
-    // }
+    const ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
+    // console.log(this.shapes.children.length)
+    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
+      const shape = this.shapes.children[i];
+      if (i > 0) {
+        const j = i - 1;
+        const num = Math.trunc(j / 2);
+        var ratioD;
+        if (ratio < 0.1) {
+          ratioD = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1, 1.0, 0.0);
+          // if (num == 0) {
+            // shape.position.set(0, - 500 * ratio, 0);
+          // }
+  
+        } else {
+          ratioD = THREE.MathUtils.mapLinear(ratio, 0.1, 1.0, 0.0, 1.0);
+
+        }
+        shape.scale.set(ratioD, ratioD)
+        this.shapes.rotation.z = - 360 * ratioD * (Math.PI / 180);
+
+
+        // const j = i - 1;
+        // var ratioD;
+        // if (ratio < 0.5) {
+        //   ratioD = ratio * 2;
+        // } else {
+        //   ratioD = (1.0 - ratio) * 2;
+        //   // shape.rotation.x = 90 * ratioD * (Math.PI / 180);
+        //   // shape.rotation.y = 36 * i * ratioD * (Math.PI / 180);
+        //   // console.log(ratio, ratioD, 90 * ratioD * (Math.PI / 180))
+        // }
+
+        //   const num = Math.trunc(j / 2);
+
+        //   var c;
+        //   switch(num) {
+        //     case 0:
+        //       shape.rotation.x = 72 * ratioD * Math.PI / 180;
+        //       break;
+        //     case 1:
+        //       c = j == 2 ? 0 : 180;
+        //       shape.rotation.x = 18 * ratioD * Math.PI / 180;
+        //       shape.rotation.y = (c - 72 * ratioD) * Math.PI / 180;
+        //       break;
+        //     case 2:
+        //       c = j == 4 ? 0 : 180;
+        //       shape.rotation.x = - 45 * ratioD * Math.PI / 180;
+        //       shape.rotation.y = (c - 63 * ratioD) * Math.PI / 180;
+        //       break;
+        //     case 3:
+        //       c = j == 6 ? 0 : 180;
+        //       shape.rotation.x = - 45 * ratioD * Math.PI / 180;
+        //       shape.rotation.y = (c + 63 * ratioD) * Math.PI / 180;
+        //       break;
+        //     case 4:
+        //       c = j == 8 ? 0 : 180;
+        //       shape.rotation.x = 18 * ratioD * Math.PI / 180;
+        //       shape.rotation.y = (c + 72 * ratioD) * Math.PI / 180;
+        //       break;
+        //   }
+
+        //   const num = Math.trunc(j / 2);
+        //   // shape.rotation.y = 30 * num * ratioD * Math.PI / 180;
+        //   // console.log(i, num)
+        //   if (j % 2 == 0) {
+        //     shape.rotation.y = 90 * num * ratioD * Math.PI / 180;
+        //     // console.log('1', i, num, 30 * num * ratioD * Math.PI / 180)
+        //   } else {
+        //     shape.rotation.y = (180 - 90 * num * ratioD) * Math.PI / 180;
+        //     // shape.rotation.y = (180 - 30 * num * ratioD) * Math.PI / 180;
+        //     // console.log('2', i, num, (180 - 30 * num * ratioD) * Math.PI / 180, shape.rotation.y)
+        //   // console.log(shape.rotation.y)
+        // }
+          // console.log(i, shape.rotation.y)
+          // shape.rotateY(i * 36 * ratioD * (Math.PI / 180))
+          // console.log(ratio, ratioD, 90 * ratioD * (Math.PI / 180))
+        // } else {
+        //   const ratioD = (1.0 - ratio) * 2;
+        //   // shape.rotation.x = 90 * ratioD * (Math.PI / 180);
+        //   // shape.rotation.y = 36 * i * ratioD * (Math.PI / 180);
+        //   // console.log(ratio, ratioD, 90 * ratioD * (Math.PI / 180))
+        // }
+
+      }
+      // const shape = this.shapes.children[i];
+      // const posRatio = - 4 * ratio ** 2 + 4 * ratio;
+      // const pos = 1500 * posRatio;
+      // if (i == 0) {
+      //   shape.position.set(-pos, 0, 0);
+      // } else {
+      //   shape.position.set(pos, 0, 0);
+      // }
+    }
     // this.shapes.rotation.x = -360 * ratio * (Math.PI / 180);
-    // this.shapes.rotation.z = -360 * ratio * (Math.PI / 180);
+    // var ratioD; 
+    // if (ratio < 0.3) {
+    //   ratioD = THREE.MathUtils.mapLinear(ratio, 0.0, 0.3, 1.0, 0.5);
+    //   // console.log(ratio, ratioD)
+    //   // ratioD = 1 - THREE.MathUtils.smoothstep(ratio, 0.1, 0.5);
+    // } else if (ratio < 0.6) {
+    //   ratioD = THREE.MathUtils.mapLinear(ratio, 0.3, 0.6, 0.5, 2.0);
+    // } else {
+    //   ratioD = THREE.MathUtils.mapLinear(ratio, 0.6, 1.0, 2.0, 1.0);
+    //   // ratioD = THREE.MathUtils.smoothstep(ratio, 0.5, 1.0);
+    // }
+    // this.shapes.scale.set(ratioD, ratioD);
+    // this.shapes.rotation.z = - 360 * ratio * (Math.PI / 180);
   }
 
   render() {
