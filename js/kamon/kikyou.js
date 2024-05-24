@@ -21,7 +21,6 @@ export default class Kikyou extends Kamon {
     this.circlesL = [];   // 花びらの大きな円
     this.circlesD = [];   // ベースの4つの中心円
     this.diagonals = [];  // 対角線
-    this.shapeVs = [];    // 図形の頂点
     this.points = [];
 
     // ガイドラインの作成
@@ -34,10 +33,10 @@ export default class Kikyou extends Kamon {
     this.generateShapes();
 
     // infoの準備
-    this.jpName.textContent = '桔梗';
-    this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様にも取り入れられました。家紋だけでなく、神社の神紋などにも多く使用されています。';
-    this.enName.textContent = 'Kikyou(Bellflower)';
-    this.enDesc.textContent = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
+    this.jpName.innerHTML = '桔梗';
+    this.jpDesc.innerHTML = '桔梗の花を図案化した家紋です。桔梗の漢字のつくりから「更に吉（さらによし）」という語呂が縁起が良いとされ、多くの家の家紋として使用されていました。この内、陰桔梗は戦国武将、明智光秀の家紋としても知られていますが、本能寺の変をきっかけに裏切り者の家紋として使用を憚られた時期があったと言われています。';
+    this.enName.innerHTML = 'Kikyou<br>(Bellflower)';
+    this.enDesc.innerHTML = 'This is a family crest with a design of a bellflower. Due to the kanji character for bellflower, the word "Moreyoshi" is said to bring good luck, and it was used as the family emblem of many families. Of these, Kagekikyo is also known as the family emblem of Sengoku warlord Akechi Mitsuhide, but it is said that there was a time when its use was discouraged as a traitor&#39;s family emblem in the wake of the Honnoji Incident.';
   }
 
   // ガイドラインを作成
@@ -179,14 +178,13 @@ export default class Kikyou extends Kamon {
     // 花びらの輪郭を描画
     const cirD = this.circlesD[1];
     const cirS = this.circlesS[0];
-    // for (var i = 0;i <= 1;i ++) {
+
     const i = 0;
     const pathW = i == 0 ? - this.pathW : this.pathW;
     const diagonal = i == 0 ? this.diagonals[0] : this.diagonals[1];
     const cirL = i == 0 ? this.circlesL[0] : this.circlesL[1];
     const side = i == 0 ? this.sides[4] : this.sides[0];
 
-    // console.log(pathW)
     const p1y = Math.sqrt(cirD.r ** 2 - pathW ** 2);
     const p1 = new THREE.Vector3(pathW, p1y, 0);
     const p2 = this.interLineCircle(cirD.r, 0, 0, diagonal.a, diagonal.r)[i == 0 ? 1 : 0];
@@ -211,88 +209,60 @@ export default class Kikyou extends Kamon {
     objects.push({k: 'circle', a: cirL.a, b: cirL.b, r: cirL.r, f: f2, t: t2});
     objects.push({k: 'straight', a: side.a, b: 1, r: side.r, f: p4.x, t: this.vertices[0].x});
 
-      // this.shapeVs.push(p1, p2, p3, p4);
-    // }
-
     const divCount = 1000;
-    // for (var v = 0;v <= 4;v ++) {
-      var index = 0;
-      // console.log(objects)
-      objects.forEach((object) => {
-        const gs = [0, 1, -1, 2, -2, 3, -3];
-        gs.forEach((g) => {
-          const points = [];
-          const k = object.k, a = object.a, b = object.b, r = object.r + g, f = object.f, t = object.t;
-          for (var i = 0;i <= divCount - 1;i ++) {
-            var point;
-            const d = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-            if (k == 'straight') {
-              if (b == 0) {
-                point = this.straight2(a, b, r, undefined, d);
-              } else {
-                point = this.straight2(a, b, r, d, undefined);
-              }
-            } else if (k == 'circle') {
-              const s = d * Math.PI / 180;
-              point = this.circle(a, b, r, s);
+    var index = 0;
+    objects.forEach((object) => {
+      const gs = [0, 1, -1, 2, -2, 3, -3];
+      gs.forEach((g) => {
+        const points = [];
+        const k = object.k, a = object.a, b = object.b, r = object.r + g, f = object.f, t = object.t;
+        for (var i = 0;i <= divCount - 1;i ++) {
+          var point;
+          const d = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
+          if (k == 'straight') {
+            if (b == 0) {
+              point = this.straight2(a, b, r, undefined, d);
+            } else {
+              point = this.straight2(a, b, r, d, undefined);
             }
-            points.push(point);
-            // if (g == 0 && index == 0) this.points.push(points);
-            if (g == 0 && index == 1 && this.points.length == 1) this.points.push([]);
-            if (g == 0 && index >= 1) this.points[1].push(point);
+          } else if (k == 'circle') {
+            const s = d * Math.PI / 180;
+            point = this.circle(a, b, r, s);
           }
-          if (g == 0 && index == 0) this.points.push(points);
-          const geometry = new THREE.BufferGeometry().setFromPoints(points);
-          // geometry.setDrawRange(0, 0);
-          const material = new THREE.LineBasicMaterial({
-            color: this.frontColor,
-            transparent: true
-          });
-          for (var v = 0;v <= 9;v ++) {
-            const line = new THREE.Line(geometry, material);
-            line.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
-            if (v % 2 == 0) line.rotation.y = 180 * Math.PI / 180;
-            this.outlines.add(line);
-          }
-        })
-        index ++;
+          points.push(point);
+          if (g == 0 && index == 1 && this.points.length == 1) this.points.push([]);
+          if (g == 0 && index >= 1) this.points[1].push(point);
+        }
+        if (g == 0 && index == 0) this.points.push(points);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        // geometry.setDrawRange(0, 0);
+        const material = new THREE.LineBasicMaterial({
+          color: this.frontColor,
+          transparent: true
+        });
+        for (var v = 0;v <= 9;v ++) {
+          const line = new THREE.Line(geometry, material);
+          line.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
+          if (v % 2 == 0) line.rotation.y = 180 * Math.PI / 180;
+          this.outlines.add(line);
+        }
       })
-    // }
+      index ++;
+    })
     this.scene.add(this.outlines);
-    // console.log(this.points)
   }
 
   // 塗りつぶし図形を生成
   generateShapes = () => {
-    // const divCount = 2000;
-    // figures.forEach((figure) => {
-      // const points = [];
-      // figure.forEach((arc) => {
-      //   const a  = arc.a;
-      //   const b  = arc.b;
-      //   const r  = arc.r + arc.g;
-      //   const f  = arc.f;
-      //   const t  = arc.t;
-      //   for (var i = 0;i <= divCount - 1;i ++) {
-      //     const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-      //     const s = deg * (Math.PI / 180);
-      //     const mid = this.circle(a, b, r, s);
-      //     points.push(mid);
-      //   }
-      // })
-      // console.log(this.points)
     var index = 0;
     this.points.forEach((points) => {
-      // console.log(points)
       const shape = new THREE.Shape(points);
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
         side: THREE.DoubleSide,
-        // opacity: 0.0,
         transparent: true,
       });
       const geometry = new THREE.ShapeGeometry(shape);
-      // const mesh = new THREE.Mesh(geometry, material);
       if (index == 0) {
         const mesh = new THREE.Mesh(geometry, material);
         this.shapes.add(mesh);
@@ -300,187 +270,46 @@ export default class Kikyou extends Kamon {
         for (var v = 0;v <= 9;v ++) {
           const materialC = material.clone();
           const mesh = new THREE.Mesh(geometry, materialC);
-          mesh.material.color = new THREE.Color(0xffffff);
-
           const num = Math.trunc(v / 2);
-          // mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
-
           if (v % 2 != 0) {
-            // console.log(v);
             mesh.rotation.y = 180 * Math.PI / 180;
             mesh.rotation.z = ( (360 / this.verNum) * num) * Math.PI / 180;
-            // mesh.material.color = new THREE.Color(0xffcccc);
           } else {
-            // mesh.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 245, 0));
             mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
           }
-
-          // mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
-
-          // if (v % 2 == 0) mesh.rotation.y = 180 * Math.PI / 180;
           this.shapes.add(mesh);
         }
       }
-      // })
       this.scene.add(this.shapes);
       index ++;
     })
-
-
-    // const figures = [
-    //   [
-    //     {a:    0, b:  0, r:  191, f:  90, t:  450, g: -6},
-    //     // {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
-    //     // {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
-    //     // {a:  110, b: -490, r: 1100, f:  -95, t: -231, g:  6},
-    //   ],
-    //   // [
-    //   //   {a:    0, b: -825, r:  750, f:   37, t:  240, g: -6},
-    //   //   {a:  110, b: -490, r: 1100, f:  250, t:  290, g: -6},
-    //   //   {a:    0, b:    0, r: 1600, f:  280, t:  450, g: -6},
-    //   //   {a: -110, b:  490, r: 1100, f:   85, t:  -51, g:  6},
-    //   // ]
-    // ];
-    // const divCount = 2000;
-    // figures.forEach((figure) => {
-    //   const points = [];
-    //   figure.forEach((arc) => {
-    //     const a  = arc.a;
-    //     const b  = arc.b;
-    //     const r  = arc.r + arc.g;
-    //     const f  = arc.f;
-    //     const t  = arc.t;
-    //     for (var i = 0;i <= divCount - 1;i ++) {
-    //       const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-    //       const s = deg * (Math.PI / 180);
-    //       const mid = this.circle(a, b, r, s);
-    //       points.push(mid);
-    //     }
-    //   })
-    //   const shape = new THREE.Shape(points);
-    //   const material = new THREE.MeshBasicMaterial({
-    //     color: this.frontColor,
-    //     side: THREE.DoubleSide,
-    //     opacity: 0.0,
-    //     transparent: true,
-    //   });
-    //   const geometry = new THREE.ShapeGeometry(shape);
-    //   const mesh = new THREE.Mesh(geometry, material);
-    //   this.shapes.add(mesh);
-    // })
-    // this.scene.add(this.shapes);
   }
 
   // 図形のアニメーション制御
   shapesRotationControl(start, end) {
-    const ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
-    // console.log(this.shapes.children.length)
+    var ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
     for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
       const shape = this.shapes.children[i];
+      const j = i - 1;
+      const num = Math.trunc(j / 2);
       if (i > 0) {
-        const j = i - 1;
-        const num = Math.trunc(j / 2);
-        var ratioD;
-        if (ratio < 0.1) {
-          ratioD = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1, 1.0, 0.0);
-          // if (num == 0) {
-            // shape.position.set(0, - 500 * ratio, 0);
-          // }
-  
+        const adjust1 = 80;
+        const adjust2 = 20;
+        var ratioSx, ratioSy;
+        if (ratio < 0.1 + num / adjust1) {
+          ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+          ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.2);
+        } else if (ratio < 0.4 + num / adjust2) {
+          ratioSx = 0.3;
+          ratioSy = 0.2;
         } else {
-          ratioD = THREE.MathUtils.mapLinear(ratio, 0.1, 1.0, 0.0, 1.0);
-
+          ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
+          ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.2, 1.0);
         }
-        shape.scale.set(ratioD, ratioD)
-        this.shapes.rotation.z = - 360 * ratioD * (Math.PI / 180);
-
-
-        // const j = i - 1;
-        // var ratioD;
-        // if (ratio < 0.5) {
-        //   ratioD = ratio * 2;
-        // } else {
-        //   ratioD = (1.0 - ratio) * 2;
-        //   // shape.rotation.x = 90 * ratioD * (Math.PI / 180);
-        //   // shape.rotation.y = 36 * i * ratioD * (Math.PI / 180);
-        //   // console.log(ratio, ratioD, 90 * ratioD * (Math.PI / 180))
-        // }
-
-        //   const num = Math.trunc(j / 2);
-
-        //   var c;
-        //   switch(num) {
-        //     case 0:
-        //       shape.rotation.x = 72 * ratioD * Math.PI / 180;
-        //       break;
-        //     case 1:
-        //       c = j == 2 ? 0 : 180;
-        //       shape.rotation.x = 18 * ratioD * Math.PI / 180;
-        //       shape.rotation.y = (c - 72 * ratioD) * Math.PI / 180;
-        //       break;
-        //     case 2:
-        //       c = j == 4 ? 0 : 180;
-        //       shape.rotation.x = - 45 * ratioD * Math.PI / 180;
-        //       shape.rotation.y = (c - 63 * ratioD) * Math.PI / 180;
-        //       break;
-        //     case 3:
-        //       c = j == 6 ? 0 : 180;
-        //       shape.rotation.x = - 45 * ratioD * Math.PI / 180;
-        //       shape.rotation.y = (c + 63 * ratioD) * Math.PI / 180;
-        //       break;
-        //     case 4:
-        //       c = j == 8 ? 0 : 180;
-        //       shape.rotation.x = 18 * ratioD * Math.PI / 180;
-        //       shape.rotation.y = (c + 72 * ratioD) * Math.PI / 180;
-        //       break;
-        //   }
-
-        //   const num = Math.trunc(j / 2);
-        //   // shape.rotation.y = 30 * num * ratioD * Math.PI / 180;
-        //   // console.log(i, num)
-        //   if (j % 2 == 0) {
-        //     shape.rotation.y = 90 * num * ratioD * Math.PI / 180;
-        //     // console.log('1', i, num, 30 * num * ratioD * Math.PI / 180)
-        //   } else {
-        //     shape.rotation.y = (180 - 90 * num * ratioD) * Math.PI / 180;
-        //     // shape.rotation.y = (180 - 30 * num * ratioD) * Math.PI / 180;
-        //     // console.log('2', i, num, (180 - 30 * num * ratioD) * Math.PI / 180, shape.rotation.y)
-        //   // console.log(shape.rotation.y)
-        // }
-          // console.log(i, shape.rotation.y)
-          // shape.rotateY(i * 36 * ratioD * (Math.PI / 180))
-          // console.log(ratio, ratioD, 90 * ratioD * (Math.PI / 180))
-        // } else {
-        //   const ratioD = (1.0 - ratio) * 2;
-        //   // shape.rotation.x = 90 * ratioD * (Math.PI / 180);
-        //   // shape.rotation.y = 36 * i * ratioD * (Math.PI / 180);
-        //   // console.log(ratio, ratioD, 90 * ratioD * (Math.PI / 180))
-        // }
-
+        shape.scale.set(ratioSx, ratioSy)
+        this.shapes.rotation.z = - 720 * ratio * (Math.PI / 180);
       }
-      // const shape = this.shapes.children[i];
-      // const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-      // const pos = 1500 * posRatio;
-      // if (i == 0) {
-      //   shape.position.set(-pos, 0, 0);
-      // } else {
-      //   shape.position.set(pos, 0, 0);
-      // }
     }
-    // this.shapes.rotation.x = -360 * ratio * (Math.PI / 180);
-    // var ratioD; 
-    // if (ratio < 0.3) {
-    //   ratioD = THREE.MathUtils.mapLinear(ratio, 0.0, 0.3, 1.0, 0.5);
-    //   // console.log(ratio, ratioD)
-    //   // ratioD = 1 - THREE.MathUtils.smoothstep(ratio, 0.1, 0.5);
-    // } else if (ratio < 0.6) {
-    //   ratioD = THREE.MathUtils.mapLinear(ratio, 0.3, 0.6, 0.5, 2.0);
-    // } else {
-    //   ratioD = THREE.MathUtils.mapLinear(ratio, 0.6, 1.0, 2.0, 1.0);
-    //   // ratioD = THREE.MathUtils.smoothstep(ratio, 0.5, 1.0);
-    // }
-    // this.shapes.scale.set(ratioD, ratioD);
-    // this.shapes.rotation.z = - 360 * ratio * (Math.PI / 180);
   }
 
   render() {

@@ -81,7 +81,7 @@ const init = () => {
   // テーマ名が保存されていたら適用
   const myTheme = localStorage.getItem('theme');
   if (myTheme) {
-    // changeTheme(myTheme);
+    changeTheme(myTheme);
     const target = document.getElementById(myTheme);
     target.checked = true;
   }
