@@ -175,6 +175,49 @@ export default class Kamon {
     return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
   }
 
+  // 円弧を生成
+  circleGen(a, b, r, f, t, d, c) {
+    const points = [];
+    for (var i = 0;i <= d - 1;i ++) {
+      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+      const s = p * Math.PI / 180;
+      const point = this.circle(a, b, r, s);
+      points.push(point);
+    }
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    geometry.setDrawRange(0, 0);
+    const material = new THREE.LineBasicMaterial({
+      color: c,
+      transparent: true
+    });
+    return new THREE.Line(geometry, material);
+  }
+
+  // 直線を生成
+  lineGen(a, b, r, f, t, d, c) {
+    const points = [];
+    for (var i = 0;i <= d - 1;i ++) {
+      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+      // const s = p * Math.PI / 180;
+      // const point = this.circle(a, b, r, s);
+      var point;
+      if (b == 0) {
+        point = this.straight2(a, b, r, undefined, p);
+      } else {
+        point = this.straight2(a, b, r, p, undefined);
+      }
+      points.push(point);
+    }
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    geometry.setDrawRange(0, 0);
+    const material = new THREE.LineBasicMaterial({
+      color: c,
+      transparent: true
+    });
+    return new THREE.Line(geometry, material);
+  }
+
+
   // ２点の座標から方程式のa,bを取得
   from2Points = (x1, y1, x2, y2) => {
     const a = (y2 - y1) / (x2 - x1);
@@ -202,11 +245,14 @@ export default class Kamon {
   // ガイドラインの描画アニメーション制御
   guidelinesDrawControl = (start, end, divCount, delayFactor) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+    const adjust = 1;
+    const num = this.guidelines.children.length / adjust;
+    const maxDelay = delayFactor * num;
     for (var i = 0;i <= this.guidelines.children.length - 1;i ++) {
       const line = this.guidelines.children[i];
-      var delay = i * delayFactor;
-      line.geometry.setDrawRange(0, divCount * (ratio - delay));
-      // console.log(divCount * (ratio - delay))
+      const delay = delayFactor * i / adjust;
+      const ratioD = THREE.MathUtils.smoothstep(ratio, 0.0 + delay, 1.0 - maxDelay + delay);
+      line.geometry.setDrawRange(0, divCount * ratioD);
     }
   }
 

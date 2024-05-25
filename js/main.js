@@ -2,6 +2,7 @@
 import Kageigeta from './kamon/kageigeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 import Kikyou from './kamon/kikyou.js';
+import GenjiGuruma from './kamon/genji-guruma.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
@@ -14,7 +15,8 @@ const init = () => {
 
   // const kamon = new Kageigeta();
   // const kamon = new HidariFutatsuDomoe();
-  const kamon = new Kikyou();
+  // const kamon = new Kikyou();
+  const kamon = new GenjiGuruma();
 
   // テーマカラーを適用
   const changeTheme = (theme) => {
