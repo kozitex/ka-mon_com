@@ -122,8 +122,16 @@ export default class Kamon {
     })
 
     // アウトラインの色を変更
-    this.outlines.children.forEach((line) => {
-      line.material.color = new THREE.Color(this.frontColor);
+    this.outlines.children.forEach((child) => {
+      if (child.isObject3D) {
+        child.children.forEach((line) => {
+          // line.material.color = new THREE.Color(this.guideColor);
+          line.material.color = new THREE.Color(this.frontColor);
+        })
+      } else {
+        // child.material.color = new THREE.Color(this.guideColor);
+        child.material.color = new THREE.Color(this.frontColor);
+      }
     })
 
     // 図形の色を変更

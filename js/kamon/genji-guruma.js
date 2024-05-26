@@ -108,7 +108,7 @@ export default class GenjiGuruma extends Kamon {
     for (var v = 0;v <= this.verNum - 1;v ++) {
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
-      const lArc = this.outlineCircleGen(0, 0, 935, 101.25, 78.75, divCount, this.frontColor);
+      const lArc = this.outlineCircleGen(0, 0, 935, 78.75, 101.25, divCount, this.frontColor);
 
       const sArcF = this.circle(0, 0, 260, 101.25);
       const sArcT = this.circle(0, 0, 260,  78.75);
@@ -133,7 +133,7 @@ export default class GenjiGuruma extends Kamon {
       const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
       const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
       const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
-      const oArc = this.outlineCircleGen(0, 0, 1265, 90 + oArcAngle, 90 - oArcAngle, divCount, this.frontColor);
+      const oArc = this.outlineCircleGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, divCount, this.frontColor);
 
       const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
       const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
@@ -152,29 +152,13 @@ export default class GenjiGuruma extends Kamon {
       this.outlines.add(iArc, oArc, lLine, rLine);
     }
 
-    // // 外側の継ぎ目の円弧
-    // for (var v = 0;v <= this.verNum - 1;v ++) {
-    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-    //   const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
-    //   const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
-    //   const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
-    //   const oArc = this.outlineCircleGen(0, 0, 1600, 90 - oArcAngle, 90 + oArcAngle - 45, divCount, this.frontColor);
-    //   const lArc = this.outlineCircleGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
-    //   const rArc = this.outlineCircleGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
-    //   iArc.rotation.z = copyAngle;
-    //   oArc.rotation.z = copyAngle;
-    //   lArc.rotation.z = copyAngle;
-    //   rArc.rotation.z = copyAngle;
-    //   this.outlines.add(iArc, oArc, lArc, rArc);
-    // }
-
     // 外側の継ぎ目の円弧
     for (var v = 0;v <= this.verNum - 1;v ++) {
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
       const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
       const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
-      const oArc = this.outlineCircleGen(0, 0, 1600, 90 - oArcAngle, 90 + oArcAngle - 45, divCount, this.frontColor);
+      const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
       const lArc = this.outlineCircleGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
       const rArc = this.outlineCircleGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
 
@@ -186,7 +170,6 @@ export default class GenjiGuruma extends Kamon {
       const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle - 45);
       const lArcF = this.circle(0, 0, 1300, 90 - oArcAngle);
       const lArcT = this.circle(0, 0, 1300, 90 - iArcAngle);
-      // console.log(lArcT, iArcF)
 
       const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
       const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
@@ -197,7 +180,6 @@ export default class GenjiGuruma extends Kamon {
       const irLine  = this.outlineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount, this.frontColor);
       const olLine  = this.outlineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount, this.frontColor);
       const orLine  = this.outlineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount, this.frontColor);
-      // const rotAngle = 16.875 * Math.PI / 180;
 
       iArc.rotation.z = copyAngle;
       oArc.rotation.z = copyAngle;
@@ -211,21 +193,6 @@ export default class GenjiGuruma extends Kamon {
       this.outlines.add(iArc, oArc, lArc, rArc);
       this.outlines.add(ilLine, irLine, olLine, orLine);
     }
-
-    // // 外側の継ぎ目の直線
-    // for (var v = 0;v <= this.verNum - 1;v ++) {
-    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-    //   const ilLine  = this.outlineGen(1, 0, this.pathW / 2, 970, 1300, divCount, this.frontColor);
-    //   const irLine  = this.outlineGen(1, 0, - this.pathW / 2, 970, 1300, divCount, this.frontColor);
-    //   const olLine  = this.outlineGen(1, 0, this.pathW / 2, 1300, 1600, divCount, this.frontColor);
-    //   const orLine  = this.outlineGen(1, 0, - this.pathW / 2, 1300, 1600, divCount, this.frontColor);
-    //   const rotAngle = 16.875 * Math.PI / 180;
-    //   ilLine.rotation.z = - rotAngle + copyAngle;
-    //   irLine.rotation.z = - rotAngle - 11.25 * Math.PI / 180 + copyAngle;
-    //   olLine.rotation.z = copyAngle;
-    //   orLine.rotation.z = - 45 * Math.PI / 180 + copyAngle;
-    //   this.outlines.add(ilLine, irLine, olLine, orLine);
-    // }
 
     this.scene.add(this.outlines);
   }
@@ -272,39 +239,85 @@ export default class GenjiGuruma extends Kamon {
       mesh.rotation.z = copyAngle;
     }
 
+    // 内側の継ぎ目
+    for (var v = 0;v <= this.verNum - 1;v ++) {
+      const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
+      const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
+      const iArc = this.circlePointGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
+      const oArc = this.circlePointGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, divCount, this.frontColor);
 
+      const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
+      const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
+      const oArcF = this.circle(0, 0, 1265, 90 + oArcAngle);
+      const oArcT = this.circle(0, 0, 1265, 90 - oArcAngle);
+
+      const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
+      const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
+
+      const lLine  = this.linePointGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, divCount, this.frontColor);
+      const rLine  = this.linePointGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, divCount, this.frontColor);
+
+      const points = iArc.concat(rLine, oArc, lLine);
+
+      const shape = new THREE.Shape(points);
+      const geometry = new THREE.ShapeGeometry(shape);
+      const material = new THREE.MeshBasicMaterial({
+        color: this.frontColor,
+        side: THREE.DoubleSide,
+        transparent: true,
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      this.shapes.add(mesh);
+
+      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+      mesh.rotation.z = copyAngle;
+    }
+
+    // 外側の継ぎ目の円弧
+    for (var v = 0;v <= this.verNum - 1;v ++) {
+      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
+      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
+      const iArc = this.circlePointGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
+      const oArc = this.circlePointGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
+      const lArc = this.circlePointGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
+      const rArc = this.circlePointGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
+
+      const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
+      const iArcT = this.circle(0, 0,  970, 90 + iArcAngle - 45);
+      const rArcF = this.circle(0, 0, 1300, 90 + iArcAngle - 45);
+      const rArcT = this.circle(0, 0, 1300, 90 + oArcAngle - 45);
+      const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
+      const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle - 45);
+      const lArcF = this.circle(0, 0, 1300, 90 - oArcAngle);
+      const lArcT = this.circle(0, 0, 1300, 90 - iArcAngle);
+
+      const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
+      const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
+      const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
+      const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
+
+      const ilLine  = this.linePointGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, divCount, this.frontColor);
+      const irLine  = this.linePointGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount, this.frontColor);
+      const olLine  = this.linePointGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount, this.frontColor);
+      const orLine  = this.linePointGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount, this.frontColor);
+
+      const points = iArc.concat(irLine, rArc, orLine, oArc, olLine, lArc, ilLine);
+
+      const shape = new THREE.Shape(points);
+      const geometry = new THREE.ShapeGeometry(shape);
+      const material = new THREE.MeshBasicMaterial({
+        color: this.frontColor,
+        side: THREE.DoubleSide,
+        transparent: true,
+      });
+      const mesh = new THREE.Mesh(geometry, material);
+      this.shapes.add(mesh);
+
+      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+      mesh.rotation.z = copyAngle;
+    }
 
     this.scene.add(this.shapes);
-
-    // var index = 0;
-    // this.points.forEach((points) => {
-    //   const shape = new THREE.Shape(points);
-    //   const material = new THREE.MeshBasicMaterial({
-    //     color: this.frontColor,
-    //     side: THREE.DoubleSide,
-    //     transparent: true,
-    //   });
-    //   const geometry = new THREE.ShapeGeometry(shape);
-    //   if (index == 0) {
-    //     const mesh = new THREE.Mesh(geometry, material);
-    //     this.shapes.add(mesh);
-    //   } else {
-    //     for (var v = 0;v <= 9;v ++) {
-    //       const materialC = material.clone();
-    //       const mesh = new THREE.Mesh(geometry, materialC);
-    //       const num = Math.trunc(v / 2);
-    //       if (v % 2 != 0) {
-    //         mesh.rotation.y = 180 * Math.PI / 180;
-    //         mesh.rotation.z = ( (360 / this.verNum) * num) * Math.PI / 180;
-    //       } else {
-    //         mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
-    //       }
-    //       this.shapes.add(mesh);
-    //     }
-    //   }
-    //   this.scene.add(this.shapes);
-    //   index ++;
-    // })
   }
 
   // ガイドラインの描画アニメーション制御
@@ -328,7 +341,6 @@ export default class GenjiGuruma extends Kamon {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.outlines.children.forEach((group) => {
       group.children.forEach((outline) => {
-        // console.log(divCount * ratio)
         outline.geometry.setDrawRange(0, divCount * ratio);
       });
     });
@@ -382,7 +394,7 @@ export default class GenjiGuruma extends Kamon {
     this.outlinesFadeoutControl(0.6, 0.7);
 
     // 図形を回転
-    // this.shapesRotationControl(0.7, 1.0);
+    this.shapesRotationControl(0.7, 1.0);
 
     // descのアニメーションを制御
     this.descSlideinControl(0.8, 0.95);

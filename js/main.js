@@ -22,7 +22,7 @@ const init = () => {
   const changeTheme = (theme) => {
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
-    // kamon.changeTheme(theme);
+    kamon.changeTheme(theme);
     localStorage.setItem('theme', theme);
   }
 
