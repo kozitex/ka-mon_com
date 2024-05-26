@@ -111,8 +111,14 @@ export default class Kamon {
     this.grid.changeTheme(this.gridColor, this.gridThinColor);
 
     // ガイドラインの色を変更
-    this.guidelines.children.forEach((line) => {
-      line.material.color = new THREE.Color(this.guideColor);
+    this.guidelines.children.forEach((child) => {
+      if (child.isObject3D) {
+        child.children.forEach((line) => {
+          line.material.color = new THREE.Color(this.guideColor);
+        })
+      } else {
+        child.material.color = new THREE.Color(this.guideColor);
+      }
     })
 
     // アウトラインの色を変更
@@ -172,7 +178,9 @@ export default class Kamon {
 
   // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, 半径, 角度）
   circle(a, b, r, s) {
-    return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
+    const sr = s * Math.PI / 180;
+    return new THREE.Vector3(a + r * Math.cos(sr), b + r * Math.sin(sr), 0);
+    // return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
   }
 
   // 円弧を生成
@@ -180,8 +188,8 @@ export default class Kamon {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      const s = p * Math.PI / 180;
-      const point = this.circle(a, b, r, s);
+      // const s = p * Math.PI / 180;
+      const point = this.circle(a, b, r, p);
       points.push(point);
     }
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -193,13 +201,22 @@ export default class Kamon {
     return new THREE.Line(geometry, material);
   }
 
+  // アウトライン用の円弧を生成
+  outlineCircleGen(a, b, r, f, t, d, c) {
+    const group = new THREE.Group();
+    const gs = [0, 1, -1, 2, -2, 3, -3];
+    gs.forEach((g) => {
+      const circle = this.circleGen(a, b, r + g, f, t, d, c);
+      group.add(circle);
+    })
+    return group;
+  }
+
   // 直線を生成
   lineGen(a, b, r, f, t, d, c) {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      // const s = p * Math.PI / 180;
-      // const point = this.circle(a, b, r, s);
       var point;
       if (b == 0) {
         point = this.straight2(a, b, r, undefined, p);
@@ -215,6 +232,82 @@ export default class Kamon {
       transparent: true
     });
     return new THREE.Line(geometry, material);
+  }
+
+  // アウトライン用の直線を生成
+  outlineGen(a, b, r, f, t, d, c) {
+    const group = new THREE.Group();
+    const gs = [0, 1, -1, 2, -2, 3, -3];
+    gs.forEach((g) => {
+      // const theta = Math.atan(a);
+      // const height = g * Math.sin(theta);
+      const line = this.lineGen(a, b, r + g, f, t, d, c);
+      group.add(line);
+    })
+    return group;
+  }
+
+  // 円弧の図形を生成
+  circleShapeGen(a, b, r, f, t, d, c) {
+    const points = [];
+    for (var i = 0;i <= d - 1;i ++) {
+      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+      // const s = p * Math.PI / 180;
+      const point = this.circle(a, b, r, p);
+      points.push(point);
+    }
+    const shape = new THREE.Shape(points);
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({
+      color: c,
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+    return new THREE.Mesh(geometry, material);
+  }
+
+  // 円弧の頂点を生成
+  circlePointGen(a, b, r, f, t, d, c) {
+    const points = [];
+    for (var i = 0;i <= d - 1;i ++) {
+      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+      // const s = p * Math.PI / 180;
+      const point = this.circle(a, b, r, p);
+      points.push(point);
+    }
+    // console.log(points)
+    return points;
+    // const shape = new THREE.Shape(points);
+    // const geometry = new THREE.ShapeGeometry(shape);
+    // const material = new THREE.MeshBasicMaterial({
+    //   color: c,
+    //   side: THREE.DoubleSide,
+    //   transparent: true,
+    // });
+    // return new THREE.Mesh(geometry, material);
+  }
+
+  // 直線を生成
+  linePointGen(a, b, r, f, t, d, c) {
+    const points = [];
+    for (var i = 0;i <= d - 1;i ++) {
+      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+      var point;
+      if (b == 0) {
+        point = this.straight2(a, b, r, undefined, p);
+      } else {
+        point = this.straight2(a, b, r, p, undefined);
+      }
+      points.push(point);
+    }
+    return points;
+    // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    // geometry.setDrawRange(0, 0);
+    // const material = new THREE.LineBasicMaterial({
+    //   color: c,
+    //   transparent: true
+    // });
+    // return new THREE.Line(geometry, material);
   }
 
 
@@ -275,21 +368,36 @@ export default class Kamon {
   // ガイドラインのフェードアウトアニメーション制御
   guidelinesFadeoutControl = (start, end) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.guidelines.children.forEach((line) => {
-      line.visible = true;
-      if (ratio >= 1) line.visible = false;
-      line.material.opacity = 1.0 - ratio;
+    this.guidelines.children.forEach((child) => {
+      if (child.isObject3D) {
+        child.children.forEach((line) => {
+          line.visible = true;
+          if (ratio >= 1) line.visible = false;
+          line.material.opacity = 1.0 - ratio;  
+        })
+      } else {
+        child.visible = true;
+        if (ratio >= 1) child.visible = false;
+        child.material.opacity = 1.0 - ratio;
+      }
     });
   }
 
   // アウトラインのフェードアウトアニメーション制御
   outlinesFadeoutControl = (start, end) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.outlines.children.forEach((line) => {
-      // console.log(line)
-      line.visible = true;
-      if (ratio >= 1) line.visible = false;
-      line.material.opacity = 1.0 - ratio;
+    this.outlines.children.forEach((child) => {
+      if (child.isObject3D) {
+        child.children.forEach((line) => {
+          line.visible = true;
+          if (ratio >= 1) line.visible = false;
+          line.material.opacity = 1.0 - ratio;
+        })
+      } else {
+        child.visible = true;
+        if (ratio >= 1) child.visible = false;
+        child.material.opacity = 1.0 - ratio;
+      }
     });
   }
 

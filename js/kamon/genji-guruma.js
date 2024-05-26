@@ -27,10 +27,10 @@ export default class GenjiGuruma extends Kamon {
     this.generateGuidelines();
 
     // アウトラインの作成
-    // this.generateOutlines();
+    this.generateOutlines();
 
     // 塗りつぶし図形の描画
-    // this.generateShapes();
+    this.generateShapes();
 
     // infoの準備
     this.jpName.innerHTML = '源氏車';
@@ -43,254 +43,295 @@ export default class GenjiGuruma extends Kamon {
   generateGuidelines = () => {
 
     const divCount = 1000;
-    const objects = [];
+    // const objects = [];
 
     // 円
-    const rs = [225, 260, 935, 970, 1265, 1300, 1600];
-    // rs.forEach((r) => {
-    //   const param = {k: 'circle', a: 0, b: 0, r: r, f: this.angleFr, t: this.angleTo};
-    //   this.circlesD.push(param);
-    //   objects.push(param);
-    // });
+    const circles = new THREE.Group();
+    const rs = [1600, 1300, 1265, 970, 935, 260, 225];
     rs.forEach((r) => {
       const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
-      this.guidelines.add(circle);
+      circles.add(circle);
     });
-
+    this.guidelines.add(circles);
 
     // 直線
     for (var v = 0;v <= this.verNum / 2 - 1;v ++) {
 
       // 車輪のスポーク部分
+      const spokes = new THREE.Group();
       for (var i = 0;i <= 1;i ++) {
-        const line = this.lineGen(1, 0, 0, - 1600, 1600, divCount, this.guideColor);
+        const line = this.lineGen(1, 0, 0, 1600, - 1600, divCount, this.guideColor);
         const piece = 22.5;
         const rotA1 = i == 0 ? piece / 2 : - piece / 2;
         const rotA2 = 360 / this.verNum * v;
         line.rotation.z = (rotA1 - rotA2) * Math.PI / 180;
-        this.guidelines.add(line);
+        spokes.add(line);
       }
+      this.guidelines.add(spokes);
 
       // 内側の継ぎ目
+      const inSeam = new THREE.Group();
       for (var i = 0;i <= 3;i ++) {
-        const line = this.lineGen(1, 0, 0, - 1600, 1600, divCount, this.guideColor);
-        // if (i == 1 || i == 3) line.material.color = new THREE.Color(0xff3333)
+        const intercept = i == 0 || i == 2 ? - this.pathW / 2 : this.pathW / 2;
+        const line = this.lineGen(1, 0, intercept, - 1600, 1600, divCount, this.guideColor);
         const piece = 16.875
         const rotA1 = (i <= 1 ? piece : - piece) * Math.PI / 180;
         const rotA2 = 360 / this.verNum * v * Math.PI / 180;
-        var moveX, moveY;
-        if (v == 0) {
-          moveX = (i == 0 || i == 2 ? - 1 : 1) * (this.pathW / 2) * Math.cos(rotA1);
-          moveY = (i == 0 || i == 2 ? - 1 : 1) * (this.pathW / 2) * Math.sin(rotA1);
-        } else if (v == 1) {
-          const angle = i <= 1 ? rotA1 : (90 * Math.PI / 180) - rotA1;
-          moveX = (i == 0 || i == 3 ? - 1 : 1) * (this.pathW / 2) * Math.cos(angle);
-          moveY = (i == 0 || i == 2 ? 1 : - 1) * (this.pathW / 2) * Math.sin(angle);
-        } else if (v == 2) {
-          const angle = (90 * Math.PI / 180) - rotA1;
-          moveX = (i == 0 || i == 2 ? - 1 : 1) * (this.pathW / 2) * Math.cos(angle);
-          moveY = (i == 0 || i == 2 ? 1 : - 1) * (this.pathW / 2) * Math.sin(angle);
-        } else if (v == 3) {
-          const angle = i >= 2 ? rotA1 : (90 * Math.PI / 180) - rotA1;
-          moveX = (i == 0 || i == 2 ? 1 : - 1) * (this.pathW / 2) * Math.cos(angle);
-          moveY = (i == 0 || i == 3 ? 1 : - 1) * (this.pathW / 2) * Math.sin(angle);
-        }
-        // console.log(v, i, moveX, moveY)
-        line.position.x = moveX;
-        line.position.y = moveY;
         line.rotation.z = rotA1 - rotA2;
-        this.guidelines.add(line);
+        inSeam.add(line);
       }
+      this.guidelines.add(inSeam);
 
       // 外側の継ぎ目
+      const outSeam = new THREE.Group();
       for (var i = 0;i <= 1;i ++) {
-        const line = this.lineGen(1, 0, 0, - 1600, 1600, divCount, this.guideColor);
+        const intercept = i == 0 ? - this.pathW / 2 : this.pathW / 2;
+        const line = this.lineGen(1, 0, intercept, 1600, - 1600, divCount, this.guideColor);
         const rotA = - 360 / this.verNum * v * Math.PI / 180;
-        const moveX = (i == 0 ? - 1 : 1) * (this.pathW / 2) * Math.cos(rotA);
-        const moveY = (i == 0 ? - 1 : 1) * (this.pathW / 2) * Math.sin(rotA);
-        line.position.x = moveX;
-        line.position.y = moveY;
         line.rotation.z = rotA;
-        this.guidelines.add(line);
+        outSeam.add(line);
       }
-
-      // const outSeam1 = {k: 'straight', a: 1, b: 0, r: - this.pathW / 2, f: 0, t: this.circle(0, 0, 1600, Math.acos((- this.pathW / 2) / 1600)).y};
-      // const outSeam2 = {k: 'straight', a: 1, b: 0, r:   this.pathW / 2, f: 0, t: this.circle(0, 0, 1600, Math.acos((  this.pathW / 2) / 1600)).y};
-      // objects.push(outSeam1, outSeam2);
-
-
-    //   // // 対角線
-    //   // const beforeP = this.straight2(this.sides[4].a, 1, this.sides[4].r, - this.pathW, undefined);
-    //   // const afterP  = this.straight2(this.sides[0].a, 1, this.sides[0].r,   this.pathW, undefined);
-    //   // const inter  = this.getIntersect(1, 0, this.sides[2].a, this.sides[2].r);
-    //   // const before = {k: 'straight', a: 1, b: 0, r:   this.pathW, f: beforeP.y, t: inter.y};
-    //   // const after  = {k: 'straight', a: 1, b: 0, r: - this.pathW, f: afterP.y,  t: inter.y};
-    //   // objects.push(before, after);
-
-    //   // // 小さな円
-    //   // const center = this.circle(0, 0, 493, this.angleFr * Math.PI / 180);
-    //   // const circle = {k: 'circle', a: center.x, b: center.y, r: this.pathW, f: this.angleFr, t: this.angleTo};
-    //   // this.circlesS.push(circle);
-    //   // objects.push(circle);
-
-    //   // // 大きな円
-    //   // const circle1 = {k: 'circle', a: centers[0].x, b: centers[0].y, r: r, f: this.angleFr, t: this.angleTo};
-    //   // const circle2 = {k: 'circle', a: centers[1].x, b: centers[1].y, r: r, f: this.angleFr, t: this.angleTo};
-    //   // this.circlesL.push(circle1, circle2);
-    //   // objects.push(circle1, circle2);
-
-    //   var index = 0;
-    //   objects.forEach((object) => {
-    //     const points = [];
-    //     const k = object.k, a = object.a, b = object.b, r = object.r, f = object.f, t = object.t;
-    //     for (var i = 0;i <= divCount - 1;i ++) {
-    //       var point;
-    //       const d = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-    //       if (k == 'straight') {
-    //         if (b == 0) {
-    //           point = this.straight2(a, b, r, undefined, d);
-    //         } else {
-    //           point = this.straight2(a, b, r, d, undefined);
-    //         }
-    //       } else if (k == 'circle') {
-    //         const s = d * Math.PI / 180;
-    //         point = this.circle(a, b, r, s);
-    //       }
-    //       points.push(point);
-    //     }
-    //     const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    //     geometry.setDrawRange(0, 0);
-    //     const material = new THREE.LineBasicMaterial({
-    //       color: this.guideColor,
-    //       transparent: true
-    //     });
-    //     const line = new THREE.Line(geometry, material);
-    //     // if (index > 9) {
-    //       line.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
-    //     // }
-    //     this.guidelines.add(line);
-    //     index ++;
-    //   })
-    //   this.scene.add(this.guidelines);
+      this.guidelines.add(outSeam);
     }
     this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
   generateOutlines = () => {
-    const objects = [];
+    const divCount = 1000;
 
     // 中央の円
-    objects.push(this.circlesD[0]);
+    const centerCircle = this.outlineCircleGen(0, 0, 225, 90, 450, divCount, this.frontColor);
+    this.outlines.add(centerCircle);
 
-    // 花びらの輪郭を描画
-    const cirD = this.circlesD[1];
-    const cirS = this.circlesS[0];
+    // スポーク
+    for (var v = 0;v <= this.verNum - 1;v ++) {
+      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+      const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
+      const lArc = this.outlineCircleGen(0, 0, 935, 101.25, 78.75, divCount, this.frontColor);
 
-    const i = 0;
-    const pathW = i == 0 ? - this.pathW : this.pathW;
-    const diagonal = i == 0 ? this.diagonals[0] : this.diagonals[1];
-    const cirL = i == 0 ? this.circlesL[0] : this.circlesL[1];
-    const side = i == 0 ? this.sides[4] : this.sides[0];
+      const sArcF = this.circle(0, 0, 260, 101.25);
+      const sArcT = this.circle(0, 0, 260,  78.75);
+      const lArcF = this.circle(0, 0, 935, 101.25);
+      const lArcT = this.circle(0, 0, 935,  78.75);
 
-    const p1y = Math.sqrt(cirD.r ** 2 - pathW ** 2);
-    const p1 = new THREE.Vector3(pathW, p1y, 0);
-    const p2 = this.interLineCircle(cirD.r, 0, 0, diagonal.a, diagonal.r)[i == 0 ? 1 : 0];
+      const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
+      const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
 
-    objects.push({k: 'circle', a: cirS.a, b: cirS.b, r: cirS.r, f: 90, t: i == 0 ? 180 : 0});
-    objects.push({k: 'straight', a: 1, b: 0, r: pathW, f: cirS.b, t: p1.y});
+      const lLine = this.outlineGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, divCount, this.frontColor);
+      const rLine = this.outlineGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, divCount, this.frontColor);
+      sArc.rotation.z = copyAngle;
+      lArc.rotation.z = copyAngle;
+      lLine.rotation.z = copyAngle;
+      rLine.rotation.z = copyAngle;
+      this.outlines.add(sArc, lArc, lLine, rLine);
+    }
 
-    const theta1 = Math.atan(Math.abs(p1.y) / Math.abs(p1.x)) * 180 / Math.PI;
-    const theta2 = Math.atan(Math.abs(p2.y) / Math.abs(p2.x)) * 180 / Math.PI;
-    const f1 = i == 0 ? 180 - theta1 : theta1;
-    const t1 = i == 0 ? 180 - theta2 : theta2;
+    // 内側の継ぎ目
+    for (var v = 0;v <= this.verNum - 1;v ++) {
+      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+      const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
+      const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
+      const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
+      const oArc = this.outlineCircleGen(0, 0, 1265, 90 + oArcAngle, 90 - oArcAngle, divCount, this.frontColor);
 
-    const p3 = this.interLineCircle(cirL.r, cirL.a, cirL.b, diagonal.a, diagonal.r)[0];
-    const p4 = this.interLineCircle(cirL.r, cirL.a, cirL.b, side.a, side.r)[0];
-    const theta3 = Math.atan(Math.abs(p3.y - cirL.b) / Math.abs(p3.x - cirL.a)) * 180 / Math.PI;
-    const theta4 = Math.atan(Math.abs(p4.y - cirL.b) / Math.abs(p4.x - cirL.a)) * 180 / Math.PI;
-    const f2 = i == 0 ? - (180 - theta3) : - theta3;
-    const t2 = i == 0 ? - (180 + theta4) :   theta4;
+      const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
+      const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
+      const oArcF = this.circle(0, 0, 1265, 90 + oArcAngle);
+      const oArcT = this.circle(0, 0, 1265, 90 - oArcAngle);
 
-    objects.push({k: 'circle', a: 0, b: 0, r: cirD.r, f: f1, t: t1});
-    objects.push({k: 'straight', a: diagonal.a, b: 1, r: diagonal.r, f: p2.x, t: p3.x});
-    objects.push({k: 'circle', a: cirL.a, b: cirL.b, r: cirL.r, f: f2, t: t2});
-    objects.push({k: 'straight', a: side.a, b: 1, r: side.r, f: p4.x, t: this.vertices[0].x});
+      const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
+      const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
 
-    const divCount = 1000;
-    var index = 0;
-    objects.forEach((object) => {
-      const gs = [0, 1, -1, 2, -2, 3, -3];
-      gs.forEach((g) => {
-        const points = [];
-        const k = object.k, a = object.a, b = object.b, r = object.r + g, f = object.f, t = object.t;
-        for (var i = 0;i <= divCount - 1;i ++) {
-          var point;
-          const d = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-          if (k == 'straight') {
-            if (b == 0) {
-              point = this.straight2(a, b, r, undefined, d);
-            } else {
-              point = this.straight2(a, b, r, d, undefined);
-            }
-          } else if (k == 'circle') {
-            const s = d * Math.PI / 180;
-            point = this.circle(a, b, r, s);
-          }
-          points.push(point);
-          if (g == 0 && index == 1 && this.points.length == 1) this.points.push([]);
-          if (g == 0 && index >= 1) this.points[1].push(point);
-        }
-        if (g == 0 && index == 0) this.points.push(points);
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        // geometry.setDrawRange(0, 0);
-        const material = new THREE.LineBasicMaterial({
-          color: this.frontColor,
-          transparent: true
-        });
-        for (var v = 0;v <= 9;v ++) {
-          const line = new THREE.Line(geometry, material);
-          line.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
-          if (v % 2 == 0) line.rotation.y = 180 * Math.PI / 180;
-          this.outlines.add(line);
-        }
-      })
-      index ++;
-    })
+      const lLine  = this.outlineGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, divCount, this.frontColor);
+      const rLine  = this.outlineGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, divCount, this.frontColor);
+      iArc.rotation.z = copyAngle;
+      oArc.rotation.z = copyAngle;
+      lLine.rotation.z = copyAngle;
+      rLine.rotation.z = copyAngle;
+      this.outlines.add(iArc, oArc, lLine, rLine);
+    }
+
+    // // 外側の継ぎ目の円弧
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+    //   const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
+    //   const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
+    //   const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
+    //   const oArc = this.outlineCircleGen(0, 0, 1600, 90 - oArcAngle, 90 + oArcAngle - 45, divCount, this.frontColor);
+    //   const lArc = this.outlineCircleGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
+    //   const rArc = this.outlineCircleGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
+    //   iArc.rotation.z = copyAngle;
+    //   oArc.rotation.z = copyAngle;
+    //   lArc.rotation.z = copyAngle;
+    //   rArc.rotation.z = copyAngle;
+    //   this.outlines.add(iArc, oArc, lArc, rArc);
+    // }
+
+    // 外側の継ぎ目の円弧
+    for (var v = 0;v <= this.verNum - 1;v ++) {
+      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
+      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
+      const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
+      const oArc = this.outlineCircleGen(0, 0, 1600, 90 - oArcAngle, 90 + oArcAngle - 45, divCount, this.frontColor);
+      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
+      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
+
+      const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
+      const iArcT = this.circle(0, 0,  970, 90 + iArcAngle - 45);
+      const rArcF = this.circle(0, 0, 1300, 90 + iArcAngle - 45);
+      const rArcT = this.circle(0, 0, 1300, 90 + oArcAngle - 45);
+      const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
+      const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle - 45);
+      const lArcF = this.circle(0, 0, 1300, 90 - oArcAngle);
+      const lArcT = this.circle(0, 0, 1300, 90 - iArcAngle);
+      // console.log(lArcT, iArcF)
+
+      const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
+      const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
+      const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
+      const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
+
+      const ilLine  = this.outlineGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, divCount, this.frontColor);
+      const irLine  = this.outlineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount, this.frontColor);
+      const olLine  = this.outlineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount, this.frontColor);
+      const orLine  = this.outlineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount, this.frontColor);
+      // const rotAngle = 16.875 * Math.PI / 180;
+
+      iArc.rotation.z = copyAngle;
+      oArc.rotation.z = copyAngle;
+      lArc.rotation.z = copyAngle;
+      rArc.rotation.z = copyAngle;
+      ilLine.rotation.z = copyAngle;
+      irLine.rotation.z = copyAngle;
+      olLine.rotation.z = copyAngle;
+      orLine.rotation.z = copyAngle;
+
+      this.outlines.add(iArc, oArc, lArc, rArc);
+      this.outlines.add(ilLine, irLine, olLine, orLine);
+    }
+
+    // // 外側の継ぎ目の直線
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+    //   const ilLine  = this.outlineGen(1, 0, this.pathW / 2, 970, 1300, divCount, this.frontColor);
+    //   const irLine  = this.outlineGen(1, 0, - this.pathW / 2, 970, 1300, divCount, this.frontColor);
+    //   const olLine  = this.outlineGen(1, 0, this.pathW / 2, 1300, 1600, divCount, this.frontColor);
+    //   const orLine  = this.outlineGen(1, 0, - this.pathW / 2, 1300, 1600, divCount, this.frontColor);
+    //   const rotAngle = 16.875 * Math.PI / 180;
+    //   ilLine.rotation.z = - rotAngle + copyAngle;
+    //   irLine.rotation.z = - rotAngle - 11.25 * Math.PI / 180 + copyAngle;
+    //   olLine.rotation.z = copyAngle;
+    //   orLine.rotation.z = - 45 * Math.PI / 180 + copyAngle;
+    //   this.outlines.add(ilLine, irLine, olLine, orLine);
+    // }
+
     this.scene.add(this.outlines);
   }
 
   // 塗りつぶし図形を生成
   generateShapes = () => {
-    var index = 0;
-    this.points.forEach((points) => {
+
+    const divCount = 1000;
+
+    // 中央の円
+    const centerCircle = this.circleShapeGen(0, 0, 225, 90, 450, divCount, this.frontColor);
+    this.shapes.add(centerCircle);
+
+    // スポーク
+    for (var v = 0;v <= this.verNum - 1;v ++) {
+
+      const sArc = this.circlePointGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
+      const lArc = this.circlePointGen(0, 0, 935, 78.75, 101.25, divCount, this.frontColor);
+
+      const sArcF = this.circle(0, 0, 260, 101.25);
+      const sArcT = this.circle(0, 0, 260,  78.75);
+      const lArcF = this.circle(0, 0, 935, 101.25);
+      const lArcT = this.circle(0, 0, 935,  78.75);
+
+      const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
+      const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
+
+      const lLine = this.linePointGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, divCount, this.frontColor);
+      const rLine = this.linePointGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, divCount, this.frontColor);
+
+      const points = sArc.concat(rLine, lArc, lLine);
+
       const shape = new THREE.Shape(points);
+      const geometry = new THREE.ShapeGeometry(shape);
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
         side: THREE.DoubleSide,
         transparent: true,
       });
-      const geometry = new THREE.ShapeGeometry(shape);
-      if (index == 0) {
-        const mesh = new THREE.Mesh(geometry, material);
-        this.shapes.add(mesh);
-      } else {
-        for (var v = 0;v <= 9;v ++) {
-          const materialC = material.clone();
-          const mesh = new THREE.Mesh(geometry, materialC);
-          const num = Math.trunc(v / 2);
-          if (v % 2 != 0) {
-            mesh.rotation.y = 180 * Math.PI / 180;
-            mesh.rotation.z = ( (360 / this.verNum) * num) * Math.PI / 180;
-          } else {
-            mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
-          }
-          this.shapes.add(mesh);
-        }
+      const mesh = new THREE.Mesh(geometry, material);
+      this.shapes.add(mesh);
+
+      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+      mesh.rotation.z = copyAngle;
+    }
+
+
+
+    this.scene.add(this.shapes);
+
+    // var index = 0;
+    // this.points.forEach((points) => {
+    //   const shape = new THREE.Shape(points);
+    //   const material = new THREE.MeshBasicMaterial({
+    //     color: this.frontColor,
+    //     side: THREE.DoubleSide,
+    //     transparent: true,
+    //   });
+    //   const geometry = new THREE.ShapeGeometry(shape);
+    //   if (index == 0) {
+    //     const mesh = new THREE.Mesh(geometry, material);
+    //     this.shapes.add(mesh);
+    //   } else {
+    //     for (var v = 0;v <= 9;v ++) {
+    //       const materialC = material.clone();
+    //       const mesh = new THREE.Mesh(geometry, materialC);
+    //       const num = Math.trunc(v / 2);
+    //       if (v % 2 != 0) {
+    //         mesh.rotation.y = 180 * Math.PI / 180;
+    //         mesh.rotation.z = ( (360 / this.verNum) * num) * Math.PI / 180;
+    //       } else {
+    //         mesh.rotation.z = (- (360 / this.verNum) * num) * Math.PI / 180;
+    //       }
+    //       this.shapes.add(mesh);
+    //     }
+    //   }
+    //   this.scene.add(this.shapes);
+    //   index ++;
+    // })
+  }
+
+  // ガイドラインの描画アニメーション制御
+  guidelinesDrawControl = (start, end, divCount, delayFactor) => {
+    const adjust = 1;
+    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+    this.guidelines.children.forEach((group) => {
+      const num = group.children.length / adjust;
+      const maxDelay = delayFactor * num;
+      for (var i = 0;i <= group.children.length - 1;i ++) {
+        const line = group.children[i];
+        const delay = delayFactor * i / adjust;
+        const ratioD = THREE.MathUtils.smoothstep(ratio, 0.0 + delay, 1.0 - maxDelay + delay);
+        line.geometry.setDrawRange(0, divCount * ratioD);
       }
-      this.scene.add(this.shapes);
-      index ++;
     })
+  }
+
+  // アウトラインの表示アニメーション制御
+  outlinesDrawControl = (start, end, divCount) => {
+    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+    this.outlines.children.forEach((group) => {
+      group.children.forEach((outline) => {
+        // console.log(divCount * ratio)
+        outline.geometry.setDrawRange(0, divCount * ratio);
+      });
+    });
   }
 
   // 図形のアニメーション制御
@@ -323,7 +364,7 @@ export default class GenjiGuruma extends Kamon {
   render() {
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDrawControl(0.05, 0.45, 1000, 0.005);
+    this.guidelinesDrawControl(0.05, 0.45, 1000, 0.1);
 
     // グリッドをフェードアウト
     this.grid.fadeOut(this.progRatio, 0.4, 0.5);
@@ -341,7 +382,7 @@ export default class GenjiGuruma extends Kamon {
     this.outlinesFadeoutControl(0.6, 0.7);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 1.0);
+    // this.shapesRotationControl(0.7, 1.0);
 
     // descのアニメーションを制御
     this.descSlideinControl(0.8, 0.95);
