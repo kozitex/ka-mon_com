@@ -125,11 +125,9 @@ export default class Kamon {
     this.outlines.children.forEach((child) => {
       if (child.isObject3D) {
         child.children.forEach((line) => {
-          // line.material.color = new THREE.Color(this.guideColor);
           line.material.color = new THREE.Color(this.frontColor);
         })
       } else {
-        // child.material.color = new THREE.Color(this.guideColor);
         child.material.color = new THREE.Color(this.frontColor);
       }
     })
@@ -212,7 +210,8 @@ export default class Kamon {
   // アウトライン用の円弧を生成
   outlineCircleGen(a, b, r, f, t, d, c) {
     const group = new THREE.Group();
-    const gs = [0, 1, -1, 2, -2, 3, -3];
+    // const gs = [4, -4];
+    const gs = [0, 1, -1, 2, -2, 3, -3, 4, -4];
     gs.forEach((g) => {
       const circle = this.circleGen(a, b, r + g, f, t, d, c);
       group.add(circle);
@@ -245,13 +244,19 @@ export default class Kamon {
   // アウトライン用の直線を生成
   outlineGen(a, b, r, f, t, d, c) {
     const group = new THREE.Group();
-    const gs = [0, 1, -1, 2, -2, 3, -3];
-    gs.forEach((g) => {
-      // const theta = Math.atan(a);
-      // const height = g * Math.sin(theta);
-      const line = this.lineGen(a, b, r + g, f, t, d, c);
-      group.add(line);
-    })
+    for (var i = 0;i <= 5;i ++) {
+      for (var j = 0;j <= 1;j ++) {
+        const g = i;
+        const theta = Math.abs(Math.atan(a));
+        const rad = (90 * Math.PI / 180) - theta;
+        const pSign = a > 0 ? j == 0 ? - 1 :   1 : j == 0 ? 1 : - 1;
+        const qSign = a > 0 ? j == 0 ?   1 : - 1 : j == 0 ? 1 : - 1;
+        const p = pSign * g * Math.cos(rad);
+        const q = qSign * g * Math.sin(rad);
+        const line = this.lineGen(a, b, - a * p + r + q, f + p, t + p, d, c);
+        group.add(line);
+      }
+    }
     return group;
   }
 
@@ -260,7 +265,6 @@ export default class Kamon {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      // const s = p * Math.PI / 180;
       const point = this.circle(a, b, r, p);
       points.push(point);
     }
@@ -377,11 +381,11 @@ export default class Kamon {
   guidelinesFadeoutControl = (start, end) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.guidelines.children.forEach((child) => {
-      if (child.isObject3D) {
+      if (child.isGroup) {
         child.children.forEach((line) => {
           line.visible = true;
           if (ratio >= 1) line.visible = false;
-          line.material.opacity = 1.0 - ratio;  
+          line.material.opacity = 1.0 - ratio;
         })
       } else {
         child.visible = true;
@@ -395,7 +399,7 @@ export default class Kamon {
   outlinesFadeoutControl = (start, end) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
     this.outlines.children.forEach((child) => {
-      if (child.isObject3D) {
+      if (child.isGroup) {
         child.children.forEach((line) => {
           line.visible = true;
           if (ratio >= 1) line.visible = false;

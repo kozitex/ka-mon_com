@@ -42,8 +42,8 @@ export default class HidariFutatsuDomoe extends Kamon {
       const r = circle.r;
       for (var i = 0;i <= divCount - 1;i ++) {
         const deg = THREE.MathUtils.damp(90, 450, 10, i / (divCount - 1));
-        const s = deg * (Math.PI / 180);
-        const mid = this.circle(a, b, r, s);
+        // const s = deg * (Math.PI / 180);
+        const mid = this.circle(a, b, r, deg);
         points.push(mid);
       }
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -81,8 +81,8 @@ export default class HidariFutatsuDomoe extends Kamon {
         const t = circle.t;
         for (var i = 0;i <= divCount - 1;i ++) {
           const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-          const s = deg * (Math.PI / 180);
-          const mid = this.circle(a, b, r, s);
+          // const s = deg * (Math.PI / 180);
+          const mid = this.circle(a, b, r, deg);
           points.push(mid);
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -125,8 +125,8 @@ export default class HidariFutatsuDomoe extends Kamon {
         const t  = arc.t;
         for (var i = 0;i <= divCount - 1;i ++) {
           const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-          const s = deg * (Math.PI / 180);
-          const mid = this.circle(a, b, r, s);
+          // const s = deg * (Math.PI / 180);
+          const mid = this.circle(a, b, r, deg);
           points.push(mid);
         }
       })

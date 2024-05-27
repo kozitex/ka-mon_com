@@ -15,13 +15,7 @@ export default class GenjiGuruma extends Kamon {
     this.verNum = 8;
     this.angleFr = 90;
     this.angleTo = 450;
-    // this.vertices = [];   // 五角形の頂点
-    // this.sides = [];      // 五角形の辺
-    // this.circlesS = [];   // 花びらの小さな円
-    // this.circlesL = [];   // 花びらの大きな円
     this.circlesD = [];   // ベースの4つの中心円
-    // this.diagonals = [];  // 対角線
-    // this.points = [];
 
     // ガイドラインの作成
     this.generateGuidelines();
@@ -34,16 +28,15 @@ export default class GenjiGuruma extends Kamon {
 
     // infoの準備
     this.jpName.innerHTML = '源氏車';
-    this.jpDesc.innerHTML = '桔梗の花を図案化した家紋です。桔梗の漢字のつくりから「更に吉（さらによし）」という語呂が縁起が良いとされ、多くの家の家紋として使用されていました。この内、陰桔梗は戦国武将、明智光秀の家紋としても知られていますが、本能寺の変をきっかけに裏切り者の家紋として使用を憚られた時期があったと言われています。';
+    this.jpDesc.innerHTML = '車紋（くるまもん）の一種で、平安時代の貴族の乗り物であった牛車の車輪の形をモチーフにした家紋です。牛車は別名で源氏車とも呼ばれていました。また、車紋は佐藤姓の家紋に用いられたことでも知られています。佐藤氏の祖先が伊勢神宮の神事に携わっていた際、使用していた牛車が豪奢で有名だったことが由来で家紋に用いることになったと言われています。';
     this.enName.innerHTML = 'Genji-Guruma';
-    this.enDesc.innerHTML = 'This is a family crest with a design of a bellflower. Due to the kanji character for bellflower, the word "Moreyoshi" is said to bring good luck, and it was used as the family emblem of many families. Of these, Kagekikyo is also known as the family emblem of Sengoku warlord Akechi Mitsuhide, but it is said that there was a time when its use was discouraged as a traitor&#39;s family emblem in the wake of the Honnoji Incident.';
+    this.enDesc.innerHTML = 'It is a type of Kurumamon (car crest), and is a family crest with a motif of the wheels of an ox cart, which was a vehicle used by aristocrats during the Heian period. The ox-cart was also called the Genji-guruma. The car crest is also known to have been used as the family crest of the Sato family name. It is said that the Sato clan&#39;s ancestors used it as their family crest because the bullock carts they used were famous for their luxury when they were involved in the rituals at Ise Grand Shrine.';
   }
 
   // ガイドラインを作成
   generateGuidelines = () => {
 
     const divCount = 1000;
-    // const objects = [];
 
     // 円
     const circles = new THREE.Group();
@@ -155,21 +148,23 @@ export default class GenjiGuruma extends Kamon {
     // 外側の継ぎ目の円弧
     for (var v = 0;v <= this.verNum - 1;v ++) {
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
-      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
+      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 / 970) * 180 / Math.PI;
+      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
+      const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
+      const lArcAngleT = 16.875 + Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI
       const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
       const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
-      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
-      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
+      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, divCount, this.frontColor);
+      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, divCount, this.frontColor);
 
       const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
-      const iArcT = this.circle(0, 0,  970, 90 + iArcAngle - 45);
-      const rArcF = this.circle(0, 0, 1300, 90 + iArcAngle - 45);
-      const rArcT = this.circle(0, 0, 1300, 90 + oArcAngle - 45);
+      const iArcT = this.circle(0, 0,  970, 90 + iArcAngle  - 45);
+      const rArcF = this.circle(0, 0, 1300, 90 + lArcAngleT - 45);
+      const rArcT = this.circle(0, 0, 1300, 90 + lArcAngleF - 45);
       const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
-      const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle - 45);
-      const lArcF = this.circle(0, 0, 1300, 90 - oArcAngle);
-      const lArcT = this.circle(0, 0, 1300, 90 - iArcAngle);
+      const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle  - 45);
+      const lArcF = this.circle(0, 0, 1300, 90 - lArcAngleF);
+      const lArcT = this.circle(0, 0, 1300, 90 - lArcAngleT);
 
       const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
       const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
@@ -193,7 +188,6 @@ export default class GenjiGuruma extends Kamon {
       this.outlines.add(iArc, oArc, lArc, rArc);
       this.outlines.add(ilLine, irLine, olLine, orLine);
     }
-
     this.scene.add(this.outlines);
   }
 
@@ -275,21 +269,23 @@ export default class GenjiGuruma extends Kamon {
 
     // 外側の継ぎ目の円弧
     for (var v = 0;v <= this.verNum - 1;v ++) {
-      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
-      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI
+      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI;
+      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
+      const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
+      const lArcAngleT = 16.875 + Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI
       const iArc = this.circlePointGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
       const oArc = this.circlePointGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
-      const lArc = this.circlePointGen(0, 0, 1300, 90 - oArcAngle, 90 - iArcAngle, divCount, this.frontColor);
-      const rArc = this.circlePointGen(0, 0, 1300, 90 + iArcAngle - 45, 90 + oArcAngle - 45, divCount, this.frontColor);
+      const lArc = this.circlePointGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, divCount, this.frontColor);
+      const rArc = this.circlePointGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, divCount, this.frontColor);
 
       const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
       const iArcT = this.circle(0, 0,  970, 90 + iArcAngle - 45);
-      const rArcF = this.circle(0, 0, 1300, 90 + iArcAngle - 45);
-      const rArcT = this.circle(0, 0, 1300, 90 + oArcAngle - 45);
+      const rArcF = this.circle(0, 0, 1300, 90 + lArcAngleT - 45);
+      const rArcT = this.circle(0, 0, 1300, 90 + lArcAngleF - 45);
       const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
       const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle - 45);
-      const lArcF = this.circle(0, 0, 1300, 90 - oArcAngle);
-      const lArcT = this.circle(0, 0, 1300, 90 - iArcAngle);
+      const lArcF = this.circle(0, 0, 1300, 90 - lArcAngleF);
+      const lArcT = this.circle(0, 0, 1300, 90 - lArcAngleT);
 
       const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
       const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
@@ -316,7 +312,6 @@ export default class GenjiGuruma extends Kamon {
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       mesh.rotation.z = copyAngle;
     }
-
     this.scene.add(this.shapes);
   }
 
@@ -379,16 +374,16 @@ export default class GenjiGuruma extends Kamon {
     this.guidelinesDrawControl(0.05, 0.45, 1000, 0.1);
 
     // グリッドをフェードアウト
-    this.grid.fadeOut(this.progRatio, 0.4, 0.5);
+    this.grid.fadeOut(this.progRatio, 0.35, 0.45);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDrawControl(0.4, 0.6, 1000);
 
     // ガイドラインをフェードアウト
-    this.guidelinesFadeoutControl(0.55, 0.65);
+    this.guidelinesFadeoutControl(0.5, 0.6);
 
     // 塗りつぶし図形をフェードイン
-    this.shapesDrawControl(0.65, 0.75);
+    this.shapesDrawControl(0.6, 0.7);
 
     // アウトラインをフェードアウト
     this.outlinesFadeoutControl(0.6, 0.7);

@@ -57,10 +57,10 @@ export default class Kikyou extends Kamon {
     for (var i = 0;i <= this.verNum - 1;i ++) {
       const r1 = this.angleFr - ((360 / this.verNum) * i);
       const r2 = this.angleFr - ((360 / this.verNum) * (i + 1));
-      const t1 = r1 * Math.PI / 180;
-      const t2 = r2 * Math.PI / 180;
-      const v1 = this.circle(0, 0, 1600, t1);
-      const v2 = this.circle(0, 0, 1600, t2);
+      // const t1 = r1;
+      // const t2 = r2;
+      const v1 = this.circle(0, 0, 1600, r1);
+      const v2 = this.circle(0, 0, 1600, r2);
       const coef = this.from2Points(v1.x, v1.y, v2.x, v2.y);
       this.vertices.push(v1);
       const side = {k: 'straight', a: coef.a, b: 1, r: coef.b, f: v1.x, t: v2.x};
@@ -121,7 +121,7 @@ export default class Kikyou extends Kamon {
       objects.push(before, after);
 
       // 小さな円
-      const center = this.circle(0, 0, 493, this.angleFr * Math.PI / 180);
+      const center = this.circle(0, 0, 493, this.angleFr);
       const circle = {k: 'circle', a: center.x, b: center.y, r: this.pathW, f: this.angleFr, t: this.angleTo};
       this.circlesS.push(circle);
       objects.push(circle);
@@ -146,8 +146,8 @@ export default class Kikyou extends Kamon {
               point = this.straight2(a, b, r, d, undefined);
             }
           } else if (k == 'circle') {
-            const s = d * Math.PI / 180;
-            point = this.circle(a, b, r, s);
+            // const s = d;
+            point = this.circle(a, b, r, d);
           }
           points.push(point);
         }
@@ -226,8 +226,8 @@ export default class Kikyou extends Kamon {
               point = this.straight2(a, b, r, d, undefined);
             }
           } else if (k == 'circle') {
-            const s = d * Math.PI / 180;
-            point = this.circle(a, b, r, s);
+            // const s = d;
+            point = this.circle(a, b, r, d);
           }
           points.push(point);
           if (g == 0 && index == 1 && this.points.length == 1) this.points.push([]);
@@ -315,7 +315,7 @@ export default class Kikyou extends Kamon {
   render() {
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDrawControl(0.05, 0.45, 1000, 0.005);
+    this.guidelinesDrawControl(0.05, 0.45, 1000, 0.001);
 
     // グリッドをフェードアウト
     this.grid.fadeOut(this.progRatio, 0.4, 0.5);
