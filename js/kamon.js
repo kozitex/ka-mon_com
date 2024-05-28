@@ -67,8 +67,38 @@ export default class Kamon {
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
 
+    // const cell1 = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
+    // const cell2 = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
+    // const cell3 = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
+    this.cells = new THREE.Group();
+    // this.cells.add(cell1, cell2, cell3);
+    for (var i = 0;i <= 2;i ++) {
+      const cell = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
+      this.cells.add(cell);
+    }
+    this.scene.add(this.cells);
+
     // 描画ループ開始
     this.render();
+  }
+
+  positionUpdate = () =>{
+    const scrAmount = THREE.MathUtils.clamp(this.progRatio, 0.0, 0.05);
+    const scrollRatio = THREE.MathUtils.mapLinear(scrAmount, 0.0, 0.05, 0.0, 0.2);
+    const nInt = 0.8;
+    const nAmp = 0.8 + scrollRatio;
+    const time = performance.now() * 0.00025;
+    for (var i = 0;i <= this.cells.children.length - 1;i ++) {
+      const cell = this.cells.children[i];
+      const positions = cell.geometry.attributes.position.array;
+      for(let j = 0; j <= 1000; j++){
+        const r = THREE.MathUtils.mapLinear(j, 0, 1000, 89, 450) * Math.PI / 180;
+        const nVal = THREE.MathUtils.mapLinear(noise.perlin2(i * 0.1 * Math.cos(r) * nInt + time, Math.sin(r) * nInt + time), 0.0, 1.0, nAmp, 1.0);
+        positions[j * 3] = Math.cos(r) * 1600 * nVal;
+        positions[j * 3 + 1] = Math.sin(r) * 1600 * nVal;
+      }
+      cell.geometry.attributes.position.needsUpdate = true;
+    }
   }
 
   // 画面のスクロール量を取得
@@ -199,7 +229,7 @@ export default class Kamon {
       points.push(point);
     }
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    geometry.setDrawRange(0, 0);
+    // geometry.setDrawRange(0, 0);
     const material = new THREE.LineBasicMaterial({
       color: c,
       transparent: true
@@ -428,6 +458,8 @@ export default class Kamon {
     // プログレスバーのアニメーション制御
     this.progressBarControl();
 
+    this.positionUpdate();
+  
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
 
