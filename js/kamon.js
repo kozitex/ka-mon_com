@@ -19,6 +19,9 @@ export default class Kamon {
     // フレームのサイズ
     this.edge = 3200;
 
+    // グリッドの有無
+    this.gridExist = true;
+
     // スクローラーの高さ
     this.rollHeight = 2000;
     this.roll = document.getElementById('roll');
@@ -56,6 +59,7 @@ export default class Kamon {
     this.outlines = new THREE.Group();
     this.shapes = new THREE.Group();
 
+
     // フレーム・グリッドの描画
     this.grid = new Grid();
     this.grids = this.grid.draw();
@@ -67,38 +71,11 @@ export default class Kamon {
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
 
-    // const cell1 = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
-    // const cell2 = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
-    // const cell3 = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
-    this.cells = new THREE.Group();
-    // this.cells.add(cell1, cell2, cell3);
-    for (var i = 0;i <= 2;i ++) {
-      const cell = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
-      this.cells.add(cell);
-    }
-    this.scene.add(this.cells);
+    // ファウンダーを生成
+    this.founderGen();
 
     // 描画ループ開始
     this.render();
-  }
-
-  positionUpdate = () =>{
-    const scrAmount = THREE.MathUtils.clamp(this.progRatio, 0.0, 0.05);
-    const scrollRatio = THREE.MathUtils.mapLinear(scrAmount, 0.0, 0.05, 0.0, 0.2);
-    const nInt = 0.8;
-    const nAmp = 0.8 + scrollRatio;
-    const time = performance.now() * 0.00025;
-    for (var i = 0;i <= this.cells.children.length - 1;i ++) {
-      const cell = this.cells.children[i];
-      const positions = cell.geometry.attributes.position.array;
-      for(let j = 0; j <= 1000; j++){
-        const r = THREE.MathUtils.mapLinear(j, 0, 1000, 89, 450) * Math.PI / 180;
-        const nVal = THREE.MathUtils.mapLinear(noise.perlin2(i * 0.1 * Math.cos(r) * nInt + time, Math.sin(r) * nInt + time), 0.0, 1.0, nAmp, 1.0);
-        positions[j * 3] = Math.cos(r) * 1600 * nVal;
-        positions[j * 3 + 1] = Math.sin(r) * 1600 * nVal;
-      }
-      cell.geometry.attributes.position.needsUpdate = true;
-    }
   }
 
   // 画面のスクロール量を取得
@@ -166,6 +143,16 @@ export default class Kamon {
     this.shapes.children.forEach((figure) => {
       figure.material.color = new THREE.Color(this.frontColor);
     })
+  }
+
+  // ファウンダーの生成
+  founderGen = () => {
+    this.founders = new THREE.Group();
+    for (var i = 0;i <= 9;i ++) {
+      const founder = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
+      this.founders.add(founder);
+    }
+    this.scene.add(this.founders);
   }
 
   // 直線の方程式
@@ -377,6 +364,33 @@ export default class Kamon {
     bar.style.strokeDashoffset = 283 * (1 - this.progRatio);
   }
 
+  // ファウンダーのアニメーション制御
+  foundersDrawControl = () => {
+    const ratio = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.05);
+    const scrFill = THREE.MathUtils.mapLinear(ratio, 0.0, 1.0, 0.0, 0.13);
+    const sizeAmt = THREE.MathUtils.mapLinear(ratio, 0.0, 1.0, 1800, 1600);
+    const opaAmt  = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.6);
+    const dInt = 0.2;
+    const dAmp = 0.87 + scrFill;
+    const time = performance.now() * 0.00025;
+    for (var i = 0;i <= this.founders.children.length - 1;i ++) {
+      const founder = this.founders.children[i];
+      const positions = founder.geometry.attributes.position.array;
+      for(let j = 0; j <= 1000; j++){
+        const angle = THREE.MathUtils.mapLinear(j, 0, 1000, 89.6, 450) * Math.PI / 180;
+        const dist = noise.perlin2(
+          Math.cos(angle) * i * dInt + time, 
+          Math.sin(angle) * i * dInt + time
+        );
+        const dVal = THREE.MathUtils.mapLinear(dist, 0.0, 1.0, dAmp, 1.0);
+        positions[j * 3] = Math.cos(angle) * sizeAmt * dVal;
+        positions[j * 3 + 1] = Math.sin(angle) * sizeAmt * dVal;
+        founder.material.opacity = Math.abs(dist * 1) - opaAmt;
+      }
+      founder.geometry.attributes.position.needsUpdate = true;
+    }
+  }
+
   // ガイドラインの描画アニメーション制御
   guidelinesDrawControl = (start, end, divCount, delayFactor) => {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
@@ -458,8 +472,9 @@ export default class Kamon {
     // プログレスバーのアニメーション制御
     this.progressBarControl();
 
-    this.positionUpdate();
-  
+    // ファウンダーのアニメーション制御
+    this.foundersDrawControl();
+
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
 

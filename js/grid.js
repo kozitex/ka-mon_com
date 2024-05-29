@@ -101,10 +101,29 @@ export default class Grid {
     });
   }
 
+  // フェードインアウト
+  fadeInOut = (exist, progRatio, inStart, inEnd, outStart, outEnd) => {
+    const inRatio  = THREE.MathUtils.smoothstep(progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(progRatio, outStart, outEnd);
+    this.group.children.forEach((line) => {
+      if (exist) {
+        if (inRatio > 0.0 && outRatio == 0.0) {
+          line.visible = true;
+          line.material.opacity = inRatio;
+        } else if (outRatio > 0.0) {
+          line.material.opacity = 1.0 - outRatio;
+        } else if (outRatio >= 1.0) {
+          line.visible = false;
+        }
+      } else {
+        line.visible = false;
+      }
+    });
+  }
+
   // フェードアウト
   fadeOut = (tick, start, end) => {
     const ratio = THREE.MathUtils.smoothstep(tick, start, end);
-
     this.group.children.forEach((line) => {
       line.visible = true;
       if (ratio >= 1) line.visible = false;

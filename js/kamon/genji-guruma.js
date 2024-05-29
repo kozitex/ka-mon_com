@@ -17,6 +17,8 @@ export default class GenjiGuruma extends Kamon {
     this.angleTo = 450;
     this.circlesD = [];   // ベースの4つの中心円
 
+    this.gridExist = false;
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -373,8 +375,9 @@ export default class GenjiGuruma extends Kamon {
     // ガイドラインの表示アニメーション制御
     this.guidelinesDrawControl(0.05, 0.45, 1000, 0.1);
 
-    // グリッドをフェードアウト
-    this.grid.fadeOut(this.progRatio, 0.35, 0.45);
+    // グリッドのアニメーション制御
+    // this.grid.fadeOut(this.progRatio, 0.35, 0.45);
+    this.grid.fadeInOut(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDrawControl(0.4, 0.6, 1000);
