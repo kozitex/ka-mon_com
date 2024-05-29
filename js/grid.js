@@ -101,8 +101,8 @@ export default class Grid {
     });
   }
 
-  // フェードインアウト
-  fadeInOut = (exist, progRatio, inStart, inEnd, outStart, outEnd) => {
+  // 表示制御
+  displayControl = (exist, progRatio, inStart, inEnd, outStart, outEnd) => {
     const inRatio  = THREE.MathUtils.smoothstep(progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(progRatio, outStart, outEnd);
     this.group.children.forEach((line) => {

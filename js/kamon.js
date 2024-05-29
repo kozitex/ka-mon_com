@@ -72,7 +72,7 @@ export default class Kamon {
     this.enDesc = document.getElementById('enDesc');
 
     // ファウンダーを生成
-    this.founderGen();
+    this.foundersGen();
 
     // 描画ループ開始
     this.render();
@@ -146,7 +146,7 @@ export default class Kamon {
   }
 
   // ファウンダーの生成
-  founderGen = () => {
+  foundersGen = () => {
     this.founders = new THREE.Group();
     for (var i = 0;i <= 9;i ++) {
       const founder = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
@@ -178,22 +178,16 @@ export default class Kamon {
     var b = -2 * h + 2 * m * (n - k);
     var c = Math.pow(h, 2) + Math.pow((n - k), 2) - Math.pow(r, 2);
     var D = Math.pow(b, 2) - 4 * a * c;
-    // console.log('D: ' + D)
 
     var kouten = [];
     if (D >= 0) {
       var x1 = (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
       var x2 = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
       if (D == 0) {
-        //Dがゼロなら、1点だけが答え
         kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
-        // kouten.push({ x: x1, y: m * x1 + n});
       } else {
-        //Dがゼロより上なら、2点が答え
         kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
         kouten.push(new THREE.Vector3(x2, m * x2 + n, 0));
-        // kouten.push({ x: x1, y: m * x1 + n});
-        // kouten.push({ x: x2, y: m * x2 + n});
       }
     }
     return kouten;
@@ -203,7 +197,6 @@ export default class Kamon {
   circle(a, b, r, s) {
     const sr = s * Math.PI / 180;
     return new THREE.Vector3(a + r * Math.cos(sr), b + r * Math.sin(sr), 0);
-    // return new THREE.Vector3(a + r * Math.cos(s), b + r * Math.sin(s), 0);
   }
 
   // 円弧を生成
@@ -211,12 +204,11 @@ export default class Kamon {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      // const s = p * Math.PI / 180;
       const point = this.circle(a, b, r, p);
       points.push(point);
     }
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    // geometry.setDrawRange(0, 0);
+    geometry.setDrawRange(0, 0);
     const material = new THREE.LineBasicMaterial({
       color: c,
       transparent: true
@@ -227,7 +219,6 @@ export default class Kamon {
   // アウトライン用の円弧を生成
   outlineCircleGen(a, b, r, f, t, d, c) {
     const group = new THREE.Group();
-    // const gs = [4, -4];
     const gs = [0, 1, -1, 2, -2, 3, -3, 4, -4];
     gs.forEach((g) => {
       const circle = this.circleGen(a, b, r + g, f, t, d, c);
@@ -300,20 +291,10 @@ export default class Kamon {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      // const s = p * Math.PI / 180;
       const point = this.circle(a, b, r, p);
       points.push(point);
     }
-    // console.log(points)
     return points;
-    // const shape = new THREE.Shape(points);
-    // const geometry = new THREE.ShapeGeometry(shape);
-    // const material = new THREE.MeshBasicMaterial({
-    //   color: c,
-    //   side: THREE.DoubleSide,
-    //   transparent: true,
-    // });
-    // return new THREE.Mesh(geometry, material);
   }
 
   // 直線を生成
@@ -330,13 +311,6 @@ export default class Kamon {
       points.push(point);
     }
     return points;
-    // const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    // geometry.setDrawRange(0, 0);
-    // const material = new THREE.LineBasicMaterial({
-    //   color: c,
-    //   transparent: true
-    // });
-    // return new THREE.Line(geometry, material);
   }
 
 
@@ -351,7 +325,6 @@ export default class Kamon {
   getIntersect(a1, b1, a2, b2) {
     const interX = (b2 - b1) / (a1 - a2);
     const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
-    // return {x: interX, y: interY};
     return new THREE.Vector3(interX, interY, 0);
   }
 
@@ -375,6 +348,7 @@ export default class Kamon {
     const time = performance.now() * 0.00025;
     for (var i = 0;i <= this.founders.children.length - 1;i ++) {
       const founder = this.founders.children[i];
+      founder.geometry.setDrawRange(0, 1000);
       const positions = founder.geometry.attributes.position.array;
       for(let j = 0; j <= 1000; j++){
         const angle = THREE.MathUtils.mapLinear(j, 0, 1000, 89.6, 450) * Math.PI / 180;
@@ -391,80 +365,88 @@ export default class Kamon {
     }
   }
 
-  // ガイドラインの描画アニメーション制御
-  guidelinesDrawControl = (start, end, divCount, delayFactor) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    const adjust = 1;
-    const num = this.guidelines.children.length / adjust;
-    const maxDelay = delayFactor * num;
-    for (var i = 0;i <= this.guidelines.children.length - 1;i ++) {
-      const line = this.guidelines.children[i];
-      const delay = delayFactor * i / adjust;
-      const ratioD = THREE.MathUtils.smoothstep(ratio, 0.0 + delay, 1.0 - maxDelay + delay);
-      line.geometry.setDrawRange(0, divCount * ratioD);
-    }
+  // ガイドラインの表示制御
+  guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, delayFactor) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    this.guidelines.children.forEach((group) => {
+      const lineNum = group.children.length;
+      const maxDelay = delayFactor * lineNum;
+      for (var i = 0;i <= lineNum - 1;i ++) {
+        const line = group.children[i];
+        if (inRatio > 0.0 && outRatio == 0.0) {
+          const delay = delayFactor * i;
+          const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
+          line.geometry.setDrawRange(0, divCount * inRatioD);
+        } else if (outRatio > 0.0) {
+          line.visible = true;
+          line.material.opacity = 1.0 - outRatio;
+        } else if (outRatio >= 1.0) {
+          line.visible = false;
+        }
+      }
+    })
   }
 
-  // アウトラインの表示アニメーション制御
-  outlinesDrawControl = (start, end, divCount) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.outlines.children.forEach((outline) => {
-      outline.geometry.setDrawRange(0, divCount * ratio);
+  // アウトラインの表示制御
+  outlinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    this.outlines.children.forEach((group) => {
+      group.children.forEach((line) => {
+        if (inRatio > 0.0 && outRatio == 0.0) {
+          line.geometry.setDrawRange(0, divCount * inRatio);
+        } else if (outRatio > 0.0) {
+          line.visible = true;
+          line.material.opacity = 1.0 - outRatio;
+        } else if (outRatio >= 1.0) {
+          line.visible = false;
+        }
+      })
     });
   }
 
-  // 塗りつぶし図形のアニメーション制御
-  shapesDrawControl = (start, end) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+  // 図形の表示制御
+  shapesDisplayControl = (inStart, inEnd, outStart, outEnd) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
     this.shapes.children.forEach((shape) => {
-      shape.material.opacity = ratio;
-    });
-  }
-
-  // ガイドラインのフェードアウトアニメーション制御
-  guidelinesFadeoutControl = (start, end) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.guidelines.children.forEach((child) => {
-      if (child.isGroup) {
-        child.children.forEach((line) => {
-          line.visible = true;
-          if (ratio >= 1) line.visible = false;
-          line.material.opacity = 1.0 - ratio;
-        })
+      if (inRatio > 0.0 && outRatio == 0.0) {
+        shape.visible = true;
+        shape.material.opacity = inRatio;
+      } else if (outRatio > 0.0) {
+        shape.visible = true;
+        shape.material.opacity = 1.0 - outRatio;
+      } else if (outRatio >= 1.0) {
+        shape.visible = false;
       } else {
-        child.visible = true;
-        if (ratio >= 1) child.visible = false;
-        child.material.opacity = 1.0 - ratio;
+        shape.visible = false;
       }
-    });
+    })
   }
 
-  // アウトラインのフェードアウトアニメーション制御
-  outlinesFadeoutControl = (start, end) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.outlines.children.forEach((child) => {
-      if (child.isGroup) {
-        child.children.forEach((line) => {
-          line.visible = true;
-          if (ratio >= 1) line.visible = false;
-          line.material.opacity = 1.0 - ratio;
-        })
-      } else {
-        child.visible = true;
-        if (ratio >= 1) child.visible = false;
-        child.material.opacity = 1.0 - ratio;
-      }
-    });
-  }
-
-  // descのアニメーション制御
-  descSlideinControl = (start, end) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    const trRatio = (1 - ratio) * 100;
-    this.jpName.style = "opacity: " + ratio + ";transform: translateX(-" + trRatio +"%);"
-    this.jpDesc.style = "opacity: " + ratio + ";transform: translateY( " + trRatio +"%);"
-    this.enName.style = "opacity: " + ratio + ";transform: translateX( " + trRatio +"%);"
-    this.enDesc.style = "opacity: " + ratio + ";transform: translateY( " + trRatio +"%);"
+  // descの表示制御
+  descDisplayControl = (inStart, inEnd, outStart, outEnd) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    var opaRaio, traRatio;
+    if (inRatio > 0.0 && outRatio == 0.0) {
+      opaRaio = inRatio;
+      traRatio = (1.0 - inRatio) * 100;
+    } else if (outRatio > 0.0) {
+      opaRaio = 1.0 - outRatio;
+      traRatio = outRatio * 100;
+    } else if (outRatio >= 1.0) {
+      opaRaio = 0.0;
+      traRatio = 100;
+    } else {
+      opaRaio = 0.0;
+      traRatio = 100;
+    }
+    this.jpName.style = "opacity: " + opaRaio + ";transform: translateX(-" + traRatio +"%);"
+    this.jpDesc.style = "opacity: " + opaRaio + ";transform: translateY( " + traRatio +"%);"
+    this.enName.style = "opacity: " + opaRaio + ";transform: translateX( " + traRatio +"%);"
+    this.enDesc.style = "opacity: " + opaRaio + ";transform: translateY( " + traRatio +"%);"
   }
 
   render() {

@@ -317,31 +317,31 @@ export default class GenjiGuruma extends Kamon {
     this.scene.add(this.shapes);
   }
 
-  // ガイドラインの描画アニメーション制御
-  guidelinesDrawControl = (start, end, divCount, delayFactor) => {
-    const adjust = 1;
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.guidelines.children.forEach((group) => {
-      const num = group.children.length / adjust;
-      const maxDelay = delayFactor * num;
-      for (var i = 0;i <= group.children.length - 1;i ++) {
-        const line = group.children[i];
-        const delay = delayFactor * i / adjust;
-        const ratioD = THREE.MathUtils.smoothstep(ratio, 0.0 + delay, 1.0 - maxDelay + delay);
-        line.geometry.setDrawRange(0, divCount * ratioD);
-      }
-    })
-  }
+  // // ガイドラインの描画アニメーション制御
+  // guidelinesDrawControl = (start, end, divCount, delayFactor) => {
+  //   const adjust = 1;
+  //   const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+  //   this.guidelines.children.forEach((group) => {
+  //     const num = group.children.length / adjust;
+  //     const maxDelay = delayFactor * num;
+  //     for (var i = 0;i <= group.children.length - 1;i ++) {
+  //       const line = group.children[i];
+  //       const delay = delayFactor * i / adjust;
+  //       const ratioD = THREE.MathUtils.smoothstep(ratio, 0.0 + delay, 1.0 - maxDelay + delay);
+  //       line.geometry.setDrawRange(0, divCount * ratioD);
+  //     }
+  //   })
+  // }
 
-  // アウトラインの表示アニメーション制御
-  outlinesDrawControl = (start, end, divCount) => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.outlines.children.forEach((group) => {
-      group.children.forEach((outline) => {
-        outline.geometry.setDrawRange(0, divCount * ratio);
-      });
-    });
-  }
+  // // アウトラインの表示アニメーション制御
+  // outlinesDrawControl = (start, end, divCount) => {
+  //   const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+  //   this.outlines.children.forEach((group) => {
+  //     group.children.forEach((outline) => {
+  //       outline.geometry.setDrawRange(0, divCount * ratio);
+  //     });
+  //   });
+  // }
 
   // 図形のアニメーション制御
   shapesRotationControl(start, end) {
@@ -372,30 +372,23 @@ export default class GenjiGuruma extends Kamon {
 
   render() {
 
-    // ガイドラインの表示アニメーション制御
-    this.guidelinesDrawControl(0.05, 0.45, 1000, 0.1);
+    // グリッドの表示アニメーション制御
+    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
-    // グリッドのアニメーション制御
-    // this.grid.fadeOut(this.progRatio, 0.35, 0.45);
-    this.grid.fadeInOut(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
+    // ガイドラインの表示アニメーション制御
+    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.1);
 
     // アウトラインの表示アニメーション制御
-    this.outlinesDrawControl(0.4, 0.6, 1000);
+    this.outlinesDisplayControl(0.4, 0.6, 0.6, 0.7, 1000);
 
-    // ガイドラインをフェードアウト
-    this.guidelinesFadeoutControl(0.5, 0.6);
-
-    // 塗りつぶし図形をフェードイン
-    this.shapesDrawControl(0.6, 0.7);
-
-    // アウトラインをフェードアウト
-    this.outlinesFadeoutControl(0.6, 0.7);
+    // 図形の表示アニメーション制御
+    this.shapesDisplayControl(0.6, 0.7, 1.0, 1.0);
 
     // 図形を回転
     this.shapesRotationControl(0.7, 1.0);
 
-    // descのアニメーションを制御
-    this.descSlideinControl(0.8, 0.95);
+    // descの表示アニメーションを制御
+    this.descDisplayControl(0.8, 0.95, 1.0, 1.0);
 
     super.render();
   }
