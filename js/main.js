@@ -15,8 +15,8 @@ const init = () => {
 
   // const kamon = new Kageigeta();
   // const kamon = new HidariFutatsuDomoe();
-  // const kamon = new Kikyou();
-  const kamon = new GenjiGuruma();
+  const kamon = new Kikyou();
+  // const kamon = new GenjiGuruma();
 
   // テーマカラーを適用
   const changeTheme = (theme) => {

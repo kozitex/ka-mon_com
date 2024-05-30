@@ -149,7 +149,7 @@ export default class Kamon {
   foundersGen = () => {
     this.founders = new THREE.Group();
     for (var i = 0;i <= 9;i ++) {
-      const founder = this.circleGen(0, 0, 1600, 90, 450, 1000, this.guideColor);
+      const founder = this.circleGen(0, 0, 1600, 90, 450, 1000, this.frontColor);
       this.founders.add(founder);
     }
     this.scene.add(this.founders);
@@ -370,9 +370,9 @@ export default class Kamon {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
     this.guidelines.children.forEach((group) => {
-      const lineNum = group.children.length;
-      const maxDelay = delayFactor * lineNum;
-      for (var i = 0;i <= lineNum - 1;i ++) {
+      const groupNum = group.children.length;
+      const maxDelay = delayFactor * groupNum;
+      for (var i = 0;i <= groupNum - 1;i ++) {
         const line = group.children[i];
         if (inRatio > 0.0 && outRatio == 0.0) {
           const delay = delayFactor * i;
@@ -395,11 +395,14 @@ export default class Kamon {
     this.outlines.children.forEach((group) => {
       group.children.forEach((line) => {
         if (inRatio > 0.0 && outRatio == 0.0) {
+          line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatio);
         } else if (outRatio > 0.0) {
           line.visible = true;
           line.material.opacity = 1.0 - outRatio;
         } else if (outRatio >= 1.0) {
+          line.visible = false;
+        } else {
           line.visible = false;
         }
       })
