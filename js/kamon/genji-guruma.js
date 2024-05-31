@@ -199,11 +199,14 @@ export default class GenjiGuruma extends Kamon {
     const divCount = 1000;
 
     // 中央の円
+    const group = new THREE.Group();
     const centerCircle = this.circleShapeGen(0, 0, 225, 90, 450, divCount, this.frontColor);
-    this.shapes.add(centerCircle);
+    group.add(centerCircle);
+    this.shapes.add(group);
 
     // スポーク
     for (var v = 0;v <= this.verNum - 1;v ++) {
+      const group = new THREE.Group();
 
       const sArc = this.circlePointGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
       const lArc = this.circlePointGen(0, 0, 935, 78.75, 101.25, divCount, this.frontColor);
@@ -229,7 +232,8 @@ export default class GenjiGuruma extends Kamon {
         transparent: true,
       });
       const mesh = new THREE.Mesh(geometry, material);
-      this.shapes.add(mesh);
+      group.add(mesh);
+      this.shapes.add(group);
 
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       mesh.rotation.z = copyAngle;
@@ -237,6 +241,7 @@ export default class GenjiGuruma extends Kamon {
 
     // 内側の継ぎ目
     for (var v = 0;v <= this.verNum - 1;v ++) {
+      const group = new THREE.Group();
       const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
       const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
       const iArc = this.circlePointGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
@@ -263,7 +268,8 @@ export default class GenjiGuruma extends Kamon {
         transparent: true,
       });
       const mesh = new THREE.Mesh(geometry, material);
-      this.shapes.add(mesh);
+      group.add(mesh);
+      this.shapes.add(group);
 
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       mesh.rotation.z = copyAngle;
@@ -271,6 +277,7 @@ export default class GenjiGuruma extends Kamon {
 
     // 外側の継ぎ目の円弧
     for (var v = 0;v <= this.verNum - 1;v ++) {
+      const group = new THREE.Group();
       const iArcAngle = 16.875 + Math.atan(this.pathW / 2 /  970) * 180 / Math.PI;
       const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
       const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
@@ -309,7 +316,8 @@ export default class GenjiGuruma extends Kamon {
         transparent: true,
       });
       const mesh = new THREE.Mesh(geometry, material);
-      this.shapes.add(mesh);
+      group.add(mesh);
+      this.shapes.add(group);
 
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       mesh.rotation.z = copyAngle;
@@ -317,35 +325,10 @@ export default class GenjiGuruma extends Kamon {
     this.scene.add(this.shapes);
   }
 
-  // // ガイドラインの描画アニメーション制御
-  // guidelinesDrawControl = (start, end, divCount, delayFactor) => {
-  //   const adjust = 1;
-  //   const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-  //   this.guidelines.children.forEach((group) => {
-  //     const num = group.children.length / adjust;
-  //     const maxDelay = delayFactor * num;
-  //     for (var i = 0;i <= group.children.length - 1;i ++) {
-  //       const line = group.children[i];
-  //       const delay = delayFactor * i / adjust;
-  //       const ratioD = THREE.MathUtils.smoothstep(ratio, 0.0 + delay, 1.0 - maxDelay + delay);
-  //       line.geometry.setDrawRange(0, divCount * ratioD);
-  //     }
-  //   })
-  // }
-
-  // // アウトラインの表示アニメーション制御
-  // outlinesDrawControl = (start, end, divCount) => {
-  //   const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-  //   this.outlines.children.forEach((group) => {
-  //     group.children.forEach((outline) => {
-  //       outline.geometry.setDrawRange(0, divCount * ratio);
-  //     });
-  //   });
-  // }
-
   // 図形のアニメーション制御
   shapesRotationControl(start, end) {
     var ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
+    if (ratio <= 0.0) return;
     for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
       const shape = this.shapes.children[i];
       const j = i - 1;
@@ -356,13 +339,13 @@ export default class GenjiGuruma extends Kamon {
         var ratioSx, ratioSy;
         if (ratio < 0.1 + num / adjust1) {
           ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-          ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.2);
+          ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
         } else if (ratio < 0.4 + num / adjust2) {
           ratioSx = 0.3;
-          ratioSy = 0.2;
+          ratioSy = 0.3;
         } else {
           ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-          ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.2, 1.0);
+          ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
         }
         shape.scale.set(ratioSx, ratioSy)
         this.shapes.rotation.z = - 720 * ratio * (Math.PI / 180);

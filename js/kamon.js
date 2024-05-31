@@ -218,12 +218,12 @@ export default class Kamon {
 
   // アウトライン用の円弧を生成
   outlineCircleGen(a, b, r, f, t, d, c) {
+    const w = 6;
     const group = new THREE.Group();
-    const gs = [0, 1, -1, 2, -2, 3, -3, 4, -4];
-    gs.forEach((g) => {
+    for (var g = - w;g <= w;g ++) {
       const circle = this.circleGen(a, b, r + g, f, t, d, c);
       group.add(circle);
-    })
+    }
     return group;
   }
 
@@ -251,8 +251,9 @@ export default class Kamon {
 
   // アウトライン用の直線を生成
   outlineGen(a, b, r, f, t, d, c) {
+    const w = 6;
     const group = new THREE.Group();
-    for (var i = 0;i <= 5;i ++) {
+    for (var i = 0;i <= w - 1;i ++) {
       for (var j = 0;j <= 1;j ++) {
         const g = i;
         const theta = Math.abs(Math.atan(a));
@@ -265,6 +266,15 @@ export default class Kamon {
         group.add(line);
       }
     }
+    // 両端を丸く処理
+    const edgeF = this.straight2(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
+    const edgeCircleF = this.circleShapeGen(edgeF.x, edgeF.y, w, 0, 360, 100, c);
+    edgeCircleF.geometry.setDrawRange(0, 0);
+    const edgeT = this.straight2(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
+    const edgeCircleT = this.circleShapeGen(edgeT.x, edgeT.y, w, 0, 360, 100, c);
+    edgeCircleT.geometry.setDrawRange(0, 0);
+    group.add(edgeCircleF, edgeCircleT);
+
     return group;
   }
 
@@ -283,6 +293,7 @@ export default class Kamon {
       side: THREE.DoubleSide,
       transparent: true,
     });
+    material.opacity = 0.0;
     return new THREE.Mesh(geometry, material);
   }
 
@@ -312,7 +323,6 @@ export default class Kamon {
     }
     return points;
   }
-
 
   // ２点の座標から方程式のa,bを取得
   from2Points = (x1, y1, x2, y2) => {
@@ -369,17 +379,20 @@ export default class Kamon {
   guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, delayFactor) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    // if (inRatio <= 0.0 || outRatio >= 1.0) return;
     this.guidelines.children.forEach((group) => {
       const groupNum = group.children.length;
       const maxDelay = delayFactor * groupNum;
-      for (var i = 0;i <= groupNum - 1;i ++) {
+    for (var i = 0;i <= groupNum - 1;i ++) {
         const line = group.children[i];
+        const delay = delayFactor * i;
+        const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
         if (inRatio > 0.0 && outRatio == 0.0) {
-          const delay = delayFactor * i;
-          const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
+          line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
         } else if (outRatio > 0.0) {
           line.visible = true;
+          line.geometry.setDrawRange(0, divCount * inRatioD);
           line.material.opacity = 1.0 - outRatio;
         } else if (outRatio >= 1.0) {
           line.visible = false;
@@ -392,16 +405,16 @@ export default class Kamon {
   outlinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    // if (inRatio <= 0.0 || outRatio >= 1.0) return;
     this.outlines.children.forEach((group) => {
       group.children.forEach((line) => {
-        if (inRatio > 0.0 && outRatio == 0.0) {
+        if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatio);
-        } else if (outRatio > 0.0) {
+        } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio <= 1.0) {
           line.visible = true;
+          line.geometry.setDrawRange(0, divCount * inRatio);
           line.material.opacity = 1.0 - outRatio;
-        } else if (outRatio >= 1.0) {
-          line.visible = false;
         } else {
           line.visible = false;
         }
@@ -413,18 +426,19 @@ export default class Kamon {
   shapesDisplayControl = (inStart, inEnd, outStart, outEnd) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
-    this.shapes.children.forEach((shape) => {
-      if (inRatio > 0.0 && outRatio == 0.0) {
-        shape.visible = true;
-        shape.material.opacity = inRatio;
-      } else if (outRatio > 0.0) {
-        shape.visible = true;
-        shape.material.opacity = 1.0 - outRatio;
-      } else if (outRatio >= 1.0) {
-        shape.visible = false;
-      } else {
-        shape.visible = false;
-      }
+    // if (inRatio <= 0.0 || outRatio >= 1.0) return;
+    this.shapes.children.forEach((group) => {
+      group.children.forEach((shape) => {
+        if (inRatio > 0.0 && outRatio == 0.0) {
+          shape.visible = true;
+          shape.material.opacity = inRatio;
+        } else if (outRatio > 0.0) {
+          shape.visible = true;
+          shape.material.opacity = 1.0 - outRatio;
+        } else {
+          shape.visible = false;
+        }
+      })
     })
   }
 
@@ -432,6 +446,7 @@ export default class Kamon {
   descDisplayControl = (inStart, inEnd, outStart, outEnd) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    // if (inRatio <= 0.0 || outRatio >= 1.0) return;
     var opaRaio, traRatio;
     if (inRatio > 0.0 && outRatio == 0.0) {
       opaRaio = inRatio;

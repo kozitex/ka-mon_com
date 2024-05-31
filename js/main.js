@@ -14,8 +14,8 @@ const init = () => {
   let autoScrolling = false;
 
   // const kamon = new Kageigeta();
-  // const kamon = new HidariFutatsuDomoe();
-  const kamon = new Kikyou();
+  const kamon = new HidariFutatsuDomoe();
+  // const kamon = new Kikyou();
   // const kamon = new GenjiGuruma();
 
   // テーマカラーを適用
@@ -83,7 +83,7 @@ const init = () => {
   // テーマ名が保存されていたら適用
   const myTheme = localStorage.getItem('theme');
   if (myTheme) {
-    changeTheme(myTheme);
+    // changeTheme(myTheme);
     const target = document.getElementById(myTheme);
     target.checked = true;
   }
