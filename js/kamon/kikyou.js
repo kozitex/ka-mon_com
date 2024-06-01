@@ -255,6 +255,9 @@ export default class Kikyou extends Kamon {
 
   render() {
 
+    // ファウンダーの表示アニメーション制御
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
+
     // グリッドの表示アニメーション制御
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.4, 0.5);
 

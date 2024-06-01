@@ -110,7 +110,7 @@ export default class Grid {
         if (inRatio > 0.0 && outRatio == 0.0) {
           line.visible = true;
           line.material.opacity = inRatio;
-        } else if (outRatio > 0.0) {
+        } else if (outRatio > 0.0 && outRatio < 1.0) {
           line.material.opacity = 1.0 - outRatio;
         } else if (outRatio >= 1.0) {
           line.visible = false;

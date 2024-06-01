@@ -13,8 +13,8 @@ const init = () => {
   let promptTimeout = 0;
   let autoScrolling = false;
 
-  // const kamon = new Kageigeta();
-  const kamon = new HidariFutatsuDomoe();
+  const kamon = new Kageigeta();
+  // const kamon = new HidariFutatsuDomoe();
   // const kamon = new Kikyou();
   // const kamon = new GenjiGuruma();
 

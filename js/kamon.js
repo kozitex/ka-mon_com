@@ -59,7 +59,6 @@ export default class Kamon {
     this.outlines = new THREE.Group();
     this.shapes = new THREE.Group();
 
-
     // フレーム・グリッドの描画
     this.grid = new Grid();
     this.grids = this.grid.draw();
@@ -119,7 +118,7 @@ export default class Kamon {
 
     // ガイドラインの色を変更
     this.guidelines.children.forEach((child) => {
-      if (child.isObject3D) {
+      if (child.isGroup) {
         child.children.forEach((line) => {
           line.material.color = new THREE.Color(this.guideColor);
         })
@@ -130,7 +129,7 @@ export default class Kamon {
 
     // アウトラインの色を変更
     this.outlines.children.forEach((child) => {
-      if (child.isObject3D) {
+      if (child.isGroup) {
         child.children.forEach((line) => {
           line.material.color = new THREE.Color(this.frontColor);
         })
@@ -140,9 +139,19 @@ export default class Kamon {
     })
 
     // 図形の色を変更
-    this.shapes.children.forEach((figure) => {
-      figure.material.color = new THREE.Color(this.frontColor);
+    this.shapes.children.forEach((child) => {
+      if (child.isGroup) {
+        child.children.forEach((line) => {
+          line.material.color = new THREE.Color(this.frontColor);
+        })
+      } else {
+        child.material.color = new THREE.Color(this.frontColor);
+      }
     })
+
+    // this.shapes.children.forEach((figure) => {
+    //   figure.material.color = new THREE.Color(this.frontColor);
+    // })
   }
 
   // ファウンダーの生成
@@ -347,14 +356,15 @@ export default class Kamon {
     bar.style.strokeDashoffset = 283 * (1 - this.progRatio);
   }
 
-  // ファウンダーのアニメーション制御
-  foundersDrawControl = () => {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.05);
-    const scrFill = THREE.MathUtils.mapLinear(ratio, 0.0, 1.0, 0.0, 0.13);
-    const sizeAmt = THREE.MathUtils.mapLinear(ratio, 0.0, 1.0, 1800, 1600);
-    const opaAmt  = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.6);
+  // ファウンダーの表示アニメーション制御
+  foundersDisplayControl = (inStart, inEnd, outStart, outEnd) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    const dAmpOrigin = 0.87;
     const dInt = 0.2;
-    const dAmp = 0.87 + scrFill;
+    const scrFill = THREE.MathUtils.mapLinear(inRatio, 0.0, 1.0, 0.0, 1.0 - dAmpOrigin);
+    const sizeAmt = THREE.MathUtils.mapLinear(inRatio, 0.0, 1.0, 1800, 1600);
+    const dAmp = dAmpOrigin + scrFill;
     const time = performance.now() * 0.00025;
     for (var i = 0;i <= this.founders.children.length - 1;i ++) {
       const founder = this.founders.children[i];
@@ -369,7 +379,12 @@ export default class Kamon {
         const dVal = THREE.MathUtils.mapLinear(dist, 0.0, 1.0, dAmp, 1.0);
         positions[j * 3] = Math.cos(angle) * sizeAmt * dVal;
         positions[j * 3 + 1] = Math.sin(angle) * sizeAmt * dVal;
-        founder.material.opacity = Math.abs(dist * 1) - opaAmt;
+        founder.material.opacity = Math.abs(dist * 1) - outRatio;
+      }
+      if (outRatio >= 1.0) {
+        founder.visible = false;
+      } else {
+        founder.visible = true;
       }
       founder.geometry.attributes.position.needsUpdate = true;
     }
@@ -383,18 +398,19 @@ export default class Kamon {
     this.guidelines.children.forEach((group) => {
       const groupNum = group.children.length;
       const maxDelay = delayFactor * groupNum;
-    for (var i = 0;i <= groupNum - 1;i ++) {
+      for (var i = 0;i <= groupNum - 1;i ++) {
         const line = group.children[i];
         const delay = delayFactor * i;
         const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
         if (inRatio > 0.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
-        } else if (outRatio > 0.0) {
+        } else if (outRatio > 0.0 && outRatio < 1.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
           line.material.opacity = 1.0 - outRatio;
         } else if (outRatio >= 1.0) {
+          // console.log('hidden')
           line.visible = false;
         }
       }
@@ -408,10 +424,11 @@ export default class Kamon {
     // if (inRatio <= 0.0 || outRatio >= 1.0) return;
     this.outlines.children.forEach((group) => {
       group.children.forEach((line) => {
+        // console.log(line)
         if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatio);
-        } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio <= 1.0) {
+        } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio < 1.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatio);
           line.material.opacity = 1.0 - outRatio;
@@ -472,8 +489,8 @@ export default class Kamon {
     // プログレスバーのアニメーション制御
     this.progressBarControl();
 
-    // ファウンダーのアニメーション制御
-    this.foundersDrawControl();
+    // ファウンダーの表示アニメーション制御
+    // this.foundersDisplayControl();
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);

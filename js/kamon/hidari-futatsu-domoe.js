@@ -9,6 +9,9 @@ export default class HidariFutatsuDomoe extends Kamon {
 
     super();
 
+    this.angleFr = 90;
+    this.angleTo = 450;
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -27,165 +30,122 @@ export default class HidariFutatsuDomoe extends Kamon {
 
   // ガイドラインを作成
   generateGuidelines = () => {
-    const circles = [
-      {a:    0, b:    0, r: 1600},
-      {a:    0, b:  825, r:  750},
-      {a:    0, b: -825, r:  750},
-      {a: -110, b:  490, r: 1100},
-      {a:  110, b: -490, r: 1100},
-    ];
     const divCount = 1000;
-    circles.forEach((circle) => {
-      const points = [];
-      const a = circle.a;
-      const b = circle.b;
-      const r = circle.r;
-      for (var i = 0;i <= divCount - 1;i ++) {
-        const deg = THREE.MathUtils.damp(90, 450, 10, i / (divCount - 1));
-        // const s = deg * (Math.PI / 180);
-        const mid = this.circle(a, b, r, deg);
-        points.push(mid);
-      }
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      geometry.setDrawRange(0, 0);
-      const material = new THREE.LineBasicMaterial({
-        color: this.guideColor,
-        transparent: true
-      });
-      const line = new THREE.Line(geometry, material);
-      this.guidelines.add(line);
-    })
+    const circle0 = this.circleGen(0, 0, 1600, this.angleFr, this.angleTo, divCount, this.guideColor);
+    const group = new THREE.Group();
+    group.add(circle0);
+    const params = [
+      {a:    0, b:  825, r:  750},
+      {a: -110, b:  490, r: 1100},
+    ];
+    for (var i = 0;i <= 1;i ++) {
+      params.forEach((param) => {
+        const circle = this.circleGen(param.a, param.b, param.r, this.angleFr, this.angleTo, divCount, this.guideColor);
+        const rad = THREE.MathUtils.degToRad(180);
+        if (i == 1) circle.rotation.z = rad;
+        group.add(circle);
+      })
+    }
+    this.guidelines.add(group);
     this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
   generateOutlines = () => {
-    const circles = [
-      {a:    0, b:    0, r: 1600, f: -73, t: 110},
-      {a:    0, b:    0, r: 1600, f: 107, t: 290},
-      {a:    0, b:  825, r:  750, f: 421, t: 218},
-      {a:    0, b: -825, r:  750, f: 240, t:  38},
-      {a: -110, b:  490, r: 1100, f: 470, t: 309.5},
+    const divCount = 1000;
+    const params = [
+      {a:    0, b:    0, r: 1600, f: 107, t: 290  },
+      {a:    0, b:  825, r:  750, f: 421, t: 218  },
+      {a: -110, b:  490, r: 1100, f: 110, t:  64  },
       {a:  110, b: -490, r: 1100, f: 290, t: 129.5},
     ];
-    const divCount = 1000;
-    circles.forEach((circle) => {
-
-      const gs = [0, 1, -1, 2, -2, 3, -3];
-      gs.forEach((g) => {
-        const points = [];
-        const a = circle.a;
-        const b = circle.b;
-        const r = circle.r + g;
-        const f = circle.f;
-        const t = circle.t;
-        for (var i = 0;i <= divCount - 1;i ++) {
-          const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-          // const s = deg * (Math.PI / 180);
-          const mid = this.circle(a, b, r, deg);
-          points.push(mid);
-        }
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        geometry.setDrawRange(0, 0);
-        const material = new THREE.LineBasicMaterial({
-          color: this.frontColor,
-          transparent: true
-        });
-        const line = new THREE.Line(geometry, material);
-        this.outlines.add(line);
+    for (var i = 0;i <= 1;i ++) {
+      params.forEach((param) => {
+        const circle = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.frontColor);
+        const rad = THREE.MathUtils.degToRad(180);
+        if (i == 1) circle.rotation.z = rad;
+        this.outlines.add(circle);
       })
-    })
-    this.scene.add(this.outlines);
+      this.scene.add(this.outlines);
+    }
   }
 
   // 塗りつぶし図形を生成
   generateShapes = () => {
-    const figures = [
-      [
-        {a:    0, b:  825, r:  750, f:  217, t:  420, g: -6},
-        {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
-        {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
-        {a:  110, b: -490, r: 1100, f:  -95, t: -231, g:  6},
-      ],
-      [
-        {a:    0, b: -825, r:  750, f:   37, t:  240, g: -6},
-        {a:  110, b: -490, r: 1100, f:  250, t:  290, g: -6},
-        {a:    0, b:    0, r: 1600, f:  280, t:  450, g: -6},
-        {a: -110, b:  490, r: 1100, f:   85, t:  -51, g:  6},
-      ]
-    ];
     const divCount = 2000;
-    figures.forEach((figure) => {
-      const points = [];
-      figure.forEach((arc) => {
-        const a  = arc.a;
-        const b  = arc.b;
-        const r  = arc.r + arc.g;
-        const f  = arc.f;
-        const t  = arc.t;
-        for (var i = 0;i <= divCount - 1;i ++) {
-          const deg = THREE.MathUtils.damp(f, t, 10, i / (divCount - 1));
-          // const s = deg * (Math.PI / 180);
-          const mid = this.circle(a, b, r, deg);
-          points.push(mid);
-        }
+    const params = [
+      {a:    0, b:  825, r:  750, f:  217, t:  420, g: -6},
+      {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
+      {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
+      {a:  110, b: -490, r: 1100, f:  -95, t: -231, g:  6},
+    ];
+
+    const group = new THREE.Group();
+    for (var i = 0;i <= 1;i ++) {
+      var points = [];
+      params.forEach((param) => {
+        const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, divCount, this.frontColor);
+        points = points.concat(arc);
       })
       const shape = new THREE.Shape(points);
+      const geometry = new THREE.ShapeGeometry(shape);
       const material = new THREE.MeshBasicMaterial({
         color: this.frontColor,
         side: THREE.DoubleSide,
-        opacity: 0.0,
         transparent: true,
       });
-      const geometry = new THREE.ShapeGeometry(shape);
+      material.opacity = 0.0;
       const mesh = new THREE.Mesh(geometry, material);
-      this.shapes.add(mesh);
-    })
+      const rad = THREE.MathUtils.degToRad(180);
+      if (i == 1) mesh.rotation.z = rad;
+      mesh.visible = false;
+      group.add(mesh);
+    }
+    this.shapes.add(group);
     this.scene.add(this.shapes);
   }
 
   // 図形を回転させるアニメーション制御
   shapesRotationControl(start, end) {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-      const shape = this.shapes.children[i];
-      const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-      const pos = 1500 * posRatio;
-      if (i == 0) {
-        shape.position.set(-pos, 0, 0);
-      } else {
-        shape.position.set(pos, 0, 0);
+    this.shapes.children.forEach((group) => {
+      for (var i = 0;i <= group.children.length - 1;i ++) {
+        const shape = group.children[i];
+        const posRatio = - 4 * ratio ** 2 + 4 * ratio;
+        const pos = 1500 * posRatio;
+        if (i == 0) {
+          shape.position.set(-pos, 0, 0);
+        } else {
+          shape.position.set(pos, 0, 0);
+        }
       }
-    }
-    this.shapes.rotation.x = -360 * ratio * (Math.PI / 180);
-    this.shapes.rotation.z = -360 * ratio * (Math.PI / 180);
+      this.shapes.rotation.x = -360 * ratio * (Math.PI / 180);
+      this.shapes.rotation.z = -360 * ratio * (Math.PI / 180);
+    })
   }
 
   render() {
 
+    // ファウンダーの表示アニメーション制御
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
+
+    // グリッドの表示アニメーション制御
+    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.5);
+
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDrawControl(0.05, 0.35, 1333, 0.05);
+    this.guidelinesDisplayControl(0.05, 0.35, 0.4, 0.5, 1000, 0.05);
 
     // アウトラインの表示アニメーション制御
-    this.outlinesDrawControl(0.3, 0.5, 1000);
+    this.outlinesDisplayControl(0.3, 0.5, 0.55, 0.6, 1000);
 
-    // グリッドをフェードアウト
-    this.grid.fadeOut(this.progRatio, 0.35, 0.5);
-
-    // ガイドラインをフェードアウト
-    this.guidelinesFadeoutControl(0.4, 0.5);
-
-    // 塗りつぶし図形をフェードイン
-    this.shapesDrawControl(0.55, 0.65);
-
-    // アウトラインをフェードアウト
-    this.outlinesFadeoutControl(0.55, 0.6);
+    // 図形の表示アニメーション制御
+    this.shapesDisplayControl(0.55, 0.65, 1.0, 1.0);
 
     // 図形を回転
     this.shapesRotationControl(0.7, 1.0);
 
     // descのアニメーションを制御
-    this.descSlideinControl(0.8, 0.95);
+    this.descDisplayControl(0.8, 0.95, 1.0, 1.0);
 
     super.render();
   }
