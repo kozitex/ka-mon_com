@@ -17,7 +17,7 @@ export default class GenjiGuruma extends Kamon {
     this.angleTo = 450;
     this.circlesD = [];   // ベースの4つの中心円
 
-    this.gridExist = false;
+    this.gridExist = true;
 
     // ガイドラインの作成
     this.generateGuidelines();

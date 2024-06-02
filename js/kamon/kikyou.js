@@ -171,7 +171,7 @@ export default class Kikyou extends Kamon {
     this.shapes.add(group);
 
     for (var i = 0;i <= this.verNum - 1;i ++) {
-      const group = new THREE.Group();
+      const group1 = new THREE.Group();
       for (var j = 0;j <= 1;j ++) {
 
         // 小さい円の弧
@@ -179,7 +179,7 @@ export default class Kikyou extends Kamon {
 
         // 対角線
         const theta2 = Math.asin(this.pathW / 245);
-        const line1 = this.linePointGen(1, 0, - this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), divCount, this.frontColor);
+        const line1 = this.linePointGen(1, 0, this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), divCount, this.frontColor);
 
         // 中心円の弧
         const circle2 = this.circlePointGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), divCount, this.frontColor);
@@ -218,10 +218,10 @@ export default class Kikyou extends Kamon {
         const mesh = new THREE.Mesh(geometry, material);
         if (j == 1) mesh.rotation.y = THREE.MathUtils.degToRad(180);
         mesh.visible = false;
-        group.add(mesh);
+        group1.add(mesh);
       }
-      group.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
-      this.shapes.add(group);
+      group1.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
+      this.shapes.add(group1);
     }
     this.scene.add(this.shapes);
   }

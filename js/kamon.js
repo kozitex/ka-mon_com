@@ -116,6 +116,17 @@ export default class Kamon {
     // グリッド色を変更
     this.grid.changeTheme(this.gridColor, this.gridThinColor);
 
+    // ファウンダーの色を変更
+    this.founders.children.forEach((child) => {
+      if (child.isGroup) {
+        child.children.forEach((line) => {
+          line.material.color = new THREE.Color(this.guideColor);
+        })
+      } else {
+        child.material.color = new THREE.Color(this.guideColor);
+      }
+    })
+
     // ガイドラインの色を変更
     this.guidelines.children.forEach((child) => {
       if (child.isGroup) {
@@ -148,10 +159,6 @@ export default class Kamon {
         child.material.color = new THREE.Color(this.frontColor);
       }
     })
-
-    // this.shapes.children.forEach((figure) => {
-    //   figure.material.color = new THREE.Color(this.frontColor);
-    // })
   }
 
   // ファウンダーの生成
@@ -175,7 +182,7 @@ export default class Kamon {
 
   straight2 = (a, b, c, x, y) => {
     if (x == undefined) {
-      return new THREE.Vector3((b * y + c) / a, y, 0);
+      return new THREE.Vector3((b * y - c) / a, y, 0);
     } else if (y == undefined) {
       return new THREE.Vector3(x, (a * x + c) / b, 0);
     }
