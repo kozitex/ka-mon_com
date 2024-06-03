@@ -267,7 +267,7 @@ export default class Kageigeta extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.5);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.35, 0.5, 0.6, 1000, 0.1);
+    this.guidelinesDisplayControl(0.05, 0.35, 0.5, 0.6, 1000, 0.1, 0.07);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDisplayControl(0.35, 0.5, 0.65, 0.7, 1000);

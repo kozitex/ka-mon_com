@@ -262,7 +262,7 @@ export default class Kikyou extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.4, 0.5);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.45, 0.55, 0.65, 1000, 0.1);
+    this.guidelinesDisplayControl(0.05, 0.45, 0.55, 0.65, 1000, 0.05, 0.05);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDisplayControl(0.4, 0.6, 0.6, 0.7, 1000);

@@ -396,18 +396,21 @@ export default class Kamon {
       founder.geometry.attributes.position.needsUpdate = true;
     }
   }
-
   // ガイドラインの表示制御
-  guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, delayFactor) => {
+  guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, gDelay, lDelay) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
     // if (inRatio <= 0.0 || outRatio >= 1.0) return;
-    this.guidelines.children.forEach((group) => {
-      const groupNum = group.children.length;
-      const maxDelay = delayFactor * groupNum;
-      for (var i = 0;i <= groupNum - 1;i ++) {
-        const line = group.children[i];
-        const delay = delayFactor * i;
+    const groupNum = this.guidelines.children.length;
+    for (var i = 0;i <= groupNum - 1;i ++) {
+      const group = this.guidelines.children[i]
+    // this.guidelines.children.forEach((group) => {
+      const lineNum = group.children.length;
+      // const maxDelay = gDelay * lineNum;
+      const maxDelay = gDelay * groupNum + lDelay * lineNum;
+      for (var j = 0;j <= lineNum - 1;j ++) {
+        const line = group.children[j];
+        const delay = gDelay * i + lDelay * j;
         const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
         if (inRatio > 0.0 && outRatio == 0.0) {
           line.visible = true;
@@ -421,8 +424,35 @@ export default class Kamon {
           line.visible = false;
         }
       }
-    })
+    // })
+    }
   }
+  // // ガイドラインの表示制御
+  // guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, delayFactor) => {
+  //   const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+  //   const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+  //   // if (inRatio <= 0.0 || outRatio >= 1.0) return;
+  //   this.guidelines.children.forEach((group) => {
+  //     const groupNum = group.children.length;
+  //     const maxDelay = delayFactor * groupNum;
+  //     for (var i = 0;i <= groupNum - 1;i ++) {
+  //       const line = group.children[i];
+  //       const delay = delayFactor * i;
+  //       const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
+  //       if (inRatio > 0.0 && outRatio == 0.0) {
+  //         line.visible = true;
+  //         line.geometry.setDrawRange(0, divCount * inRatioD);
+  //       } else if (outRatio > 0.0 && outRatio < 1.0) {
+  //         line.visible = true;
+  //         line.geometry.setDrawRange(0, divCount * inRatioD);
+  //         line.material.opacity = 1.0 - outRatio;
+  //       } else if (outRatio >= 1.0) {
+  //         // console.log('hidden')
+  //         line.visible = false;
+  //       }
+  //     }
+  //   })
+  // }
 
   // アウトラインの表示制御
   outlinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount) => {

@@ -133,7 +133,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.5);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.35, 0.4, 0.5, 1000, 0.05);
+    this.guidelinesDisplayControl(0.05, 0.35, 0.4, 0.5, 1000, 0.1, 0.1);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDisplayControl(0.3, 0.5, 0.55, 0.6, 1000);

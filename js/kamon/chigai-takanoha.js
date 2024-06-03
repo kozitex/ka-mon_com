@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Kamon from '../kamon.js';
 
-export default class GenjiGuruma extends Kamon {
+export default class ChigaiTakanoha extends Kamon {
 
   constructor() {
 
@@ -26,12 +26,12 @@ export default class GenjiGuruma extends Kamon {
     this.generateOutlines();
 
     // 塗りつぶし図形の描画
-    this.generateShapes();
+    // this.generateShapes();
 
     // infoの準備
-    this.jpName.innerHTML = '源氏車';
+    this.jpName.innerHTML = '丸に違い鷹の羽';
     this.jpDesc.innerHTML = '車紋（くるまもん）の一種で、平安時代の貴族の乗り物であった牛車の車輪の形をモチーフにした家紋です。牛車は別名で源氏車とも呼ばれていました。また、車紋は佐藤姓の家紋に用いられたことでも知られています。佐藤氏の祖先が伊勢神宮の神事に携わっていた際、使用していた牛車が豪奢で有名だったことが由来で家紋に用いることになったと言われています。';
-    this.enName.innerHTML = 'Genji-Guruma';
+    this.enName.innerHTML = 'Maruni-Chigai-Takanoha';
     this.enDesc.innerHTML = 'It is a type of Kurumamon (car crest), and is a family crest with a motif of the wheels of an ox cart, which was a vehicle used by aristocrats during the Heian period. The ox-cart was also called the Genji-guruma. The car crest is also known to have been used as the family crest of the Sato family name. It is said that the Sato clan&#39;s ancestors used it as their family crest because the bullock carts they used were famous for their luxury when they were involved in the rituals at Ise Grand Shrine.';
   }
 
@@ -40,54 +40,72 @@ export default class GenjiGuruma extends Kamon {
 
     const divCount = 1000;
 
-    // 円
-    const circles = new THREE.Group();
-    const rs = [1600, 1300, 1265, 970, 935, 260, 225];
+    // 外円
+    const outCircles = new THREE.Group();
+    const rs = [1600, 1300];
     rs.forEach((r) => {
       const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
-      circles.add(circle);
+      outCircles.add(circle);
     });
-    this.guidelines.add(circles);
+    this.guidelines.add(outCircles);
 
-    // 直線
-    for (var v = 0;v <= this.verNum / 2 - 1;v ++) {
+    // 羽
+    for (var i = 0;i <= 1;i ++) {
 
-      // 車輪のスポーク部分
-      const spokes = new THREE.Group();
-      for (var i = 0;i <= 1;i ++) {
-        const line = this.lineGen(1, 0, 0, 1600, - 1600, divCount, this.guideColor);
-        const piece = 22.5;
-        const rotA1 = i == 0 ? piece / 2 : - piece / 2;
-        const rotA2 = 360 / this.verNum * v;
-        line.rotation.z = (rotA1 - rotA2) * Math.PI / 180;
-        spokes.add(line);
-      }
-      this.guidelines.add(spokes);
+      // 羽の輪郭円
+      const group1 = new THREE.Group();
+      const params1 = [
+        {a:   516, b:   516, r: 516},
+        {a: - 416, b: - 416, r: 516},
+        {a: - 466, b: - 466, r: 516},
+        {a: - 516, b: - 516, r: 516},
+        {a: - 416, b: - 416, r: 550},
+        {a: - 466, b: - 466, r: 550},
+      ];
+      params1.forEach((param) => {
+        const line = this.circleGen(param.a, param.b, param.r, 90, 450, divCount, this.guideColor);
+        if (i == 1) line.rotation.z = THREE.MathUtils.degToRad(90);
+        group1.add(line);
+      });
 
-      // 内側の継ぎ目
-      const inSeam = new THREE.Group();
-      for (var i = 0;i <= 3;i ++) {
-        const intercept = i == 0 || i == 2 ? - this.pathW / 2 : this.pathW / 2;
-        const line = this.lineGen(1, 0, intercept, - 1600, 1600, divCount, this.guideColor);
-        const piece = 16.875
-        const rotA1 = (i <= 1 ? piece : - piece) * Math.PI / 180;
-        const rotA2 = 360 / this.verNum * v * Math.PI / 180;
-        line.rotation.z = rotA1 - rotA2;
-        inSeam.add(line);
-      }
-      this.guidelines.add(inSeam);
+      // 羽の輪郭線
+      const group2 = new THREE.Group();
+      const theta = THREE.MathUtils.degToRad(45);
+      const params2 = [
+        {p:   516 * Math.cos(theta), q:   516 * Math.cos(theta), f: 700, t: - 700},
+        {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta), f: 700, t: - 700},
+        {p:    35 * Math.cos(theta), q:    35 * Math.cos(theta), f: 950, t: - 950},
+        {p:    71 * Math.cos(theta), q:    71 * Math.cos(theta), f: 950, t: - 950},
+      ];
+      params2.forEach((param) => {
+        for (var j = 0;j <= 1;j ++) {
+          const line = this.lineGen(1, 1, - (  param.p + param.q), param.f + param.p, param.t + param.p, divCount, this.guideColor);
+          line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
+          group2.add(line);
+        }
+      });
 
-      // 外側の継ぎ目
-      const outSeam = new THREE.Group();
-      for (var i = 0;i <= 1;i ++) {
-        const intercept = i == 0 ? - this.pathW / 2 : this.pathW / 2;
-        const line = this.lineGen(1, 0, intercept, 1600, - 1600, divCount, this.guideColor);
-        const rotA = - 360 / this.verNum * v * Math.PI / 180;
-        line.rotation.z = rotA;
-        outSeam.add(line);
-      }
-      this.guidelines.add(outSeam);
+      // 羽の模様（タテ）
+      const group3 = new THREE.Group();
+      const params3 = [- 94, - 130, - 194, - 230, - 294, - 330, 646, 610, 546, 510, 446, 410];
+      params3.forEach((param) => {
+        const line = this.lineGen(1, 0, param, 1100, - 1100, divCount, this.guideColor);
+        line.rotation.z = THREE.MathUtils.degToRad(90 * i);
+        group3.add(line);
+      });
+
+      // 羽の模様（ヨコ）
+      const group4 = new THREE.Group();
+      const params4 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
+      params4.forEach((param) => {
+        const line = this.lineGen(0, 1, param, 1100, - 1100, divCount, this.guideColor);
+        line.rotation.z = THREE.MathUtils.degToRad(90 * i);
+        group4.add(line);
+      });
+
+      this.guidelines.add(group1, group2, group3, group4);
     }
+
     this.scene.add(this.guidelines);
   }
 
@@ -95,101 +113,127 @@ export default class GenjiGuruma extends Kamon {
   generateOutlines = () => {
     const divCount = 1000;
 
-    // 中央の円
-    const centerCircle = this.outlineCircleGen(0, 0, 225, 90, 450, divCount, this.frontColor);
-    this.outlines.add(centerCircle);
+    // 外円
+    const rs = [1600, 1300];
+    rs.forEach((r) => {
+      const circle = this.outlineCircleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+      this.outlines.add(circle);
+    });
 
-    // スポーク
-    for (var v = 0;v <= this.verNum - 1;v ++) {
-      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-      const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
-      const lArc = this.outlineCircleGen(0, 0, 935, 78.75, 101.25, divCount, this.frontColor);
+    // 羽の輪郭線
+    // const group2 = new THREE.Group();
+    const theta = THREE.MathUtils.degToRad(45);
+    const params2 = [
+      {p:   516 * Math.cos(theta), q:   516 * Math.cos(theta), f: 700, t: - 700},
+      {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta), f: 700, t: - 700},
+      {p:    35 * Math.cos(theta), q:    35 * Math.cos(theta), f: 950, t: - 950},
+      {p:    71 * Math.cos(theta), q:    71 * Math.cos(theta), f: 950, t: - 950},
+    ];
+    params2.forEach((param) => {
+      for (var j = 0;j <= 1;j ++) {
+        const line = this.lineGen(1, 1, - (  param.p + param.q), param.f + param.p, param.t + param.p, divCount, this.guideColor);
+        line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
+        this.outlines.add(line);
+      }
+    });
 
-      const sArcF = this.circle(0, 0, 260, 101.25);
-      const sArcT = this.circle(0, 0, 260,  78.75);
-      const lArcF = this.circle(0, 0, 935, 101.25);
-      const lArcT = this.circle(0, 0, 935,  78.75);
 
-      const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
-      const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
 
-      const lLine = this.outlineGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, divCount, this.frontColor);
-      const rLine = this.outlineGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, divCount, this.frontColor);
-      sArc.rotation.z = copyAngle;
-      lArc.rotation.z = copyAngle;
-      lLine.rotation.z = copyAngle;
-      rLine.rotation.z = copyAngle;
-      this.outlines.add(sArc, lArc, lLine, rLine);
-    }
+    // // 中央の円
+    // const centerCircle = this.outlineCircleGen(0, 0, 225, 90, 450, divCount, this.frontColor);
+    // this.outlines.add(centerCircle);
 
-    // 内側の継ぎ目
-    for (var v = 0;v <= this.verNum - 1;v ++) {
-      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-      const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
-      const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
-      const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
-      const oArc = this.outlineCircleGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, divCount, this.frontColor);
+    // // スポーク
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+    //   const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
+    //   const lArc = this.outlineCircleGen(0, 0, 935, 78.75, 101.25, divCount, this.frontColor);
 
-      const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
-      const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
-      const oArcF = this.circle(0, 0, 1265, 90 + oArcAngle);
-      const oArcT = this.circle(0, 0, 1265, 90 - oArcAngle);
+    //   const sArcF = this.circle(0, 0, 260, 101.25);
+    //   const sArcT = this.circle(0, 0, 260,  78.75);
+    //   const lArcF = this.circle(0, 0, 935, 101.25);
+    //   const lArcT = this.circle(0, 0, 935,  78.75);
 
-      const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
-      const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
+    //   const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
+    //   const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
 
-      const lLine  = this.outlineGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, divCount, this.frontColor);
-      const rLine  = this.outlineGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, divCount, this.frontColor);
-      iArc.rotation.z = copyAngle;
-      oArc.rotation.z = copyAngle;
-      lLine.rotation.z = copyAngle;
-      rLine.rotation.z = copyAngle;
-      this.outlines.add(iArc, oArc, lLine, rLine);
-    }
+    //   const lLine = this.outlineGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, divCount, this.frontColor);
+    //   const rLine = this.outlineGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, divCount, this.frontColor);
+    //   sArc.rotation.z = copyAngle;
+    //   lArc.rotation.z = copyAngle;
+    //   lLine.rotation.z = copyAngle;
+    //   rLine.rotation.z = copyAngle;
+    //   this.outlines.add(sArc, lArc, lLine, rLine);
+    // }
 
-    // 外側の継ぎ目の円弧
-    for (var v = 0;v <= this.verNum - 1;v ++) {
-      const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-      const iArcAngle = 16.875 + Math.atan(this.pathW / 2 / 970) * 180 / Math.PI;
-      const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
-      const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
-      const lArcAngleT = 16.875 + Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI
-      const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
-      const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
-      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, divCount, this.frontColor);
-      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, divCount, this.frontColor);
+    // // 内側の継ぎ目
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+    //   const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
+    //   const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
+    //   const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
+    //   const oArc = this.outlineCircleGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, divCount, this.frontColor);
 
-      const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
-      const iArcT = this.circle(0, 0,  970, 90 + iArcAngle  - 45);
-      const rArcF = this.circle(0, 0, 1300, 90 + lArcAngleT - 45);
-      const rArcT = this.circle(0, 0, 1300, 90 + lArcAngleF - 45);
-      const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
-      const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle  - 45);
-      const lArcF = this.circle(0, 0, 1300, 90 - lArcAngleF);
-      const lArcT = this.circle(0, 0, 1300, 90 - lArcAngleT);
+    //   const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
+    //   const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
+    //   const oArcF = this.circle(0, 0, 1265, 90 + oArcAngle);
+    //   const oArcT = this.circle(0, 0, 1265, 90 - oArcAngle);
 
-      const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
-      const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
-      const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
-      const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
+    //   const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
+    //   const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
 
-      const ilLine  = this.outlineGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, divCount, this.frontColor);
-      const irLine  = this.outlineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount, this.frontColor);
-      const olLine  = this.outlineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount, this.frontColor);
-      const orLine  = this.outlineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount, this.frontColor);
+    //   const lLine  = this.outlineGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, divCount, this.frontColor);
+    //   const rLine  = this.outlineGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, divCount, this.frontColor);
+    //   iArc.rotation.z = copyAngle;
+    //   oArc.rotation.z = copyAngle;
+    //   lLine.rotation.z = copyAngle;
+    //   rLine.rotation.z = copyAngle;
+    //   this.outlines.add(iArc, oArc, lLine, rLine);
+    // }
 
-      iArc.rotation.z = copyAngle;
-      oArc.rotation.z = copyAngle;
-      lArc.rotation.z = copyAngle;
-      rArc.rotation.z = copyAngle;
-      ilLine.rotation.z = copyAngle;
-      irLine.rotation.z = copyAngle;
-      olLine.rotation.z = copyAngle;
-      orLine.rotation.z = copyAngle;
+    // // 外側の継ぎ目の円弧
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
+    //   const iArcAngle = 16.875 + Math.atan(this.pathW / 2 / 970) * 180 / Math.PI;
+    //   const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
+    //   const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
+    //   const lArcAngleT = 16.875 + Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI
+    //   const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
+    //   const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
+    //   const lArc = this.outlineCircleGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, divCount, this.frontColor);
+    //   const rArc = this.outlineCircleGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, divCount, this.frontColor);
 
-      this.outlines.add(iArc, oArc, lArc, rArc);
-      this.outlines.add(ilLine, irLine, olLine, orLine);
-    }
+    //   const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
+    //   const iArcT = this.circle(0, 0,  970, 90 + iArcAngle  - 45);
+    //   const rArcF = this.circle(0, 0, 1300, 90 + lArcAngleT - 45);
+    //   const rArcT = this.circle(0, 0, 1300, 90 + lArcAngleF - 45);
+    //   const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
+    //   const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle  - 45);
+    //   const lArcF = this.circle(0, 0, 1300, 90 - lArcAngleF);
+    //   const lArcT = this.circle(0, 0, 1300, 90 - lArcAngleT);
+
+    //   const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
+    //   const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
+    //   const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
+    //   const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
+
+    //   const ilLine  = this.outlineGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, divCount, this.frontColor);
+    //   const irLine  = this.outlineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount, this.frontColor);
+    //   const olLine  = this.outlineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount, this.frontColor);
+    //   const orLine  = this.outlineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount, this.frontColor);
+
+    //   iArc.rotation.z = copyAngle;
+    //   oArc.rotation.z = copyAngle;
+    //   lArc.rotation.z = copyAngle;
+    //   rArc.rotation.z = copyAngle;
+    //   ilLine.rotation.z = copyAngle;
+    //   irLine.rotation.z = copyAngle;
+    //   olLine.rotation.z = copyAngle;
+    //   orLine.rotation.z = copyAngle;
+
+    //   this.outlines.add(iArc, oArc, lArc, rArc);
+    //   this.outlines.add(ilLine, irLine, olLine, orLine);
+    // }
     this.scene.add(this.outlines);
   }
 
@@ -362,7 +406,7 @@ export default class GenjiGuruma extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.05, 0.02);
+    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.05, 0.05);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDisplayControl(0.4, 0.6, 0.6, 0.7, 1000);
