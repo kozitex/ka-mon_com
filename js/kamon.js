@@ -411,7 +411,10 @@ export default class Kamon {
       for (var j = 0;j <= lineNum - 1;j ++) {
         const line = group.children[j];
         const delay = gDelay * i + lDelay * j;
-        const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
+        // const inRatioD = THREE.MathUtils.clamp(inRatio, delay, 1.0 + delay - maxDelay);
+        const inRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, inRatio);
+        // const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
+        // console.log(maxDelay, delay, inRatioD)
         if (inRatio > 0.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
