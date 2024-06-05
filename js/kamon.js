@@ -313,6 +313,25 @@ export default class Kamon {
     return new THREE.Mesh(geometry, material);
   }
 
+  // // 円弧のパスを生成
+  // circlePathGen(a, b, r, f, t, d, c) {
+  //   const points = [];
+  //   for (var i = 0;i <= d - 1;i ++) {
+  //     const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+  //     const point = this.circle(a, b, r, p);
+  //     points.push(point);
+  //   }
+  //   const shape = new THREE.Shape(points);
+  //   const geometry = new THREE.ShapeGeometry(shape);
+  //   const material = new THREE.MeshBasicMaterial({
+  //     color: c,
+  //     side: THREE.DoubleSide,
+  //     transparent: true,
+  //   });
+  //   material.opacity = 0.0;
+  //   return new THREE.Mesh(geometry, material);
+  // }
+
   // 円弧の頂点を生成
   circlePointGen(a, b, r, f, t, d, c) {
     const points = [];
@@ -338,6 +357,19 @@ export default class Kamon {
       points.push(point);
     }
     return points;
+  }
+
+  // ポイントからシェイプを生成
+  shapeGen = (points) => {
+    const shape = new THREE.Shape(points);
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({
+      color: this.frontColor,
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    return mesh;
   }
 
   // ２点の座標から方程式のa,bを取得
