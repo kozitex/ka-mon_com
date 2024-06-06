@@ -84,18 +84,10 @@ export default class HidariFutatsuDomoe extends Kamon {
     for (var i = 0;i <= 1;i ++) {
       var points = [];
       params.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, divCount, this.frontColor);
+        const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, divCount);
         points = points.concat(arc);
       })
-      const shape = new THREE.Shape(points);
-      const geometry = new THREE.ShapeGeometry(shape);
-      const material = new THREE.MeshBasicMaterial({
-        color: this.frontColor,
-        side: THREE.DoubleSide,
-        transparent: true,
-      });
-      material.opacity = 0.0;
-      const mesh = new THREE.Mesh(geometry, material);
+      const mesh = this.shapeGen(points, this.frontColor);
       const rad = THREE.MathUtils.degToRad(180);
       if (i == 1) mesh.rotation.z = rad;
       mesh.visible = false;

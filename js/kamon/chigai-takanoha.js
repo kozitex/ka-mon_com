@@ -11,11 +11,8 @@ export default class ChigaiTakanoha extends Kamon {
 
     this.rollHeight = 4000;
 
-    this.pathW = 35;
-    this.verNum = 8;
     this.angleFr = 90;
     this.angleTo = 450;
-    this.circlesD = [];   // ベースの4つの中心円
 
     this.gridExist = true;
 
@@ -452,8 +449,8 @@ export default class ChigaiTakanoha extends Kamon {
     // 外円
     for (var i = 0;i <= 3;i ++) {
       var points = [];
-      const circle1 = this.circlePointGen(0, 0, 1300, 90, 180, divCount, this.guideColor);
-      const circle2 = this.circlePointGen(0, 0, 1600, 180, 90, divCount, this.guideColor);
+      const circle1 = this.circlePointGen(0, 0, 1300, 90, 180, divCount);
+      const circle2 = this.circlePointGen(0, 0, 1600, 180, 90, divCount);
       points = circle1.concat(circle2);
       const shape = new THREE.Shape(points);
       const geometry = new THREE.ShapeGeometry(shape);
@@ -469,79 +466,155 @@ export default class ChigaiTakanoha extends Kamon {
       this.shapes.add(outer);
     }
 
+    // 円のパラメータ
+    const ens = [
+      {a:   516, b:   516, r: 516},
+      {a: - 416, b: - 416, r: 516},
+      {a: - 466, b: - 466, r: 516},
+      {a: - 516, b: - 516, r: 516},
+      {a: - 416, b: - 416, r: 550},
+      {a: - 466, b: - 466, r: 550},
+    ];
+
+    // 輪郭＆中心の線のパラメータ
+    const theta = THREE.MathUtils.degToRad(45);
+    const sens = [
+      {p: - 516 * Math.cos(theta), q: - 516 * Math.sin(theta)},
+      {p: -  71 * Math.cos(theta), q: -  71 * Math.sin(theta)},
+      {p: -  35 * Math.cos(theta), q: -  35 * Math.sin(theta)},
+      {p: - 552 * Math.cos(theta), q: - 552 * Math.sin(theta)},
+    ];
+
+    // 羽の模様線のパラメータ
+    const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
+
+    // 黒い板
+    this.blackBoard = new THREE.Group();
+    const line26 = this.linePointGen(  1, 1, - (sens[3].p + sens[3].q),   500, - 1300, divCount);
+    const line28 = this.linePointGen(  1, 1,   (sens[3].p + sens[3].q), - 500,   1300, divCount);
+    const points10 = line26.concat(line28);
+    this.blackBoard.add(this.shapeGen(points10, this.backColor));
+    this.blackBoard.position.z = - 1;
+    this.scene.add(this.blackBoard);
+
     // 羽
-    for (var i = 0;i <= 1;i ++) {
-
-      // 円のパラメータ
-      const ens = [
-        {a:   516, b:   516, r: 516},
-        {a: - 416, b: - 416, r: 516},
-        {a: - 466, b: - 466, r: 516},
-        {a: - 516, b: - 516, r: 516},
-        {a: - 416, b: - 416, r: 550},
-        {a: - 466, b: - 466, r: 550},
-      ];
-
-      // 輪郭＆中心の線のパラメータ
-      const theta = THREE.MathUtils.degToRad(45);
-      const sens = [
-        {p: - 516 * Math.cos(theta), q: - 516 * Math.cos(theta)},
-        {p: -  71 * Math.cos(theta), q: -  71 * Math.cos(theta)},
-        {p: -  35 * Math.cos(theta), q: -  35 * Math.cos(theta)},
-        {p: - 552 * Math.cos(theta), q: - 552 * Math.cos(theta)},
-      ];
-
-      // 羽の模様線のパラメータ
-      const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
+    for (var i = 0;i <= 3;i ++) {
 
       // 中心の棒
       const stick = new THREE.Group();
-      const arc0 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 45, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r)), divCount, this.frontColor);
-      const arc1 = this.circlePointGen(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), 225, divCount, this.frontColor);
-      const line0 = this.linePointGen(1, 1, - (sens[2].p + sens[2].q), this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x, divCount, this.frontColor);
+      const arc0 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 45, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r)), divCount);
+      const arc1 = this.circlePointGen(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), 225, divCount);
+      const line0 = this.linePointGen(1, 1, - (sens[2].p + sens[2].q), this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x, divCount);
       const points0 = arc0.concat(line0, arc1);
-      stick.add(this.shapeGen(points0));
+      stick.add(this.shapeGen(points0, this.frontColor));
+      stick.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      stick.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(stick);
 
       // 羽の部品0
       const feather0 = new THREE.Group();
-      const arc2 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 330) / ens[0].r)), divCount, this.frontColor);
-      const line1 = this.linePointGen(1, 0, - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[5], undefined).y, divCount, this.frontColor);
-      const line2 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, divCount, this.frontColor);
+      const arc2 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 330) / ens[0].r)), divCount);
+      const line1 = this.linePointGen(1, 0, - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[5], undefined).y, divCount);
+      const line2 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, divCount);
       const points1 = arc2.concat(line1, line2);
-      feather0.add(this.shapeGen(points1));
+      feather0.add(this.shapeGen(points1, this.frontColor));
+      feather0.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather0.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather0);
 
       // 羽の部品1
       const feather1 = new THREE.Group();
-      const arc3 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r)), divCount, this.frontColor);
-      const line3 = this.linePointGen(1, 0, - stripes[3], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, divCount, this.frontColor);
-      const line4 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[3],  stripes[4], divCount, this.frontColor);
-      const line5 = this.linePointGen(1, 0, - stripes[4], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, divCount, this.frontColor);
+      const arc3 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r)), divCount);
+      const line3 = this.linePointGen(1, 0, - stripes[3], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, divCount);
+      const line4 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[3],  stripes[4], divCount);
+      const line5 = this.linePointGen(1, 0, - stripes[4], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, divCount);
       const points2 = arc3.concat(line3, line4, line5);
-      feather1.add(this.shapeGen(points2));
+      feather1.add(this.shapeGen(points2, this.frontColor));
+      feather1.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather1.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather1);
 
       // 羽の部品2
       const feather2 = new THREE.Group();
-      const arc4 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r)), divCount, this.frontColor);
-      const line6 = this.linePointGen(1, 0, - stripes[1], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, divCount, this.frontColor);
-      const line7 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[1],  stripes[2], divCount, this.frontColor);
-      const line8 = this.linePointGen(1, 0, - stripes[2], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))).y, divCount, this.frontColor);
+      const arc4 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r)), divCount);
+      const line6 = this.linePointGen(1, 0, - stripes[1], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, divCount);
+      const line7 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[1],  stripes[2], divCount);
+      const line8 = this.linePointGen(1, 0, - stripes[2], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))).y, divCount);
       const points3 = arc4.concat(line6, line7, line8);
-      feather2.add(this.shapeGen(points3));
+      feather2.add(this.shapeGen(points3, this.frontColor));
+      feather2.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather2.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather2);
 
       // 羽の部品3
       const feather3 = new THREE.Group();
-      const line9  = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[0], stripes[11], divCount, this.frontColor);
-      const line10 = this.linePointGen(1, 0, - stripes[11], this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[11], undefined).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[11], undefined).y, divCount, this.frontColor);
-      const line11 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[11], stripes[0], divCount, this.frontColor);
-      const line12 = this.linePointGen(1, 0, - stripes[0], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[0], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[0], undefined).y, divCount, this.frontColor);
+      const line9  = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[0], stripes[11], divCount);
+      const line10 = this.linePointGen(1, 0, - stripes[11], this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[11], undefined).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[11], undefined).y, divCount);
+      const line11 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[11], stripes[0], divCount);
+      const line12 = this.linePointGen(1, 0, - stripes[0], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[0], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[0], undefined).y, divCount);
       const points4 = line9.concat(line10, line11, line12);
-      feather3.add(this.shapeGen(points4));
+      feather3.add(this.shapeGen(points4, this.frontColor));
+      feather3.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather3.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather3);
 
+      // 羽の部品4
+      const feather4 = new THREE.Group();
+      const line13 = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[10],  stripes[9], divCount);
+      const line14 = this.linePointGen(1, 0, - stripes[10], this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[10], undefined).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[10], undefined).y, divCount);
+      const line15 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[9],  stripes[10], divCount);
+      const line16 = this.linePointGen(1, 0, - stripes[9], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[9], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[9], undefined).y, divCount);
+      const points5 = line13.concat(line14, line15, line16);
+      feather4.add(this.shapeGen(points5, this.frontColor));
+      feather4.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather4.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(feather4);
+
+      // 羽の部品5
+      const feather5 = new THREE.Group();
+      const line17 = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[8], stripes[7], divCount);
+      const line18 = this.linePointGen(1, 0, - stripes[8], this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[8], undefined).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[8], undefined).y, divCount);
+      const line19 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[7], stripes[8], divCount);
+      const line20 = this.linePointGen(1, 0, - stripes[7], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[7], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[7], undefined).y, divCount);
+      const points6 = line17.concat(line18, line19, line20);
+      feather5.add(this.shapeGen(points6, this.frontColor));
+      feather5.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather5.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(feather5);
+
+      // 羽の部品6
+      const feather6 = new THREE.Group();
+      const line21 = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[6], this.circle(ens[1].a, ens[1].b, ens[1].r, 135).x, divCount);
+      const arc5 = this.circlePointGen(ens[1].a, ens[1].b, ens[1].r, 135, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r)), divCount);
+      const line22 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x, stripes[6], divCount);
+      const line23 = this.linePointGen(1, 0, - stripes[6], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[6], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[6], undefined).y, divCount);
+      const points7 = line21.concat(arc5, line22, line23);
+      feather6.add(this.shapeGen(points7, this.frontColor));
+      feather6.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather6.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(feather6);
+
+      // 羽の部品7
+      const feather7 = new THREE.Group();
+      const arc6 = this.circlePointGen(ens[2].a, ens[2].b, ens[2].r, 155, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r)), divCount);
+      const line24 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x, this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, divCount);
+      const arc7 = this.circlePointGen(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r)), 166, divCount);
+      const points8 = arc6.concat(line24, arc7);
+      feather7.add(this.shapeGen(points8, this.frontColor));
+      feather7.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather7.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(feather7);
+
+      // 羽の部品8
+      const feather8 = new THREE.Group();
+      const arc8 = this.circlePointGen(ens[3].a, ens[3].b, ens[3].r, 155, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r)), divCount);
+      const line25 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x, this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, divCount);
+      const arc9 = this.circlePointGen(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r)), 166, divCount);
+      const points9 = arc8.concat(line25, arc9);
+      feather8.add(this.shapeGen(points9, this.frontColor));
+      feather8.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      feather8.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(feather8);
     }
 
     this.scene.add(this.shapes);
@@ -549,30 +622,29 @@ export default class ChigaiTakanoha extends Kamon {
 
   // 図形のアニメーション制御
   shapesRotationControl(start, end) {
-    // var ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
-    // if (ratio <= 0.0) return;
-    // for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-    //   const shape = this.shapes.children[i];
-    //   const j = i - 1;
-    //   const num = Math.trunc(j / 2);
-    //   if (i > 0) {
-    //     const adjust1 = 80;
-    //     const adjust2 = 20;
-    //     var ratioSx, ratioSy;
-    //     if (ratio < 0.1 + num / adjust1) {
-    //       ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-    //       ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-    //     } else if (ratio < 0.4 + num / adjust2) {
-    //       ratioSx = 0.3;
-    //       ratioSy = 0.3;
-    //     } else {
-    //       ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-    //       ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-    //     }
-    //     shape.scale.set(ratioSx, ratioSy)
-    //     this.shapes.rotation.z = - 720 * ratio * (Math.PI / 180);
-    //   }
-    // }
+    var ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
+    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
+      const shape = this.shapes.children[i];
+      const j = i - 1;
+      const num = Math.trunc(j / 4);
+      const adjust1 = 80;
+      const adjust2 = 20;
+      var ratioSx, ratioSy;
+      if (ratio < 0.1 + num / adjust1) {
+        ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+        ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+      } else if (ratio < 0.4 + num / adjust2) {
+        ratioSx = 0.3;
+        ratioSy = 0.3;
+      } else {
+        ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
+        ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
+      }
+      this.blackBoard.scale.set(ratioSx, ratioSy)
+      shape.scale.set(ratioSx, ratioSy)
+    }
+    if (this.blackBoard) this.blackBoard.rotation.z = - 1440 * ratio * (Math.PI / 180);
+    this.shapes.rotation.z = - 1440 * ratio * (Math.PI / 180);
   }
 
   render() {
@@ -590,10 +662,10 @@ export default class ChigaiTakanoha extends Kamon {
     this.outlinesDisplayControl(0.4, 0.6, 0.65, 0.75, 1000);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.6, 0.7, 1.0, 1.0);
+    this.shapesDisplayControl(0.65, 0.75, 1.0, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 1.0);
+    this.shapesRotationControl(0.75, 1.0);
 
     // descの表示アニメーションを制御
     this.descDisplayControl(0.8, 0.95, 1.0, 1.0);

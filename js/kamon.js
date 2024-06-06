@@ -333,7 +333,7 @@ export default class Kamon {
   // }
 
   // 円弧の頂点を生成
-  circlePointGen(a, b, r, f, t, d, c) {
+  circlePointGen(a, b, r, f, t, d) {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
@@ -344,7 +344,7 @@ export default class Kamon {
   }
 
   // 直線を生成
-  linePointGen(a, b, r, f, t, d, c) {
+  linePointGen(a, b, r, f, t, d) {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
@@ -360,11 +360,11 @@ export default class Kamon {
   }
 
   // ポイントからシェイプを生成
-  shapeGen = (points) => {
+  shapeGen = (points, c) => {
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
-      color: this.frontColor,
+      color: c,
       side: THREE.DoubleSide,
       transparent: true,
     });
@@ -447,7 +447,7 @@ export default class Kamon {
         const inRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, inRatio);
         // const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
         // console.log(maxDelay, delay, inRatioD)
-        if (inRatio > 0.0 && outRatio == 0.0) {
+        if (inRatio >= 0.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
         } else if (outRatio > 0.0 && outRatio < 1.0) {
@@ -462,32 +462,6 @@ export default class Kamon {
     // })
     }
   }
-  // // ガイドラインの表示制御
-  // guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, delayFactor) => {
-  //   const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
-  //   const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
-  //   // if (inRatio <= 0.0 || outRatio >= 1.0) return;
-  //   this.guidelines.children.forEach((group) => {
-  //     const groupNum = group.children.length;
-  //     const maxDelay = delayFactor * groupNum;
-  //     for (var i = 0;i <= groupNum - 1;i ++) {
-  //       const line = group.children[i];
-  //       const delay = delayFactor * i;
-  //       const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
-  //       if (inRatio > 0.0 && outRatio == 0.0) {
-  //         line.visible = true;
-  //         line.geometry.setDrawRange(0, divCount * inRatioD);
-  //       } else if (outRatio > 0.0 && outRatio < 1.0) {
-  //         line.visible = true;
-  //         line.geometry.setDrawRange(0, divCount * inRatioD);
-  //         line.material.opacity = 1.0 - outRatio;
-  //       } else if (outRatio >= 1.0) {
-  //         // console.log('hidden')
-  //         line.visible = false;
-  //       }
-  //     }
-  //   })
-  // }
 
   // アウトラインの表示制御
   outlinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount) => {

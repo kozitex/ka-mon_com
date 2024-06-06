@@ -161,10 +161,10 @@ export default class Kageigeta extends Kamon {
       const group = new THREE.Group();
 
       const point01 = this.straight2(a, 1, bs[0], undefined, 0);
-      const line01 = this.linePointGen(a, 1, bs[0], point01.x, 0, divCount, this.frontColor);
+      const line01 = this.linePointGen(a, 1, bs[0], point01.x, 0, divCount);
 
       const point11 = this.straight2(a, 1, bs[1], undefined, 0);
-      const line11 = this.linePointGen(a, 1, bs[1], 0, point11.x, divCount, this.frontColor);
+      const line11 = this.linePointGen(a, 1, bs[1], 0, point11.x, divCount);
 
       const points = line01.concat(line11);
 
@@ -189,59 +189,50 @@ export default class Kageigeta extends Kamon {
 
       const point21 = this.straight2(- a, 1, - bs[2], undefined, 0);
       const point22 = this.getIntersect(a, bs[4], - a, - bs[2]);
-      const line21  = this.linePointGen(- a, 1, - bs[2], point21.x, point22.x, divCount, this.frontColor);
+      const line21  = this.linePointGen(- a, 1, - bs[2], point21.x, point22.x, divCount);
 
       const point23 = this.getIntersect(a, bs[4], - a, - bs[1]);
-      const line22  = this.linePointGen(a, 1, bs[4], point22.x, point23.x, divCount, this.frontColor);
+      const line22  = this.linePointGen(a, 1, bs[4], point22.x, point23.x, divCount);
 
       const point24 = this.getIntersect(- a, - bs[1], a, bs[2]);
-      const line23  = this.linePointGen(- a, 1, - bs[1], point23.x, point24.x, divCount, this.frontColor);
+      const line23  = this.linePointGen(- a, 1, - bs[1], point23.x, point24.x, divCount);
 
       const point25 = this.getIntersect(a, bs[2], - a, bs[1]);
-      const line24  = this.linePointGen(a, 1, bs[2], point24.x, point25.x, divCount, this.frontColor);
+      const line24  = this.linePointGen(a, 1, bs[2], point24.x, point25.x, divCount);
 
       const point26 = this.getIntersect(- a, bs[1], a, bs[4]);
-      const line25  = this.linePointGen(- a, 1, bs[1], point25.x, point26.x, divCount, this.frontColor);
+      const line25  = this.linePointGen(- a, 1, bs[1], point25.x, point26.x, divCount);
 
       const point27 = this.getIntersect(a, bs[4], - a, bs[2]);
-      const line26  = this.linePointGen(a, 1, bs[4], point26.x, point27.x, divCount, this.frontColor);
+      const line26  = this.linePointGen(a, 1, bs[4], point26.x, point27.x, divCount);
 
       const point28 = this.getIntersect(- a, bs[2], a, bs[2]);
-      const line27  = this.linePointGen(- a, 1, bs[2], point27.x, point28.x, divCount, this.frontColor);
+      const line27  = this.linePointGen(- a, 1, bs[2], point27.x, point28.x, divCount);
 
       const point31 = this.straight2(- a, 1, bs[3], 0, undefined);
       const point32 = this.getIntersect(- a, bs[3], a, bs[5]);
-      const line31  = this.linePointGen(- a, 1, bs[3], point31.x, point32.x, divCount, this.frontColor);
+      const line31  = this.linePointGen(- a, 1, bs[3], point31.x, point32.x, divCount);
 
       const point33 = this.getIntersect(a, bs[5], - a, bs[0]);
-      const line32  = this.linePointGen(a, 1, bs[5], point32.x, point33.x, divCount, this.frontColor);
+      const line32  = this.linePointGen(a, 1, bs[5], point32.x, point33.x, divCount);
 
       const point34 = this.getIntersect(- a, bs[0], a, bs[3]);
-      const line33  = this.linePointGen(- a, 1, bs[0], point33.x, point34.x, divCount, this.frontColor);
+      const line33  = this.linePointGen(- a, 1, bs[0], point33.x, point34.x, divCount);
 
       const point35 = this.getIntersect(a, bs[3], - a, - bs[0]);
-      const line34  = this.linePointGen(a, 1, bs[3], point34.x, point35.x, divCount, this.frontColor);
+      const line34  = this.linePointGen(a, 1, bs[3], point34.x, point35.x, divCount);
 
       const point36 = this.getIntersect(- a, - bs[0], a, bs[5]);
-      const line35  = this.linePointGen(- a, 1, - bs[0], point35.x, point36.x, divCount, this.frontColor);
+      const line35  = this.linePointGen(- a, 1, - bs[0], point35.x, point36.x, divCount);
 
       const point37 = this.getIntersect(a, bs[5], - a, - bs[3]);
-      const line36  = this.linePointGen(a, 1, bs[5], point36.x, point37.x, divCount, this.frontColor);
+      const line36  = this.linePointGen(a, 1, bs[5], point36.x, point37.x, divCount);
 
       const point38 = this.getIntersect(- a, - bs[3], a, bs[3]);
-      const line37  = this.linePointGen(- a, 1, - bs[3], point37.x, point38.x, divCount, this.frontColor);
+      const line37  = this.linePointGen(- a, 1, - bs[3], point37.x, point38.x, divCount);
 
       const points = line21.concat(line22, line23, line24, line25, line26, line27, line31, line32, line33, line34, line35, line36, line37);
-
-      const shape = new THREE.Shape(points);
-      const geometry = new THREE.ShapeGeometry(shape);
-      const material = new THREE.MeshBasicMaterial({
-        color: this.frontColor,
-        side: THREE.DoubleSide,
-        transparent: true,
-      });
-      material.opacity = 0.0;
-      const mesh = new THREE.Mesh(geometry, material);
+      const mesh = this.shapeGen(points, this.frontColor);
       mesh.visible = false;
       group.add(mesh);
       group.rotation.x = - THREE.MathUtils.degToRad(180) * Math.trunc(i / 2);
