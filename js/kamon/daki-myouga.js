@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Kamon from '../kamon.js';
 
-export default class ChigaiTakanoha extends Kamon {
+export default class DakiMyouga extends Kamon {
 
   constructor() {
 
@@ -20,26 +20,26 @@ export default class ChigaiTakanoha extends Kamon {
     this.generateGuidelines();
 
     // アウトラインの作成
-    this.generateOutlines();
+    // this.generateOutlines();
 
     // 塗りつぶし図形の描画
-    this.generateShapes();
+    // this.generateShapes();
 
     // infoの準備
-    this.jpName.innerHTML = '丸に違い鷹の羽';
+    this.jpName.innerHTML = '抱き茗荷';
     this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
-    this.enName.innerHTML = 'Maruni-Chigai-Takanoha';
+    this.enName.innerHTML = 'Daki-Myouga';
     this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
   }
 
-  // テーマカラー変更
-  changeTheme = (theme) => {
-    super.changeTheme(theme);
+  // // テーマカラー変更
+  // changeTheme = (theme) => {
+  //   super.changeTheme(theme);
 
-    this.blackBoard.children.forEach((shape) => {
-      shape.material.color = new THREE.Color(this.backColor);
-    })
-  }
+  //   this.blackBoard.children.forEach((shape) => {
+  //     shape.material.color = new THREE.Color(this.backColor);
+  //   })
+  // }
 
   // ガイドラインを作成
   generateGuidelines = () => {
@@ -48,68 +48,188 @@ export default class ChigaiTakanoha extends Kamon {
 
     // 外円
     const outCircles = new THREE.Group();
-    const rs = [1600, 1300];
+    const rs = [1600];
     rs.forEach((r) => {
       const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
       outCircles.add(circle);
     });
     this.guidelines.add(outCircles);
 
-    // 羽
+    // 
     for (var i = 0;i <= 1;i ++) {
 
-      // 羽の輪郭円
+      // 
       const group1 = new THREE.Group();
       const params1 = [
-        {a:   516, b:   516, r: 516},
-        {a: - 416, b: - 416, r: 516},
-        {a: - 466, b: - 466, r: 516},
-        {a: - 516, b: - 516, r: 516},
-        {a: - 416, b: - 416, r: 550},
-        {a: - 466, b: - 466, r: 550},
+        {a: -  200, b: - 1410, r:  173, f:   90, t: 450},
+        {a:      0, b: -  880, r:  586, f:  240, t: 160},
+        {a: - 1415, b: - 1020, r:  837, f: - 20, t: 110},
+        {a:     10, b: -   22, r: 1512, f:  187, t: 240},
+        {a:    270, b:     90, r: 1750, f:  190, t: 235},
+        {a: - 2155, b: - 1477, r: 1377, f:   63, t:  20},
+        {a: - 2230, b: - 1620, r: 1500, f:   63, t:  22},
+        {a: - 1480, b: - 1045, r:  760, f:   95, t:  10},
+        {a: - 1555, b: - 1165, r:  865, f:   90, t:  15},
       ];
       params1.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, 90, 450, divCount, this.guideColor);
-        if (i == 1) line.rotation.z = THREE.MathUtils.degToRad(90);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group1.add(line);
       });
 
-      // 羽の輪郭線
       const group2 = new THREE.Group();
-      const theta = THREE.MathUtils.degToRad(45);
       const params2 = [
-        {p:   516 * Math.cos(theta), q:   516 * Math.cos(theta), f: 700, t: - 700},
-        {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta), f: 700, t: - 700},
-        {p:    35 * Math.cos(theta), q:    35 * Math.cos(theta), f: 950, t: - 950},
-        {p:    71 * Math.cos(theta), q:    71 * Math.cos(theta), f: 950, t: - 950},
+        {a: -  200, b: - 1410, r:  208, f:   90, t: 180},
+        {a:      0, b: -  880, r:  551, f:  240, t: 160},
+        {a: - 1415, b: - 1020, r:  872, f: - 20, t: 110},
+        {a: -  300, b: -  840, r:  750, f:  150, t:  65},
+        {a:    670, b: -  820, r: 1000, f:  210, t: 135},
+        {a: -  330, b: -  665, r:  510, f:   75, t: 145},
+        {a: -  310, b: -  850, r:  650, f:   80, t: 135},
+        {a:     33, b: -  828, r:  750, f:  113, t: 162},
+        {a: -   15, b: -  790, r:  650, f:  105, t: 167},
+        {a:    450, b: -  785, r:  900, f:  135, t: 192},
+        {a:    278, b: -  690, r:  750, f:  135, t: 200},
       ];
       params2.forEach((param) => {
-        for (var j = 0;j <= 1;j ++) {
-          const line = this.lineGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, divCount, this.guideColor);
-          line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
-          group2.add(line);
-        }
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+        group2.add(line);
       });
 
-      // 羽の模様（タテ）
       const group3 = new THREE.Group();
-      const params3 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
+      const params3 = [
+        {a: -  300, b: -  840, r:  785, f: 150, t:  75},
+        {a: - 1800, b: -  550, r: 1150, f:  15, t:  80},
+        {a: -   90, b:     75, r: 1400, f: 163, t: 186},
+        {a:    917, b: -  175, r: 2400, f: 164, t: 179},
+        {a: - 2565, b: -  505, r: 1500, f:  42, t:  14},
+        {a: - 4030, b: - 1450, r: 3200, f:  37, t:  24},
+        {a: - 1610, b: -  270, r:  750, f:  80, t:  10},
+        {a: - 1725, b: -  415, r:  900, f:  75, t:  20},
+      ];
       params3.forEach((param) => {
-        const line = this.lineGen(1, 0, - param, 1100, - 1100, divCount, this.guideColor);
-        line.rotation.z = THREE.MathUtils.degToRad(90 * i);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group3.add(line);
       });
 
-      // 羽の模様（ヨコ）
       const group4 = new THREE.Group();
-      const params4 = [- 94, - 130, - 194, - 230, - 294, - 330, 646, 610, 546, 510, 446, 410];
+      const params4 = [
+        {a: - 1800, b: - 550, r: 1185, f:   15, t:   80},
+        {a: -   70, b: - 650, r: 1150, f:  140, t:   86},
+        {a: - 2470, b:   670, r: 2450, f: - 20, t: -  3},
+        {a: -  115, b: - 440, r:  850, f:   90, t:  138},
+        {a: -   10, b: - 815, r: 1200, f:   95, t:  128},
+        {a:    515, b: - 580, r: 1200, f:  124, t:  152},
+        {a:    760, b: - 945, r: 1600, f:  123, t:  145},
+        {a: - 1020, b:   480, r:  900, f: -  3, t: - 35},
+        {a: - 1355, b:   500, r: 1200, f: -  3, t: - 26},
+      ];
       params4.forEach((param) => {
-        const line = this.lineGen(0, 1, - param, 1100, - 1100, divCount, this.guideColor);
-        line.rotation.z = THREE.MathUtils.degToRad(90 * i);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group4.add(line);
       });
 
-      this.guidelines.add(group1, group2, group3, group4);
+      const group5 = new THREE.Group();
+      const params5 = [
+        {a: -   70, b: - 650, r: 1185, f: 140, t:  89},
+        {a: - 1700, b:   240, r: 1050, f:   3, t:  65},
+        {a: - 1710, b:   235, r:  910, f:  50, t:  13},
+        {a: - 1525, b:   400, r:  700, f:  55, t:   3},
+        {a: - 1910, b:   570, r:  900, f:  30, t: - 8},
+        {a: - 2610, b:   330, r: 1600, f:  25, t:   4},
+        {a: -  435, b:   375, r:  900, f: 137, t: 165},
+        {a:    115, b: - 120, r: 1600, f: 137, t: 153},
+      ];
+      params5.forEach((param) => {
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+        group5.add(line);
+      });
+
+      const group6 = new THREE.Group();
+      const params6 = [
+        {a: - 1700, b:   240, r: 1085, f:    3, t:   65},
+        {a: -   60, b:    55, r: 1000, f:  140, t:   84},
+        {a: - 2470, b:  1150, r: 2450, f: - 16, t:    0},
+        {a: -   70, b:   115, r:  850, f:   90, t:  135},
+        {a:     30, b: - 260, r: 1200, f:   95, t:  126},
+        {a:    595, b:    40, r: 1200, f:  128, t:  157},
+        {a:    835, b: - 350, r: 1600, f:  123, t:  147},
+        {a: -  995, b:  1030, r:  900, f: -  3, t: - 32},
+        {a: - 1330, b:  1040, r: 1200, f: -  3, t: - 24},
+      ];
+      params6.forEach((param) => {
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+        group6.add(line);
+      });
+
+      const group7 = new THREE.Group();
+      const params7 = [
+        {a: -   60, b:   55, r: 1035, f:  140, t:   84},
+        {a: - 1655, b: 1130, r: 1100, f: - 15, t:   22},
+        {a: -  510, b:  885, r:  500, f:  105, t:  152},
+        {a: -  395, b:  615, r:  750, f:  110, t:  139},
+        {a: -   75, b:  880, r:  750, f:  138, t:  175},
+        {a:    335, b:  625, r: 1200, f:  143, t:  165},
+        {a: - 1215, b: 1165, r:  600, f:   21, t: - 20},
+        {a: - 1845, b: 1055, r: 1200, f:   15, t: -  5},
+
+      ];
+      params7.forEach((param) => {
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+        group7.add(line);
+      });
+
+      const group8 = new THREE.Group();
+      const params8 = [
+        {a: - 1655, b:  1130, r: 1135, f: - 12, t:   22},
+        {a: -  490, b:  1020, r:   80, f: -  5, t:  125},
+        {a: -  490, b:  1020, r:  115, f: -  1, t:  115},
+        {a: -  510, b:  1458, r:   55, f:  240, t: - 20},
+        {a: -   85, b:  1146, r:   55, f:  220, t:  480},
+        {a: -  390, b:  1484, r:   65, f:  220, t: - 70},
+        {a: -   80, b:  1255, r:   55, f:  240, t:  530},
+        {a: -  215, b:  1360, r:  150, f:  130, t:  210},
+        {a: -  250, b:  1370, r:  150, f:  345, t:  260},
+        {a: -  330, b:  1340, r:   33, f:  150, t:  380},
+        {a: -  225, b:  1255, r:   33, f:  320, t:   80},
+        {a: -  595, b:  1455, r:  320, f:  320, t:  380},
+        {a: -   40, b:  1034, r:  320, f:  150, t:   90},
+        {a: -  205, b:  1508, r:   75, f:  220, t:   30},
+        {a: -  100, b:  1425, r:   75, f:  250, t:  440},
+        {a: -   90, b:  1532, r:   65, f:  180, t: - 90},
+
+        {a: - 1350, b:  1350, r:  900, f: - 15, t:    4},
+        {a: - 1325, b:  1330, r:  900, f: - 14, t:    6},
+        {a: -  441, b:  1410, r:   12, f:  220, t: - 40},
+
+        {a: -   42, b:   603, r:  600, f: 127, t:    98},
+        {a:    105, b:   310, r:  900, f: 124, t:   104},
+        {a: -  132, b:  1186, r:    9, f: 130, t: - 130},
+
+        {a:   1597, b: - 177, r: 2400, f: 148, t:   135},
+        {a:   1658, b: - 128, r: 2400, f: 150, t:   137},
+        {a: -  105, b:  1510, r:    5, f: 175, t: -  85},
+      ];
+      params8.forEach((param) => {
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+        group8.add(line);
+      });
+
+      this.guidelines.add(group1);
+      this.guidelines.add(group2);
+      this.guidelines.add(group3);
+      this.guidelines.add(group4);
+      this.guidelines.add(group5);
+      this.guidelines.add(group6);
+      this.guidelines.add(group7);
+      this.guidelines.add(group8);
     }
 
     this.scene.add(this.guidelines);
@@ -665,7 +785,7 @@ export default class ChigaiTakanoha extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.07, 0.02);
+    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.02, 0.02);
 
     // アウトラインの表示アニメーション制御
     this.outlinesDisplayControl(0.4, 0.6, 0.65, 0.75, 1000);

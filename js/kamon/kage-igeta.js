@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Kamon from '../kamon.js';
 
-export default class Kageigeta extends Kamon {
+export default class KageIgeta extends Kamon {
   constructor() {
 
     super();

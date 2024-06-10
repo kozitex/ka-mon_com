@@ -1,9 +1,10 @@
 'use strict';
-import Kageigeta from './kamon/kageigeta.js';
+import Kageigeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 import Kikyou from './kamon/kikyou.js';
 import GenjiGuruma from './kamon/genji-guruma.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
+import DakiMyouga from './kamon/daki-myouga.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
@@ -14,11 +15,12 @@ const init = () => {
   let promptTimeout = 0;
   let autoScrolling = false;
 
-  const kamon = new Kageigeta();
+  // const kamon = new KageIgeta();
   // const kamon = new HidariFutatsuDomoe();
   // const kamon = new Kikyou();
   // const kamon = new GenjiGuruma();
   // const kamon = new ChigaiTakanoha();
+  const kamon = new DakiMyouga();
 
   // テーマカラーを適用
   const changeTheme = (theme) => {
@@ -85,7 +87,7 @@ const init = () => {
   // テーマ名が保存されていたら適用
   const myTheme = localStorage.getItem('theme');
   if (myTheme) {
-    // changeTheme(myTheme);
+    changeTheme(myTheme);
     const target = document.getElementById(myTheme);
     target.checked = true;
   }

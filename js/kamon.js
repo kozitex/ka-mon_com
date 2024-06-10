@@ -95,7 +95,7 @@ export default class Kamon {
   }
 
   // テーマカラー変更
-  changeTheme = (theme) => {
+  changeTheme(theme) {
     if (theme == 'dark') {
       this.frontColor    = 0xffffff;
       this.backColor     = 0x111111;
