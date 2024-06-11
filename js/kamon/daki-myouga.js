@@ -20,7 +20,7 @@ export default class DakiMyouga extends Kamon {
     this.generateGuidelines();
 
     // アウトラインの作成
-    // this.generateOutlines();
+    this.generateOutlines();
 
     // 塗りつぶし図形の描画
     // this.generateShapes();
@@ -203,15 +203,12 @@ export default class DakiMyouga extends Kamon {
         {a: -  205, b:  1508, r:   75, f:  220, t:   30},
         {a: -  100, b:  1425, r:   75, f:  250, t:  440},
         {a: -   90, b:  1532, r:   65, f:  180, t: - 90},
-
         {a: - 1350, b:  1350, r:  900, f: - 15, t:    4},
         {a: - 1325, b:  1330, r:  900, f: - 14, t:    6},
         {a: -  441, b:  1410, r:   12, f:  220, t: - 40},
-
         {a: -   42, b:   603, r:  600, f: 127, t:    98},
         {a:    105, b:   310, r:  900, f: 124, t:   104},
         {a: -  132, b:  1186, r:    9, f: 130, t: - 130},
-
         {a:   1597, b: - 177, r: 2400, f: 148, t:   135},
         {a:   1658, b: - 128, r: 2400, f: 150, t:   137},
         {a: -  105, b:  1510, r:    5, f: 175, t: -  85},
@@ -240,332 +237,534 @@ export default class DakiMyouga extends Kamon {
 
     const divCount = 1000;
 
-    // 外円
-    const rs = [1600, 1300];
-    rs.forEach((r) => {
-      const circle = this.outlineCircleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
-      this.outlines.add(circle);
-    });
-
-    // 羽
     for (var i = 0;i <= 1;i ++) {
 
-      // 円のパラメータ
-      const ens = [
-        {a:   516, b:   516, r: 516},
-        {a: - 416, b: - 416, r: 516},
-        {a: - 466, b: - 466, r: 516},
-        {a: - 516, b: - 516, r: 516},
-        {a: - 416, b: - 416, r: 550},
-        {a: - 466, b: - 466, r: 550},
+      // // 外円
+      // const params0 = [
+      //   // {f: 262,   t: 187},
+      //   // {f: 186,   t: 159.4},
+      //   // {f: 158.4, t: 135.2},
+      //   // {f: 134,   t: 112.4},
+      // ];
+      // params0.forEach((param) => {
+      //   const circle = this.outlineCircleGen(0, 0, 1600, param.f, param.t, divCount, this.frontColor);
+      //   circle.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      //   this.outlines.add(circle);
+      // });
+
+      const params1 = [
+        {a:      0  , b:      0, r: 1600, f: 262   , t:  187  },
+        {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98  },
+        {a:      0.5, b: -  880, r:  586, f:  232  , t:  186.5},
+        {a: - 1415  , b: - 1020, r:  837, f:    5  , t:  102  },
+        {a:     10  , b: -   22, r: 1512, f:  189.8, t:  240  },
+        {a:    270  , b:     90, r: 1750, f:  194.7, t:  234  },
+        {a: - 2155  , b: - 1477, r: 1377, f:   57.5, t:   20  },
+        {a: - 2230  , b: - 1620, r: 1500, f:   57.5, t:   24  },
+        {a: - 1480  , b: - 1045, r:  760, f:   90  , t:   10  },
+        {a: - 1555  , b: - 1165, r:  865, f:   80.5, t:   17  },
       ];
-
-      // 輪郭＆中心の線のパラメータ
-      const theta = THREE.MathUtils.degToRad(45);
-      const sens = [
-        {p: - 516 * Math.cos(theta), q: - 516 * Math.cos(theta)},
-        {p: -  71 * Math.cos(theta), q: -  71 * Math.cos(theta)},
-        {p: -  35 * Math.cos(theta), q: -  35 * Math.cos(theta)},
-      ];
-
-      // 羽の模様線のパラメータ
-      const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
-
-
-      // 輪郭＆中心線の描画
-      const sen0Params = [
-        {f:    94, t: - 410},
-        {f: - 446, t: - 510},
-        {f: - 546, t: - 610},
-        {f: - 646, t: - 416 - 516 * Math.cos(theta)},
-      ];
-      sen0Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+      params1.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.frontColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      const sen1Params = [
-        {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, t: 330},
-        {f:   294, t:   230},
-        {f:   194, t:   130},
-        {f:    94, t: - 410},
-        {f: - 446, t: - 510},
-        {f: - 546, t: - 610},
-        {f: - 646, t: this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x},
-        {f: this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, t: this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x},
-        {f: this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x},
+      const params2 = [
+        {a: -  200, b: - 1410, r:  208, f:  102, t: 146  },
+        {a:      0, b: -  880, r:  550, f:  228, t: 185  },
+        {a: - 1415, b: - 1020, r:  872, f:    6, t:  27.5},
+        {a: - 1415, b: - 1020, r:  872, f:   31, t:  51  },
+        // {a: - 1415, b: - 1020, r:  872, f:   53, t: 102  },
+        {a: -  300, b: -  840, r:  750, f:  139, t:  70.5},
+        {a:    670, b: -  820, r: 1000, f:  203, t: 136.5},
+        {a: -  330, b: -  665, r:  510, f:   75.5, t: 145},
+        {a: -  310, b: -  850, r:  650, f:   97  , t: 135},
+        {a:     33, b: -  828, r:  750, f:  124  , t: 160},
+        {a: -   15, b: -  790, r:  650, f:  116  , t: 165},
+        {a:    450, b: -  785, r:  900, f:  137  , t: 188},
+        {a:    278, b: -  690, r:  750, f:  140  , t: 197},
       ];
-      sen1Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+      params2.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.frontColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      const sen2Params = [
-        {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x},
+      const params3 = [
+        {a:      0, b:      0, r: 1600, f: 186,   t: 159.4},
+        {a: -  300, b: -  840, r:  785, f: 139.3, t: 121.5},
+        {a: - 1415, b: - 1020, r:  872, f:   53 , t: 102  },
+        // {a: -  300, b: -  840, r:  785, f: 119.5, t:  77.5},
+        {a: - 1800, b: -  550, r: 1150, f:  18.9, t:  75  },
+        {a: -   90, b:     75, r: 1400, f: 163.8, t: 186  },
+        {a:    917, b: -  175, r: 2400, f: 166.2, t: 177.5},
+        {a: - 2565, b: -  505, r: 1500, f:  38  , t:  14  },
+        {a: - 4030, b: - 1450, r: 3200, f:  35.2, t:  24  },
+        {a: - 1610, b: -  270, r:  750, f:  77  , t:  11  },
+        {a: - 1725, b: -  415, r:  900, f:  67.2, t:  20  },
       ];
-      sen2Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
-
-      // 輪郭円の描画
-      const en0Params = [
-        {f: 45, t: 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))},
-        {f: 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))},
-        {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))},
-        {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))},
-      ];
-      en0Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
-
-      const en1Params = [
-        {f: 135, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))},
-      ];
-      en1Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
-
-      const en2Params = [
-        {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))},
-      ];
-      en2Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
-
-      const en3Params = [
-        {f: 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), t: 225},
-        {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))},
-      ];
-      en3Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
-
-      const en4Params = [
-        {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))},
-      ];
-      en4Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
-
-      const en5Params = [
-        {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))},
-      ];
-      en5Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+      params3.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
 
-      // 羽の模様線の描画
-      var index = 0;
-      stripes.forEach((sen) => {
-        const f = this.straight2(1, 1, - (sens[1].p + sens[1].q), sen, undefined).y;
-        var t;
-        if (index > 1 && index <= 5) {
-          t = this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - sen) / ens[0].r))).y;
-        } else {
-          t = this.straight2(1, 1, - (sens[0].p + sens[0].q), sen, undefined).y;
-        }
-        const line = this.outlineGen(1, 0, - sen, f, t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-        index ++;
-      });
-
-    }
-
-    // 反転した羽
-    for (var i = 0;i <= 1;i ++) {
-
-      // 円のパラメータ
-      const ens = [
-        {a:   516, b:   516, r: 516},
-        {a: - 416, b: - 416, r: 516},
-        {a: - 466, b: - 466, r: 516},
-        {a: - 516, b: - 516, r: 516},
-        {a: - 416, b: - 416, r: 550},
-        {a: - 466, b: - 466, r: 550},
+      const params4 = [
+        {a: - 1800, b: - 550, r: 1185, f:   19.4, t:   38.3},
+        {a: -  300, b: -  840, r:  785, f: 119.5, t:   77.5},
+        // {a: - 1800, b: - 550, r: 1185, f:   39.6, t:   75  },
+        {a: -   70, b: - 650, r: 1150, f:  133.8, t:   87.4},
+        {a: - 2470, b:   670, r: 2450, f: - 17.7, t: -  4  },
+        {a: -  115, b: - 440, r:  850, f:   90  , t:  138  },
+        {a: -   10, b: - 815, r: 1200, f:  100.4, t:  128  },
+        {a:    515, b: - 580, r: 1200, f:  128  , t:  152  },
+        {a:    760, b: - 945, r: 1600, f:  125.2, t:  145  },
+        {a: - 1020, b:   480, r:  900, f: -  4.0, t: - 34.5},
+        {a: - 1355, b:   500, r: 1200, f: -  6.5, t: - 26  },
       ];
-
-      // 輪郭＆中心の線のパラメータ
-      const theta = THREE.MathUtils.degToRad(45);
-      const sens = [
-        {p: - 516 * Math.cos(theta), q: - 516 * Math.cos(theta)},
-        {p: -  71 * Math.cos(theta), q: -  71 * Math.cos(theta)},
-        {p: -  35 * Math.cos(theta), q: -  35 * Math.cos(theta)},
-        {p: - 552 * Math.cos(theta), q: - 552 * Math.cos(theta)},
-        {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta)},
-      ];
-
-      // 羽の模様線のパラメータ
-      const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446];
-
-
-      // 輪郭＆中心線の描画
-      const crossX0 = this.getIntersect(1, sens[0].p + sens[0].q, - 1,   (sens[3].p + sens[3].q)).x;
-      const crossX1 = this.getIntersect(1, sens[0].p + sens[0].q, - 1, - (sens[3].p + sens[3].q)).x;
-      const sen0Params = [
-        {f:    94, t: - crossX0},
-        {f: - crossX1, t: - 416 - 516 * Math.cos(theta)},
-      ];
-      sen0Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+      params4.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      const crossX2 = this.getIntersect(1, sens[1].p + sens[1].q, - 1,   (sens[3].p + sens[3].q)).x;
-      const crossX3 = this.getIntersect(1, sens[1].p + sens[1].q, - 1, - (sens[3].p + sens[3].q)).x;
-      const sen1Params = [
-        {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, t: - crossX2},
-        {f: - crossX3, t: - 510},
-        {f: - 546, t: - 610},
-        {f: - 646, t: this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x},
-        {f: this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, t: this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x},
-        {f: this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x},
+      const params5 = [
+        {a:      0, b:     0, r: 1600, f: 158.4, t: 135.2},
+        {a: - 1800, b: - 550, r: 1185, f:  39.6, t:  75  },
+        {a: -   70, b: - 650, r: 1185, f: 134  , t: 119.6},
+        // {a: -   70, b: - 650, r: 1185, f: 118.2, t:  91.1},
+        {a: - 1700, b:   240, r: 1050, f:   7.4, t:  57.8},
+        {a: - 1710, b:   235, r:  910, f:  45  , t:  13  },
+        {a: - 1525, b:   400, r:  700, f:  54.4, t:   3.8},
+        {a: - 1910, b:   570, r:  900, f:  20  , t: - 7.8},
+        {a: - 2610, b:   330, r: 1600, f:  21  , t:   4.6},
+        {a: -  435, b:   375, r:  900, f: 138.6, t: 164  },
+        {a:    115, b: - 120, r: 1600, f: 140.1, t: 152  },
       ];
-      sen1Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+      params5.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      const crossX4 = this.getIntersect(1, sens[2].p + sens[2].q, - 1,   (sens[3].p + sens[3].q)).x;
-      const crossX5 = this.getIntersect(1, sens[2].p + sens[2].q, - 1, - (sens[3].p + sens[3].q)).x;
-      const sen2Params = [
-        {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, t: - crossX4},
-        {f: - crossX5, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x},
+      const params6 = [
+        {a: -   70, b: - 650, r: 1185, f: 118.2 , t:   91.1},
+        {a: - 1700, b:   240, r: 1085, f:    8.0, t:   29.7},
+        // {a: - 1700, b:   240, r: 1085, f:   31.1, t:   57.4},
+        {a: -   60, b:    55, r: 1000, f:  134.2, t:   87.4},
+        {a: - 2470, b:  1150, r: 2450, f: - 14.7, t: -  2.1},
+        {a: -   70, b:   115, r:  850, f:   91.4, t:  135  },
+        {a:     30, b: - 260, r: 1200, f:  102.4, t:  126  },
+        {a:    595, b:    40, r: 1200, f:  133.2, t:  156.5},
+        {a:    835, b: - 350, r: 1600, f:  127.2, t:  146.8},
+        {a: -  995, b:  1030, r:  900, f: -  4  , t: - 32  },
+        {a: - 1330, b:  1040, r: 1200, f: -  5.4, t: - 24  },
       ];
-      sen2Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+      params6.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      const crossX6 = this.getIntersect(1, sens[1].p + sens[1].q, - 1, (sens[3].p + sens[3].q)).x;
-      const crossX7 = this.getIntersect(1, sens[2].p + sens[2].q, - 1, (sens[3].p + sens[3].q)).x;
-      const sen3Params = [
-        {f: - crossX0, t: 94},
-        {f: 130, t: 194},
-        {f: 230, t: 294},
-        {f: 330, t: - crossX6},
-        {f: - crossX7, t: - sens[3].p},
+      const params7 = [
+        {a:      0, b:    0, r: 1600, f:  134  , t:  112.4},
+        {a: - 1700, b:  240, r: 1085, f:   31.1, t:   57.4},
+        {a: -   60, b:   55, r: 1035, f:  133.8, t:  119.2},
+        {a: - 1655, b: 1130, r: 1100, f: -  9.3, t:   18.7},
+        {a: -  510, b:  885, r:  500, f:  105.5, t:  152  },
+        {a: -  395, b:  615, r:  750, f:  114  , t:  138.2},
+        {a: -   75, b:  880, r:  750, f:  145.8, t:  175  },
+        {a:    335, b:  625, r: 1200, f:  146.6, t:  164.8},
+        {a: - 1215, b: 1165, r:  600, f:   20  , t: - 19.8},
+        {a: - 1845, b: 1055, r: 1200, f:   11.2, t: -  4.6},
+
       ];
-      sen3Params.forEach((param) => {
-        const line = this.outlineGen(- 1, 1, - (sens[3].p + sens[3].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+      params7.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      const sen4Params = [
-        {f: - crossX1, t: - 646},
-        {f: - 610, t: - 546},
-        {f: - 510, t: - 446},
-        {f: - 410, t: sens[3].p},
+      const params8 = [
+        {a: -   60, b:    55, r: 1035, f:  117.2, t:  109.5},
+        {a: -   60, b:    55, r: 1035, f:  108.2, t:   91.2},
+
+        {a: - 1655, b:  1130, r: 1135, f: -  8.0, t: -  1.6},
+        {a: - 1655, b:  1130, r: 1135, f: -  0.3, t:   16  },
+
+        {a: -  490, b:  1020, r:   80, f:    3  , t:  112  },
+        {a: -  490, b:  1020, r:  115, f:    8  , t:  25  },
+        {a: -  490, b:  1020, r:  115, f:    33  , t:  44  },
+        {a: -  490, b:  1020, r:  115, f:    53  , t:  72  },
+        {a: -  490, b:  1020, r:  115, f:    80  , t:  108  },
+
+        {a: -  509, b:  1458, r:   56, f:  200  , t:   18  },
+        {a: -   85, b:  1146, r:   55, f:  270  , t:  440  },
+
+        {a: -  390, b:  1484, r:   65, f:  185  , t: - 45  },
+        {a: -   80, b:  1255, r:   55, f:  275  , t:  510  },
+
+        {a: -  215, b:  1360, r:  150, f:  148.5, t:  190  },
+        {a: -  250, b:  1370, r:  150, f:  324.2, t:  286  },
+
+        {a: -  330, b:  1340, r:   33, f:  190  , t:  360  },
+        {a: -  225, b:  1255, r:   33, f:  300  , t:  118  },
+
+        {a: -  595, b:  1455, r:  320, f:  338.8, t:  370  },
+        {a: -   40, b:  1035, r:  320, f:  128.8, t:   98  },
+
+        {a: -  205, b:  1508, r:   75, f:  179  , t:   38  },
+        {a: -  100, b:  1425, r:   75, f:  282  , t:  412  },
+
+        {a: -   90, b:  1532, r:   65, f:  160  , t: - 58  },
+
+        {a: - 1350, b:  1350, r:  900, f: - 14.3, t:    3.9},
+        {a: - 1325, b:  1330, r:  900, f: - 13.4, t:    5.1},
+        {a: -  441, b:  1410, r:   12, f:  180  , t: -  0  },
+
+        {a: -   42, b:   603, r:  600, f: 126.6, t:    98.8},
+        {a:    105, b:   310, r:  900, f: 123.2, t:   105.2},
+        {a: -  132, b:  1186, r:    9, f: 100  , t: -  80  },
+
+        {a:   1597, b: - 177, r: 2400, f: 147.6, t:   135.2},
+        {a:   1658, b: - 128, r: 2400, f: 149.4, t:   137.1},
+        {a: -  105, b:  1509, r:    5, f: 135  , t: -  45  },
       ];
-      sen4Params.forEach((param) => {
-        const line = this.outlineGen(- 1, 1, - (sens[4].p + sens[4].q), param.f , param.t , divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+      params8.forEach((param) => {
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
 
-      // 輪郭円の描画
-      const en0Params = [
-        {f: 45, t: 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))},
-        {f: 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 330) / ens[0].r))},
-        {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 294) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 230) / ens[0].r))},
-        {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 194) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 130) / ens[0].r))},
-      ];
-      en0Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
+  }
+    // // 外円
+    // const rs = [1600, 1300];
+    // rs.forEach((r) => {
+    //   const circle = this.outlineCircleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+    //   this.outlines.add(circle);
+    // });
 
-      const en1Params = [
-        {f: 135, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))},
-      ];
-      en1Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
+    // // 羽
+    // for (var i = 0;i <= 1;i ++) {
 
-      const en2Params = [
-        {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))},
-      ];
-      en2Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
+    //   // 円のパラメータ
+    //   const ens = [
+    //     {a:   516, b:   516, r: 516},
+    //     {a: - 416, b: - 416, r: 516},
+    //     {a: - 466, b: - 466, r: 516},
+    //     {a: - 516, b: - 516, r: 516},
+    //     {a: - 416, b: - 416, r: 550},
+    //     {a: - 466, b: - 466, r: 550},
+    //   ];
 
-      const en3Params = [
-        {f: 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), t: 225},
-        {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))},
-      ];
-      en3Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
+    //   // 輪郭＆中心の線のパラメータ
+    //   const theta = THREE.MathUtils.degToRad(45);
+    //   const sens = [
+    //     {p: - 516 * Math.cos(theta), q: - 516 * Math.cos(theta)},
+    //     {p: -  71 * Math.cos(theta), q: -  71 * Math.cos(theta)},
+    //     {p: -  35 * Math.cos(theta), q: -  35 * Math.cos(theta)},
+    //   ];
 
-      const en4Params = [
-        {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))},
-      ];
-      en4Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
+    //   // 羽の模様線のパラメータ
+    //   const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
 
-      const en5Params = [
-        {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))},
-      ];
-      en5Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-      });
 
-      // 羽の模様線の描画
-      var index = 0;
-      stripes.forEach((sen) => {
-        var f;
-        if (index <= 5) {
-          f = this.straight2(- 1, 1, - (sens[3].p + sens[3].q), sen, undefined).y;
-        } else {
-          f = this.straight2(1, 1, - (sens[1].p + sens[1].q), sen, undefined).y;
-        }
-        var t;
-        if (index <= 1) {
-          t = this.straight2( 1, 1, - (sens[0].p + sens[0].q), sen, undefined).y;
-        } else if (index > 1 && index <= 5) {
-          t = this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - sen) / ens[0].r))).y;
-        } else {
-          t = this.straight2(- 1, 1,   (sens[3].p + sens[3].q), sen, undefined).y;
-        }
-        const line = this.outlineGen(1, 0, - sen, f, t, divCount, this.guideColor);
-        line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-        this.outlines.add(line);
-        index ++;
-      });
-    }
+    //   // 輪郭＆中心線の描画
+    //   const sen0Params = [
+    //     {f:    94, t: - 410},
+    //     {f: - 446, t: - 510},
+    //     {f: - 546, t: - 610},
+    //     {f: - 646, t: - 416 - 516 * Math.cos(theta)},
+    //   ];
+    //   sen0Params.forEach((param) => {
+    //     const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const sen1Params = [
+    //     {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, t: 330},
+    //     {f:   294, t:   230},
+    //     {f:   194, t:   130},
+    //     {f:    94, t: - 410},
+    //     {f: - 446, t: - 510},
+    //     {f: - 546, t: - 610},
+    //     {f: - 646, t: this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x},
+    //     {f: this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, t: this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x},
+    //     {f: this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x},
+    //   ];
+    //   sen1Params.forEach((param) => {
+    //     const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const sen2Params = [
+    //     {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x},
+    //   ];
+    //   sen2Params.forEach((param) => {
+    //     const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   // 輪郭円の描画
+    //   const en0Params = [
+    //     {f: 45, t: 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))},
+    //     {f: 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))},
+    //     {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))},
+    //     {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))},
+    //   ];
+    //   en0Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en1Params = [
+    //     {f: 135, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))},
+    //   ];
+    //   en1Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en2Params = [
+    //     {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))},
+    //   ];
+    //   en2Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en3Params = [
+    //     {f: 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), t: 225},
+    //     {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))},
+    //   ];
+    //   en3Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en4Params = [
+    //     {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))},
+    //   ];
+    //   en4Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en5Params = [
+    //     {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))},
+    //   ];
+    //   en5Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+
+    //   // 羽の模様線の描画
+    //   var index = 0;
+    //   stripes.forEach((sen) => {
+    //     const f = this.straight2(1, 1, - (sens[1].p + sens[1].q), sen, undefined).y;
+    //     var t;
+    //     if (index > 1 && index <= 5) {
+    //       t = this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - sen) / ens[0].r))).y;
+    //     } else {
+    //       t = this.straight2(1, 1, - (sens[0].p + sens[0].q), sen, undefined).y;
+    //     }
+    //     const line = this.outlineGen(1, 0, - sen, f, t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //     index ++;
+    //   });
+
+    // }
+
+    // // 反転した羽
+    // for (var i = 0;i <= 1;i ++) {
+
+    //   // 円のパラメータ
+    //   const ens = [
+    //     {a:   516, b:   516, r: 516},
+    //     {a: - 416, b: - 416, r: 516},
+    //     {a: - 466, b: - 466, r: 516},
+    //     {a: - 516, b: - 516, r: 516},
+    //     {a: - 416, b: - 416, r: 550},
+    //     {a: - 466, b: - 466, r: 550},
+    //   ];
+
+    //   // 輪郭＆中心の線のパラメータ
+    //   const theta = THREE.MathUtils.degToRad(45);
+    //   const sens = [
+    //     {p: - 516 * Math.cos(theta), q: - 516 * Math.cos(theta)},
+    //     {p: -  71 * Math.cos(theta), q: -  71 * Math.cos(theta)},
+    //     {p: -  35 * Math.cos(theta), q: -  35 * Math.cos(theta)},
+    //     {p: - 552 * Math.cos(theta), q: - 552 * Math.cos(theta)},
+    //     {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta)},
+    //   ];
+
+    //   // 羽の模様線のパラメータ
+    //   const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446];
+
+
+    //   // 輪郭＆中心線の描画
+    //   const crossX0 = this.getIntersect(1, sens[0].p + sens[0].q, - 1,   (sens[3].p + sens[3].q)).x;
+    //   const crossX1 = this.getIntersect(1, sens[0].p + sens[0].q, - 1, - (sens[3].p + sens[3].q)).x;
+    //   const sen0Params = [
+    //     {f:    94, t: - crossX0},
+    //     {f: - crossX1, t: - 416 - 516 * Math.cos(theta)},
+    //   ];
+    //   sen0Params.forEach((param) => {
+    //     const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const crossX2 = this.getIntersect(1, sens[1].p + sens[1].q, - 1,   (sens[3].p + sens[3].q)).x;
+    //   const crossX3 = this.getIntersect(1, sens[1].p + sens[1].q, - 1, - (sens[3].p + sens[3].q)).x;
+    //   const sen1Params = [
+    //     {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, t: - crossX2},
+    //     {f: - crossX3, t: - 510},
+    //     {f: - 546, t: - 610},
+    //     {f: - 646, t: this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x},
+    //     {f: this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, t: this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x},
+    //     {f: this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x},
+    //   ];
+    //   sen1Params.forEach((param) => {
+    //     const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const crossX4 = this.getIntersect(1, sens[2].p + sens[2].q, - 1,   (sens[3].p + sens[3].q)).x;
+    //   const crossX5 = this.getIntersect(1, sens[2].p + sens[2].q, - 1, - (sens[3].p + sens[3].q)).x;
+    //   const sen2Params = [
+    //     {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, t: - crossX4},
+    //     {f: - crossX5, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x},
+    //   ];
+    //   sen2Params.forEach((param) => {
+    //     const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const crossX6 = this.getIntersect(1, sens[1].p + sens[1].q, - 1, (sens[3].p + sens[3].q)).x;
+    //   const crossX7 = this.getIntersect(1, sens[2].p + sens[2].q, - 1, (sens[3].p + sens[3].q)).x;
+    //   const sen3Params = [
+    //     {f: - crossX0, t: 94},
+    //     {f: 130, t: 194},
+    //     {f: 230, t: 294},
+    //     {f: 330, t: - crossX6},
+    //     {f: - crossX7, t: - sens[3].p},
+    //   ];
+    //   sen3Params.forEach((param) => {
+    //     const line = this.outlineGen(- 1, 1, - (sens[3].p + sens[3].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const sen4Params = [
+    //     {f: - crossX1, t: - 646},
+    //     {f: - 610, t: - 546},
+    //     {f: - 510, t: - 446},
+    //     {f: - 410, t: sens[3].p},
+    //   ];
+    //   sen4Params.forEach((param) => {
+    //     const line = this.outlineGen(- 1, 1, - (sens[4].p + sens[4].q), param.f , param.t , divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   // 輪郭円の描画
+    //   const en0Params = [
+    //     {f: 45, t: 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))},
+    //     {f: 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 330) / ens[0].r))},
+    //     {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 294) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 230) / ens[0].r))},
+    //     {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 194) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 130) / ens[0].r))},
+    //   ];
+    //   en0Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en1Params = [
+    //     {f: 135, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))},
+    //   ];
+    //   en1Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en2Params = [
+    //     {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))},
+    //   ];
+    //   en2Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en3Params = [
+    //     {f: 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), t: 225},
+    //     {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))},
+    //   ];
+    //   en3Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en4Params = [
+    //     {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))},
+    //   ];
+    //   en4Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   const en5Params = [
+    //     {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))},
+    //   ];
+    //   en5Params.forEach((param) => {
+    //     const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //   });
+
+    //   // 羽の模様線の描画
+    //   var index = 0;
+    //   stripes.forEach((sen) => {
+    //     var f;
+    //     if (index <= 5) {
+    //       f = this.straight2(- 1, 1, - (sens[3].p + sens[3].q), sen, undefined).y;
+    //     } else {
+    //       f = this.straight2(1, 1, - (sens[1].p + sens[1].q), sen, undefined).y;
+    //     }
+    //     var t;
+    //     if (index <= 1) {
+    //       t = this.straight2( 1, 1, - (sens[0].p + sens[0].q), sen, undefined).y;
+    //     } else if (index > 1 && index <= 5) {
+    //       t = this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - sen) / ens[0].r))).y;
+    //     } else {
+    //       t = this.straight2(- 1, 1,   (sens[3].p + sens[3].q), sen, undefined).y;
+    //     }
+    //     const line = this.outlineGen(1, 0, - sen, f, t, divCount, this.guideColor);
+    //     line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+    //     this.outlines.add(line);
+    //     index ++;
+    //   });
+    // }
 
     this.scene.add(this.outlines);
   }
