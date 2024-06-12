@@ -372,6 +372,21 @@ export default class Kamon {
     return mesh;
   }
 
+  // ポイントからシェイプを生成
+  clipShapeGen = (shapePoints, pathPoints, c) => {
+    const shape = new THREE.Shape(shapePoints);
+    const path  = new THREE.Path(pathPoints);
+    shape.holes.push(path);
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshBasicMaterial({
+      color: c,
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    return mesh;
+  }
+
   // ２点の座標から方程式のa,bを取得
   from2Points = (x1, y1, x2, y2) => {
     const a = (y2 - y1) / (x2 - x1);
