@@ -19,6 +19,26 @@ export default class GenjiGuruma extends Kamon {
 
     this.gridExist = true;
 
+    // // ガイドラインの作成
+    // this.generateGuidelines();
+
+    // // アウトラインの作成
+    // this.generateOutlines();
+
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
+
+    // infoの準備
+    // this.jpName.innerHTML = '源氏車';
+    // this.jpDesc.innerHTML = '車紋（くるまもん）の一種で、平安時代の貴族の乗り物であった牛車の車輪の形をモチーフにした家紋です。牛車は別名で源氏車とも呼ばれていました。また、車紋は佐藤姓の家紋に用いられたことでも知られています。佐藤氏の祖先が伊勢神宮の神事に携わっていた際、使用していた牛車が豪奢で有名だったことが由来で家紋に用いることになったと言われています。';
+    // this.enName.innerHTML = 'Genji-Guruma';
+    // this.enDesc.innerHTML = 'It is a type of Kurumamon (car crest), and is a family crest with a motif of the wheels of an ox cart, which was a vehicle used by aristocrats during the Heian period. The ox-cart was also called the Genji-guruma. The car crest is also known to have been used as the family crest of the Sato family name. It is said that the Sato clan&#39;s ancestors used it as their family crest because the bullock carts they used were famous for their luxury when they were involved in the rituals at Ise Grand Shrine.';
+  }
+
+  init = () => {
+
+    super.init()
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -349,7 +369,7 @@ export default class GenjiGuruma extends Kamon {
   render() {
 
     // ファウンダーの表示アニメーション制御
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
@@ -361,13 +381,13 @@ export default class GenjiGuruma extends Kamon {
     this.outlinesDisplayControl(0.4, 0.6, 0.6, 0.7, 1000);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.6, 0.7, 1.0, 1.0);
+    this.shapesDisplayControl(0.6, 0.7, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 1.0);
+    this.shapesRotationControl(0.7, 0.95);
 
     // descの表示アニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 1.0, 1.0);
+    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
 
     super.render();
   }

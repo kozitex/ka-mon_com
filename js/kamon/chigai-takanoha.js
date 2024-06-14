@@ -16,6 +16,28 @@ export default class ChigaiTakanoha extends Kamon {
 
     this.gridExist = true;
 
+    this.blackBoard = new THREE.Group();
+
+    // // ガイドラインの作成
+    // this.generateGuidelines();
+
+    // // アウトラインの作成
+    // this.generateOutlines();
+
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
+
+    // // infoの準備
+    // this.jpName.innerHTML = '丸に違い鷹の羽';
+    // this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
+    // this.enName.innerHTML = 'Maruni-Chigai-Takanoha';
+    // this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
+  }
+
+  init = () => {
+
+    super.init()
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -50,7 +72,7 @@ export default class ChigaiTakanoha extends Kamon {
     const outCircles = new THREE.Group();
     const rs = [1600, 1300];
     rs.forEach((r) => {
-      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount);
       outCircles.add(circle);
     });
     this.guidelines.add(outCircles);
@@ -69,7 +91,7 @@ export default class ChigaiTakanoha extends Kamon {
         {a: - 466, b: - 466, r: 550},
       ];
       params1.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, 90, 450, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, 90, 450, divCount);
         if (i == 1) line.rotation.z = THREE.MathUtils.degToRad(90);
         group1.add(line);
       });
@@ -85,7 +107,7 @@ export default class ChigaiTakanoha extends Kamon {
       ];
       params2.forEach((param) => {
         for (var j = 0;j <= 1;j ++) {
-          const line = this.lineGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, divCount, this.guideColor);
+          const line = this.lineGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, divCount);
           line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
           group2.add(line);
         }
@@ -95,7 +117,7 @@ export default class ChigaiTakanoha extends Kamon {
       const group3 = new THREE.Group();
       const params3 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
       params3.forEach((param) => {
-        const line = this.lineGen(1, 0, - param, 1100, - 1100, divCount, this.guideColor);
+        const line = this.lineGen(1, 0, - param, 1100, - 1100, divCount);
         line.rotation.z = THREE.MathUtils.degToRad(90 * i);
         group3.add(line);
       });
@@ -104,7 +126,7 @@ export default class ChigaiTakanoha extends Kamon {
       const group4 = new THREE.Group();
       const params4 = [- 94, - 130, - 194, - 230, - 294, - 330, 646, 610, 546, 510, 446, 410];
       params4.forEach((param) => {
-        const line = this.lineGen(0, 1, - param, 1100, - 1100, divCount, this.guideColor);
+        const line = this.lineGen(0, 1, - param, 1100, - 1100, divCount);
         line.rotation.z = THREE.MathUtils.degToRad(90 * i);
         group4.add(line);
       });
@@ -123,7 +145,7 @@ export default class ChigaiTakanoha extends Kamon {
     // 外円
     const rs = [1600, 1300];
     rs.forEach((r) => {
-      const circle = this.outlineCircleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+      const circle = this.outlineCircleGen(0, 0, r, this.angleFr, this.angleTo, divCount);
       this.outlines.add(circle);
     });
 
@@ -160,7 +182,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: - 646, t: - 416 - 516 * Math.cos(theta)},
       ];
       sen0Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -177,7 +199,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x},
       ];
       sen1Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -186,7 +208,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x},
       ];
       sen2Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -199,7 +221,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))},
       ];
       en0Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -208,7 +230,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 135, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))},
       ];
       en1Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -217,7 +239,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))},
       ];
       en2Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -227,7 +249,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))},
       ];
       en3Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -236,7 +258,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))},
       ];
       en4Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -245,7 +267,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))},
       ];
       en5Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -261,7 +283,7 @@ export default class ChigaiTakanoha extends Kamon {
         } else {
           t = this.straight2(1, 1, - (sens[0].p + sens[0].q), sen, undefined).y;
         }
-        const line = this.outlineGen(1, 0, - sen, f, t, divCount, this.guideColor);
+        const line = this.outlineGen(1, 0, - sen, f, t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
         index ++;
@@ -304,7 +326,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: - crossX1, t: - 416 - 516 * Math.cos(theta)},
       ];
       sen0Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(1, 1, - (sens[0].p + sens[0].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -320,7 +342,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x},
       ];
       sen1Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(1, 1, - (sens[1].p + sens[1].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -332,7 +354,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: - crossX5, t: this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x},
       ];
       sen2Params.forEach((param) => {
-        const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(1, 1, - (sens[2].p + sens[2].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -347,7 +369,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: - crossX7, t: - sens[3].p},
       ];
       sen3Params.forEach((param) => {
-        const line = this.outlineGen(- 1, 1, - (sens[3].p + sens[3].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(- 1, 1, - (sens[3].p + sens[3].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -359,7 +381,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: - 410, t: sens[3].p},
       ];
       sen4Params.forEach((param) => {
-        const line = this.outlineGen(- 1, 1, - (sens[4].p + sens[4].q), param.f , param.t , divCount, this.guideColor);
+        const line = this.outlineGen(- 1, 1, - (sens[4].p + sens[4].q), param.f , param.t , divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -372,7 +394,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 194) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 130) / ens[0].r))},
       ];
       en0Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -381,7 +403,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 135, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))},
       ];
       en1Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -390,7 +412,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))},
       ];
       en2Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -400,7 +422,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 150, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))},
       ];
       en3Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -409,7 +431,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))},
       ];
       en4Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -418,7 +440,7 @@ export default class ChigaiTakanoha extends Kamon {
         {f: 166, t: 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))},
       ];
       en5Params.forEach((param) => {
-        const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
       });
@@ -440,7 +462,7 @@ export default class ChigaiTakanoha extends Kamon {
         } else {
           t = this.straight2(- 1, 1,   (sens[3].p + sens[3].q), sen, undefined).y;
         }
-        const line = this.outlineGen(1, 0, - sen, f, t, divCount, this.guideColor);
+        const line = this.outlineGen(1, 0, - sen, f, t, divCount);
         line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
         this.outlines.add(line);
         index ++;
@@ -498,11 +520,11 @@ export default class ChigaiTakanoha extends Kamon {
     const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
 
     // 黒い板
-    this.blackBoard = new THREE.Group();
+    // this.blackBoard = new THREE.Group();
     const line26 = this.linePointGen(  1, 1, - (sens[3].p + sens[3].q),   500, - 1300, divCount);
     const line28 = this.linePointGen(  1, 1,   (sens[3].p + sens[3].q), - 500,   1300, divCount);
     const points10 = line26.concat(line28);
-    this.blackBoard.add(this.shapeGen(points10, this.backColor));
+    this.blackBoard.add(this.shapeGen(points10));
     this.blackBoard.position.z = - 1;
     this.scene.add(this.blackBoard);
 
@@ -515,7 +537,7 @@ export default class ChigaiTakanoha extends Kamon {
       const arc1 = this.circlePointGen(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), 225, divCount);
       const line0 = this.linePointGen(1, 1, - (sens[2].p + sens[2].q), this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x, divCount);
       const points0 = arc0.concat(line0, arc1);
-      stick.add(this.shapeGen(points0, this.frontColor));
+      stick.add(this.shapeGen(points0));
       stick.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       stick.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(stick);
@@ -526,7 +548,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line1 = this.linePointGen(1, 0, - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))).y, this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[5], undefined).y, divCount);
       const line2 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, divCount);
       const points1 = arc2.concat(line1, line2);
-      feather0.add(this.shapeGen(points1, this.frontColor));
+      feather0.add(this.shapeGen(points1));
       feather0.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather0.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather0);
@@ -538,7 +560,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line4 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[3],  stripes[4], divCount);
       const line5 = this.linePointGen(1, 0, - stripes[4], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, divCount);
       const points2 = arc3.concat(line3, line4, line5);
-      feather1.add(this.shapeGen(points2, this.frontColor));
+      feather1.add(this.shapeGen(points2));
       feather1.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather1.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather1);
@@ -550,7 +572,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line7 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[1],  stripes[2], divCount);
       const line8 = this.linePointGen(1, 0, - stripes[2], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))).y, divCount);
       const points3 = arc4.concat(line6, line7, line8);
-      feather2.add(this.shapeGen(points3, this.frontColor));
+      feather2.add(this.shapeGen(points3));
       feather2.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather2.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather2);
@@ -562,7 +584,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line11 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[11], stripes[0], divCount);
       const line12 = this.linePointGen(1, 0, - stripes[0], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[0], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[0], undefined).y, divCount);
       const points4 = line9.concat(line10, line11, line12);
-      feather3.add(this.shapeGen(points4, this.frontColor));
+      feather3.add(this.shapeGen(points4));
       feather3.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather3.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather3);
@@ -574,7 +596,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line15 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[9],  stripes[10], divCount);
       const line16 = this.linePointGen(1, 0, - stripes[9], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[9], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[9], undefined).y, divCount);
       const points5 = line13.concat(line14, line15, line16);
-      feather4.add(this.shapeGen(points5, this.frontColor));
+      feather4.add(this.shapeGen(points5));
       feather4.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather4.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather4);
@@ -586,7 +608,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line19 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[7], stripes[8], divCount);
       const line20 = this.linePointGen(1, 0, - stripes[7], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[7], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[7], undefined).y, divCount);
       const points6 = line17.concat(line18, line19, line20);
-      feather5.add(this.shapeGen(points6, this.frontColor));
+      feather5.add(this.shapeGen(points6));
       feather5.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather5.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather5);
@@ -598,7 +620,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line22 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x, stripes[6], divCount);
       const line23 = this.linePointGen(1, 0, - stripes[6], this.straight2(1, 1, - (sens[1].p + sens[1].q), stripes[6], undefined).y, this.straight2(1, 1, - (sens[0].p + sens[0].q), stripes[6], undefined).y, divCount);
       const points7 = line21.concat(arc5, line22, line23);
-      feather6.add(this.shapeGen(points7, this.frontColor));
+      feather6.add(this.shapeGen(points7));
       feather6.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather6.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather6);
@@ -609,7 +631,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line24 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x, this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, divCount);
       const arc7 = this.circlePointGen(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r)), 166, divCount);
       const points8 = arc6.concat(line24, arc7);
-      feather7.add(this.shapeGen(points8, this.frontColor));
+      feather7.add(this.shapeGen(points8));
       feather7.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather7.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather7);
@@ -620,7 +642,7 @@ export default class ChigaiTakanoha extends Kamon {
       const line25 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x, this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, divCount);
       const arc9 = this.circlePointGen(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r)), 166, divCount);
       const points9 = arc8.concat(line25, arc9);
-      feather8.add(this.shapeGen(points9, this.frontColor));
+      feather8.add(this.shapeGen(points9));
       feather8.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
       feather8.position.z = i <= 1 ? 0 : - 2;
       this.shapes.add(feather8);
@@ -659,7 +681,7 @@ export default class ChigaiTakanoha extends Kamon {
   render() {
 
     // ファウンダーの表示アニメーション制御
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
@@ -671,13 +693,13 @@ export default class ChigaiTakanoha extends Kamon {
     this.outlinesDisplayControl(0.4, 0.6, 0.65, 0.75, 1000);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.65, 0.75, 1.0, 1.0);
+    this.shapesDisplayControl(0.65, 0.75, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.75, 1.0);
+    this.shapesRotationControl(0.75, 0.95);
 
     // descの表示アニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 1.0, 1.0);
+    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
 
     super.render();
   }

@@ -25,8 +25,8 @@ export default class Kamon {
     // スクローラーの高さ
     this.rollHeight = 2000;
     this.roll = document.getElementById('roll');
-    this.roll.style = 'height: ' + this.rollHeight + 'vh;'
-    this.rollLength = this.roll.scrollHeight - this.h;
+    // this.roll.style = 'height: ' + this.rollHeight + 'vh;'
+    // this.rollLength = this.roll.scrollHeight - this.h;
 
     // スクロールの所要時間
     this.scrollDur = 10000;
@@ -42,9 +42,9 @@ export default class Kamon {
     this.renderer.setSize(this.w, this.h);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // DOMにレンダラーのcanvasを追加
+    // // DOMにレンダラーのcanvasを追加
     this.kamon = document.getElementById('kamon');
-    this.kamon.appendChild(this.renderer.domElement);
+    // this.kamon.appendChild(this.renderer.domElement);
 
     // カメラ
     this.camZ = 4000;
@@ -74,7 +74,18 @@ export default class Kamon {
     this.foundersGen();
 
     // 描画ループ開始
-    this.render();
+    // this.render();
+  }
+
+  init() {
+
+    // DOMにレンダラーのcanvasを追加
+    // this.kamon = document.getElementById('kamon');
+    this.kamon.appendChild(this.renderer.domElement);
+
+    this.roll.style = 'height: ' + this.rollHeight + 'vh;'
+    this.rollLength = this.roll.scrollHeight - this.h;
+
   }
 
   // 画面のスクロール量を取得
@@ -216,7 +227,7 @@ export default class Kamon {
   }
 
   // 円弧を生成
-  circleGen(a, b, r, f, t, d, c) {
+  circleGen(a, b, r, f, t, d) {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
@@ -226,25 +237,25 @@ export default class Kamon {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.setDrawRange(0, 0);
     const material = new THREE.LineBasicMaterial({
-      color: c,
+      // color: c,
       transparent: true
     });
     return new THREE.Line(geometry, material);
   }
 
   // アウトライン用の円弧を生成
-  outlineCircleGen(a, b, r, f, t, d, c) {
+  outlineCircleGen(a, b, r, f, t, d) {
     const w = 6;
     const group = new THREE.Group();
     for (var g = - w;g <= w;g ++) {
-      const circle = this.circleGen(a, b, r + g, f, t, d, c);
+      const circle = this.circleGen(a, b, r + g, f, t, d);
       group.add(circle);
     }
     return group;
   }
 
   // 直線を生成
-  lineGen(a, b, r, f, t, d, c) {
+  lineGen(a, b, r, f, t, d) {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
@@ -259,14 +270,14 @@ export default class Kamon {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.setDrawRange(0, 0);
     const material = new THREE.LineBasicMaterial({
-      color: c,
+      // color: c,
       transparent: true
     });
     return new THREE.Line(geometry, material);
   }
 
   // アウトライン用の直線を生成
-  outlineGen(a, b, r, f, t, d, c) {
+  outlineGen(a, b, r, f, t, d) {
     const w = 6;
     const group = new THREE.Group();
     for (var i = 0;i <= w - 1;i ++) {
@@ -278,16 +289,16 @@ export default class Kamon {
         const qSign = a > 0 ? j == 0 ?   1 : - 1 : j == 0 ? 1 : - 1;
         const p = pSign * g * Math.cos(rad);
         const q = qSign * g * Math.sin(rad);
-        const line = this.lineGen(a, b, - a * p + r + q, f + p, t + p, d, c);
+        const line = this.lineGen(a, b, - a * p + r + q, f + p, t + p, d);
         group.add(line);
       }
     }
     // 両端を丸く処理
     const edgeF = this.straight2(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
-    const edgeCircleF = this.circleShapeGen(edgeF.x, edgeF.y, w, 0, 360, 100, c);
+    const edgeCircleF = this.circleShapeGen(edgeF.x, edgeF.y, w, 0, 360, 100);
     edgeCircleF.geometry.setDrawRange(0, 0);
     const edgeT = this.straight2(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
-    const edgeCircleT = this.circleShapeGen(edgeT.x, edgeT.y, w, 0, 360, 100, c);
+    const edgeCircleT = this.circleShapeGen(edgeT.x, edgeT.y, w, 0, 360, 100);
     edgeCircleT.geometry.setDrawRange(0, 0);
     group.add(edgeCircleF, edgeCircleT);
 
@@ -295,7 +306,7 @@ export default class Kamon {
   }
 
   // 円弧の図形を生成
-  circleShapeGen(a, b, r, f, t, d, c) {
+  circleShapeGen(a, b, r, f, t, d) {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
@@ -305,7 +316,7 @@ export default class Kamon {
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
-      color: c,
+      // color: c,
       side: THREE.DoubleSide,
       transparent: true,
     });
@@ -360,11 +371,11 @@ export default class Kamon {
   }
 
   // ポイントからシェイプを生成
-  shapeGen = (points, c) => {
+  shapeGen = (points) => {
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
-      color: c,
+      // color: color,
       side: THREE.DoubleSide,
       transparent: true,
     });
@@ -373,13 +384,13 @@ export default class Kamon {
   }
 
   // ポイントからシェイプを生成
-  clipShapeGen = (shapePoints, pathPoints, c) => {
+  clipShapeGen = (shapePoints, pathPoints) => {
     const shape = new THREE.Shape(shapePoints);
     const path  = new THREE.Path(pathPoints);
     shape.holes.push(path);
     const geometry = new THREE.ShapeGeometry(shape);
     const material = new THREE.MeshBasicMaterial({
-      color: c,
+      // color: color,
       side: THREE.DoubleSide,
       transparent: true,
     });
@@ -411,13 +422,14 @@ export default class Kamon {
   }
 
   // ファウンダーの表示アニメーション制御
-  foundersDisplayControl = (inStart, inEnd, outStart, outEnd) => {
+  foundersDisplayControl = (inStart, inEnd, outStart, outEnd , reInStart, reInEnd) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    const reInRatio  = THREE.MathUtils.smoothstep(this.progRatio, reInStart, reInEnd);
     const dAmpOrigin = 0.87;
     const dInt = 0.2;
-    const scrFill = THREE.MathUtils.mapLinear(inRatio, 0.0, 1.0, 0.0, 1.0 - dAmpOrigin);
-    const sizeAmt = THREE.MathUtils.mapLinear(inRatio, 0.0, 1.0, 1800, 1600);
+    const scrFill = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 0.0, 1.0 - dAmpOrigin);
+    const sizeAmt = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 1800, 1600);
     const dAmp = dAmpOrigin + scrFill;
     const time = performance.now() * 0.00025;
     for (var i = 0;i <= this.founders.children.length - 1;i ++) {
@@ -433,9 +445,10 @@ export default class Kamon {
         const dVal = THREE.MathUtils.mapLinear(dist, 0.0, 1.0, dAmp, 1.0);
         positions[j * 3] = Math.cos(angle) * sizeAmt * dVal;
         positions[j * 3 + 1] = Math.sin(angle) * sizeAmt * dVal;
-        founder.material.opacity = Math.abs(dist * 1) - outRatio;
+        // console.log(Math.abs(dist * 1) - outRatio + reInRatio)
+        founder.material.opacity = Math.abs(dist * 1) - outRatio + reInRatio;
       }
-      if (outRatio >= 1.0) {
+      if (outRatio >= 1.0 && reInRatio <= 0.0) {
         founder.visible = false;
       } else {
         founder.visible = true;
@@ -457,14 +470,17 @@ export default class Kamon {
       const maxDelay = gDelay * groupNum + lDelay * lineNum;
       for (var j = 0;j <= lineNum - 1;j ++) {
         const line = group.children[j];
+        // line.visible = true;
         const delay = gDelay * i + lDelay * j;
         // const inRatioD = THREE.MathUtils.clamp(inRatio, delay, 1.0 + delay - maxDelay);
         const inRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, inRatio);
         // const inRatioD = THREE.MathUtils.smoothstep(inRatio, delay, 1.0 + delay - maxDelay);
         // console.log(maxDelay, delay, inRatioD)
+        // console.log(inRatio, inRatioD, outRatio)
         if (inRatio >= 0.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
+          line.material.opacity = 1.0 - outRatio;
         } else if (outRatio > 0.0 && outRatio < 1.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatioD);
@@ -489,6 +505,7 @@ export default class Kamon {
         if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatio);
+          line.material.opacity = 1.0 - outRatio;
         } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio < 1.0) {
           line.visible = true;
           line.geometry.setDrawRange(0, divCount * inRatio);

@@ -16,6 +16,18 @@ export default class DakiMyouga extends Kamon {
 
     this.gridExist = true;
 
+
+    // // infoの準備
+    // this.jpName.innerHTML = '抱き茗荷';
+    // this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
+    // this.enName.innerHTML = 'Daki-Myouga';
+    // this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
+  }
+
+  init = () => {
+
+    super.init()
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -753,7 +765,7 @@ export default class DakiMyouga extends Kamon {
   render() {
 
     // ファウンダーの表示アニメーション制御
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
@@ -765,13 +777,13 @@ export default class DakiMyouga extends Kamon {
     this.outlinesDisplayControl(0.4, 0.6, 0.65, 0.75, 1000);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.65, 0.75, 1.0, 1.0);
+    this.shapesDisplayControl(0.65, 0.75, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.75, 1.0);
+    this.shapesRotationControl(0.75, 0.95);
 
     // descの表示アニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 1.0, 1.0);
+    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
 
     super.render();
   }

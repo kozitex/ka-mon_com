@@ -29,7 +29,7 @@
   <script src="./js/perlin.js"></script>
   <title>ka-mon.com</title>
 </head>
-<body class="dark">
+<body class="dark loading">
   <div id="roll"></div>
   <div id="kamon"></div>
   <div id="prompt" class="hide">
@@ -58,11 +58,18 @@
     </div>
     <div id="auto">
       <div class="button">
-        <div id="forward" class="icon">
-          <i class="fa-solid fa-forward"></i>
+        <div id="playBtn" class="icon">
+          <i class="fa-solid fa-play"></i>
+          <!-- <i class="fa-solid fa-forward"></i> -->
         </div>
-        <div id="backward" class="icon disabled">
+        <!-- <div id="backward" class="icon disabled">
           <i class="fa-solid fa-backward"></i>
+        </div> -->
+        <div id="pauseBtn" class="icon disabled">
+          <i class="fa-solid fa-pause"></i>
+        </div>
+        <div id="backBtn" class="icon disabled">
+          <i class="fa-solid fa-backward-step"></i>
         </div>
       </div>
       <div class="caption">Auto play</div>
@@ -78,5 +85,6 @@
       </div>
     </div>
   </div>
+  <div id="loader">loading</div>
 </body>
 </html>

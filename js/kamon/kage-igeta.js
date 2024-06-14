@@ -27,6 +27,17 @@ export default class KageIgeta extends Kamon {
     this.generateShapes();
 
     // infoの準備
+    // this.jpName.textContent = '陰井桁';
+    // this.jpDesc.innerHTML = '井戸を真上から見た形状をモチーフにした家紋です。実際の井戸は、地上の木組み部分を「井桁」、地下の円筒状の部分を「井筒」と呼びますが、家紋においては、正方形のものが「井筒」、菱形のものが「井桁」と呼ばれています。苗字に「井」のつく家の家紋として使われることが多いです。';
+    // this.enName.textContent = 'Kage-Igeta';
+    // this.enDesc.innerHTML = 'This family crest is based on the shape of a well seen from directly above.<br>In actual wells, the wood-framed part above ground is called "Igeta", and the cylindrical part underground is called "Izutsu", but in the family crest, the square one is called "Izutsu", and the diamond-shaped one is called "Igeta".<br>It is often used as a family crest for families with an "I" in their last name.';
+  }
+
+  init = () => {
+
+    super.init()
+
+    // infoの準備
     this.jpName.textContent = '陰井桁';
     this.jpDesc.innerHTML = '井戸を真上から見た形状をモチーフにした家紋です。実際の井戸は、地上の木組み部分を「井桁」、地下の円筒状の部分を「井筒」と呼びますが、家紋においては、正方形のものが「井筒」、菱形のものが「井桁」と呼ばれています。苗字に「井」のつく家の家紋として使われることが多いです。';
     this.enName.textContent = 'Kage-Igeta';

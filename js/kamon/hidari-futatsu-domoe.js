@@ -12,6 +12,26 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.angleFr = 90;
     this.angleTo = 450;
 
+    // // ガイドラインの作成
+    // this.generateGuidelines();
+
+    // // アウトラインの作成
+    // this.generateOutlines();
+
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
+
+    // infoの準備
+    // this.jpName.textContent = '左二つ巴';
+    // this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様にも取り入れられました。家紋だけでなく、神社の神紋などにも多く使用されています。';
+    // this.enName.textContent = 'Hidari-Futatsu-Domoe';
+    // this.enDesc.textContent = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
+  }
+
+  init = () => {
+
+    super.init()
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -119,7 +139,7 @@ export default class HidariFutatsuDomoe extends Kamon {
   render() {
 
     // ファウンダーの表示アニメーション制御
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.5);
@@ -131,13 +151,13 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.outlinesDisplayControl(0.3, 0.5, 0.55, 0.6, 1000);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.55, 0.65, 1.0, 1.0);
+    this.shapesDisplayControl(0.55, 0.65, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 1.0);
+    this.shapesRotationControl(0.7, 0.95);
 
     // descのアニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 1.0, 1.0);
+    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
 
     super.render();
   }
