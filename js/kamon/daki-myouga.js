@@ -9,7 +9,7 @@ export default class DakiMyouga extends Kamon {
 
     super();
 
-    this.rollHeight = 4000;
+    // this.rollHeight = 4000;
 
     this.angleFr = 90;
     this.angleTo = 450;

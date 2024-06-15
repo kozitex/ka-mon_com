@@ -12,6 +12,8 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.angleFr = 90;
     this.angleTo = 450;
 
+    this.divCount = 10000;
+
     // // ガイドラインの作成
     // this.generateGuidelines();
 
@@ -50,8 +52,7 @@ export default class HidariFutatsuDomoe extends Kamon {
 
   // ガイドラインを作成
   generateGuidelines = () => {
-    const divCount = 1000;
-    const circle0 = this.circleGen(0, 0, 1600, this.angleFr, this.angleTo, divCount, this.guideColor);
+    const circle0 = this.circleGen(0, 0, 1600, this.angleFr, this.angleTo, this.divCount, this.guideColor);
     const group = new THREE.Group();
     group.add(circle0);
     const params = [
@@ -60,7 +61,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     ];
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const circle = this.circleGen(param.a, param.b, param.r, this.angleFr, this.angleTo, divCount, this.guideColor);
+        const circle = this.circleGen(param.a, param.b, param.r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
         const rad = THREE.MathUtils.degToRad(180);
         if (i == 1) circle.rotation.z = rad;
         group.add(circle);
@@ -72,7 +73,6 @@ export default class HidariFutatsuDomoe extends Kamon {
 
   // アウトラインを作成
   generateOutlines = () => {
-    const divCount = 1000;
     const params = [
       {a:    0, b:    0, r: 1600, f: 107, t: 290  },
       {a:    0, b:  825, r:  750, f: 421, t: 218  },
@@ -81,7 +81,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     ];
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const circle = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.frontColor);
+        const circle = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
         const rad = THREE.MathUtils.degToRad(180);
         if (i == 1) circle.rotation.z = rad;
         this.outlines.add(circle);
@@ -92,7 +92,6 @@ export default class HidariFutatsuDomoe extends Kamon {
 
   // 塗りつぶし図形を生成
   generateShapes = () => {
-    const divCount = 2000;
     const params = [
       {a:    0, b:  825, r:  750, f:  217, t:  420, g: -6},
       {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
@@ -104,7 +103,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     for (var i = 0;i <= 1;i ++) {
       var points = [];
       params.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, this.divCount);
         points = points.concat(arc);
       })
       const mesh = this.shapeGen(points, this.frontColor);
@@ -142,22 +141,22 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
-    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.5);
+    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.3, 0.45);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.35, 0.4, 0.5, 1000, 0.1, 0.1);
+    this.guidelinesDisplayControl(0.05, 0.3, 0.3, 0.4, this.divCount, 0.1, 0.1);
 
     // アウトラインの表示アニメーション制御
-    this.outlinesDisplayControl(0.3, 0.5, 0.55, 0.6, 1000);
+    this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.55, 0.65, 0.95, 1.0);
+    this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 0.95);
+    this.shapesRotationControl(0.6, 0.8);
 
     // descのアニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
+    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
 
     super.render();
   }

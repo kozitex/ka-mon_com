@@ -9,7 +9,7 @@ export default class Kikyou extends Kamon {
 
     super();
 
-    this.rollHeight = 4000;
+    // this.rollHeight = 4000;
 
     this.pathW = 27;
     this.verNum = 5;

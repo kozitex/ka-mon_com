@@ -9,7 +9,7 @@ export default class GenjiGuruma extends Kamon {
 
     super();
 
-    this.rollHeight = 4000;
+    // this.rollHeight = 4000;
 
     this.pathW = 35;
     this.verNum = 8;

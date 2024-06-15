@@ -23,13 +23,13 @@ export default class Kamon {
     this.gridExist = true;
 
     // スクローラーの高さ
-    this.rollHeight = 2000;
+    this.rollHeight = 4000;
     this.roll = document.getElementById('roll');
     // this.roll.style = 'height: ' + this.rollHeight + 'vh;'
     // this.rollLength = this.roll.scrollHeight - this.h;
 
     // スクロールの所要時間
-    this.scrollDur = 10000;
+    this.scrollDur = 15000;
 
     // スクロールの進捗率
     this.progRatio = 0;
@@ -79,6 +79,8 @@ export default class Kamon {
 
   init() {
 
+    this.progRatio = 0;
+
     // DOMにレンダラーのcanvasを追加
     // this.kamon = document.getElementById('kamon');
     this.kamon.appendChild(this.renderer.domElement);
@@ -91,6 +93,7 @@ export default class Kamon {
   // 画面のスクロール量を取得
   scrolled = (y) => {
     this.progRatio = y / this.rollLength;
+    this.render();
   }
 
   // ウィンドウサイズ変更
@@ -170,6 +173,109 @@ export default class Kamon {
         child.material.color = new THREE.Color(this.frontColor);
       }
     })
+  }
+
+  // オベジェクトやシーンをすべてクリア
+  dispose = () => {
+    const objects = [
+      this.founders, this.grids, this.guidelines, this.outlines, this.shapes,
+    ];
+    objects.forEach((object) => {
+      if (object.isGroup) {
+        object.children.forEach((child) => {
+          if (child.isGroup) {
+            child.children.forEach((line) => {
+              line.material.dispose();
+              line.geometry.dispose();
+              this.scene.remove(line);
+            })
+          } else {
+            child.material.dispose();
+            child.geometry.dispose();
+            this.scene.remove(child);
+          }
+        })
+        this.scene.remove(object);
+      } else {
+        object.material.dispose();
+        object.geometry.dispose();
+        this.scene.remove(object);
+      }
+    })
+
+
+    // for( var i = this.scene.children.length - 1; i >= 0; i--) { 
+    //   const obj = this.scene.children[i];
+    //   this.scene.remove(obj); 
+    // }
+ 
+    // this.scene.remove(this.founders, this.guidelines, this.outlines, this.shapes);
+
+
+    // // ファウンダーの色を変更
+    // this.founders.children.forEach((child) => {
+    //   if (child.isGroup) {
+    //     child.children.forEach((line) => {
+    //       this.scene.remove(line);
+    //       line.material.dispose();
+    //       line.geometry.dispose();
+    //     })
+    //   } else {
+    //     this.scene.remove(child);
+    //     child.material.dispose();
+    //     child.geometry.dispose();
+    //   }
+    // })
+
+    // // ガイドラインの色を変更
+    // this.guidelines.children.forEach((child) => {
+    //   if (child.isGroup) {
+    //     child.children.forEach((line) => {
+    //       this.scene.remove(line);
+    //       line.material.dispose();
+    //       line.geometry.dispose();
+    //     })
+    //   } else {
+    //     this.scene.remove(child);
+    //     child.material.dispose();
+    //     child.geometry.dispose();
+    //   }
+    // })
+
+    // // アウトラインの色を変更
+    // this.outlines.children.forEach((child) => {
+    //   if (child.isGroup) {
+    //     child.children.forEach((line) => {
+    //       this.scene.remove(line);
+    //       line.material.dispose();
+    //       line.geometry.dispose();
+    //     })
+    //   } else {
+    //     this.scene.remove(child);
+    //     child.material.dispose();
+    //     child.geometry.dispose();
+    //   }
+    // })
+
+    // // 図形の色を変更
+    // this.shapes.children.forEach((child) => {
+    //   if (child.isGroup) {
+    //     child.children.forEach((line) => {
+    //       this.scene.remove(line);
+    //       line.material.dispose();
+    //       line.geometry.dispose();
+    //     })
+    //   } else {
+    //     this.scene.remove(child);
+    //     child.material.dispose();
+    //     child.geometry.dispose();
+    //   }
+    // })
+
+    // this.scene.remove(mesh);
+    // mesh.material.dispose();
+    // mesh.geometry.dispose();
+    
   }
 
   // ファウンダーの生成
@@ -574,6 +680,6 @@ export default class Kamon {
     this.renderer.render(this.scene, this.camera);
 
     // 次のフレームを要求
-    requestAnimationFrame(() => this.render());
+    // requestAnimationFrame(() => this.render());
   }
 }
