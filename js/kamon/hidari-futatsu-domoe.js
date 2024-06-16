@@ -23,7 +23,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     // // 塗りつぶし図形の描画
     // this.generateShapes();
 
-    // infoの準備
+    // // infoの準備
     // this.jpName.textContent = '左二つ巴';
     // this.jpDesc.textContent = '巴紋は鞆（とも）という弓の道具を図案化した説、勾玉を図案化した説など、由来には諸説あります。水が渦を巻く様子にも見えることから、平安時代には火除けの印として瓦の紋様にも取り入れられました。家紋だけでなく、神社の神紋などにも多く使用されています。';
     // this.enName.textContent = 'Hidari-Futatsu-Domoe';
@@ -138,6 +138,7 @@ export default class HidariFutatsuDomoe extends Kamon {
   render() {
 
     // ファウンダーの表示アニメーション制御
+    // this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
     this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御

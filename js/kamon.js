@@ -59,6 +59,15 @@ export default class Kamon {
     this.outlines = new THREE.Group();
     this.shapes = new THREE.Group();
 
+    // 共有マテリアル
+    this.lineMat = new THREE.LineBasicMaterial({
+      transparent: true
+    });
+    this.meshMat = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+
     // フレーム・グリッドの描画
     this.grid = new Grid();
     this.grids = this.grid.draw();
@@ -74,12 +83,15 @@ export default class Kamon {
     this.foundersGen();
 
     // 描画ループ開始
-    // this.render();
+    this.render();
   }
 
   init() {
 
-    this.progRatio = 0;
+    // this.progRatio = 0;
+
+    // ファウンダーを生成
+    // this.foundersGen();
 
     // DOMにレンダラーのcanvasを追加
     // this.kamon = document.getElementById('kamon');
@@ -93,7 +105,7 @@ export default class Kamon {
   // 画面のスクロール量を取得
   scrolled = (y) => {
     this.progRatio = y / this.rollLength;
-    this.render();
+    // this.render();
   }
 
   // ウィンドウサイズ変更
@@ -178,6 +190,7 @@ export default class Kamon {
   // オベジェクトやシーンをすべてクリア
   dispose = () => {
     const objects = [
+      // this.grids, this.guidelines, this.outlines, this.shapes,
       this.founders, this.grids, this.guidelines, this.outlines, this.shapes,
     ];
     objects.forEach((object) => {
@@ -203,79 +216,6 @@ export default class Kamon {
       }
     })
 
-
-    // for( var i = this.scene.children.length - 1; i >= 0; i--) { 
-    //   const obj = this.scene.children[i];
-    //   this.scene.remove(obj); 
-    // }
- 
-    // this.scene.remove(this.founders, this.guidelines, this.outlines, this.shapes);
-
-
-    // // ファウンダーの色を変更
-    // this.founders.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       this.scene.remove(line);
-    //       line.material.dispose();
-    //       line.geometry.dispose();
-    //     })
-    //   } else {
-    //     this.scene.remove(child);
-    //     child.material.dispose();
-    //     child.geometry.dispose();
-    //   }
-    // })
-
-    // // ガイドラインの色を変更
-    // this.guidelines.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       this.scene.remove(line);
-    //       line.material.dispose();
-    //       line.geometry.dispose();
-    //     })
-    //   } else {
-    //     this.scene.remove(child);
-    //     child.material.dispose();
-    //     child.geometry.dispose();
-    //   }
-    // })
-
-    // // アウトラインの色を変更
-    // this.outlines.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       this.scene.remove(line);
-    //       line.material.dispose();
-    //       line.geometry.dispose();
-    //     })
-    //   } else {
-    //     this.scene.remove(child);
-    //     child.material.dispose();
-    //     child.geometry.dispose();
-    //   }
-    // })
-
-    // // 図形の色を変更
-    // this.shapes.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       this.scene.remove(line);
-    //       line.material.dispose();
-    //       line.geometry.dispose();
-    //     })
-    //   } else {
-    //     this.scene.remove(child);
-    //     child.material.dispose();
-    //     child.geometry.dispose();
-    //   }
-    // })
-
-    // this.scene.remove(mesh);
-    // mesh.material.dispose();
-    // mesh.geometry.dispose();
-    
   }
 
   // ファウンダーの生成
@@ -342,10 +282,11 @@ export default class Kamon {
     }
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.setDrawRange(0, 0);
-    const material = new THREE.LineBasicMaterial({
-      // color: c,
-      transparent: true
-    });
+    const material = this.lineMat.clone();
+    // const material = new THREE.LineBasicMaterial({
+    //   // color: c,
+    //   transparent: true
+    // });
     return new THREE.Line(geometry, material);
   }
 
@@ -375,10 +316,11 @@ export default class Kamon {
     }
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.setDrawRange(0, 0);
-    const material = new THREE.LineBasicMaterial({
-      // color: c,
-      transparent: true
-    });
+    const material = this.lineMat.clone();
+    // const material = new THREE.LineBasicMaterial({
+    //   // color: c,
+    //   transparent: true
+    // });
     return new THREE.Line(geometry, material);
   }
 
@@ -421,33 +363,15 @@ export default class Kamon {
     }
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
-    const material = new THREE.MeshBasicMaterial({
-      // color: c,
-      side: THREE.DoubleSide,
-      transparent: true,
-    });
+    const material = this.meshMat.clone();
+    // const material = new THREE.MeshBasicMaterial({
+    //   // color: c,
+    //   side: THREE.DoubleSide,
+    //   transparent: true,
+    // });
     material.opacity = 0.0;
     return new THREE.Mesh(geometry, material);
   }
-
-  // // 円弧のパスを生成
-  // circlePathGen(a, b, r, f, t, d, c) {
-  //   const points = [];
-  //   for (var i = 0;i <= d - 1;i ++) {
-  //     const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-  //     const point = this.circle(a, b, r, p);
-  //     points.push(point);
-  //   }
-  //   const shape = new THREE.Shape(points);
-  //   const geometry = new THREE.ShapeGeometry(shape);
-  //   const material = new THREE.MeshBasicMaterial({
-  //     color: c,
-  //     side: THREE.DoubleSide,
-  //     transparent: true,
-  //   });
-  //   material.opacity = 0.0;
-  //   return new THREE.Mesh(geometry, material);
-  // }
 
   // 円弧の頂点を生成
   circlePointGen(a, b, r, f, t, d) {
@@ -480,11 +404,12 @@ export default class Kamon {
   shapeGen = (points) => {
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
-    const material = new THREE.MeshBasicMaterial({
-      // color: color,
-      side: THREE.DoubleSide,
-      transparent: true,
-    });
+    const material = this.meshMat.clone();
+    // const material = new THREE.MeshBasicMaterial({
+    //   // color: color,
+    //   side: THREE.DoubleSide,
+    //   transparent: true,
+    // });
     const mesh = new THREE.Mesh(geometry, material);
     return mesh;
   }
@@ -495,11 +420,12 @@ export default class Kamon {
     const path  = new THREE.Path(pathPoints);
     shape.holes.push(path);
     const geometry = new THREE.ShapeGeometry(shape);
-    const material = new THREE.MeshBasicMaterial({
-      // color: color,
-      side: THREE.DoubleSide,
-      transparent: true,
-    });
+    const material = this.meshMat.clone();
+    // const material = new THREE.MeshBasicMaterial({
+    //   // color: color,
+    //   side: THREE.DoubleSide,
+    //   transparent: true,
+    // });
     const mesh = new THREE.Mesh(geometry, material);
     return mesh;
   }
@@ -562,6 +488,7 @@ export default class Kamon {
       founder.geometry.attributes.position.needsUpdate = true;
     }
   }
+
   // ガイドラインの表示制御
   guidelinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount, gDelay, lDelay) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
@@ -680,6 +607,6 @@ export default class Kamon {
     this.renderer.render(this.scene, this.camera);
 
     // 次のフレームを要求
-    // requestAnimationFrame(() => this.render());
+    requestAnimationFrame(() => this.render());
   }
 }

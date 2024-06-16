@@ -33,17 +33,17 @@ const init = async () => {
   const backBtn = document.getElementById('backBtn');
   const pauseBtn = document.getElementById('pauseBtn');
   var terminus;
-  const myTheme = localStorage.getItem('theme');
+  var myTheme = localStorage.getItem('theme');
   // var terminus = roll.scrollHeight - window.innerHeight;
 
-  var kamons = [
-    new HidariFutatsuDomoe(),
-    // new Kikyou(),
-    // new GenjiGuruma(),
-    // new ChigaiTakanoha(),
-    // new DakiMyouga(),
-  ];
-  // var kamons = [];
+  // var kamons = [
+  //   new HidariFutatsuDomoe(),
+  //   // new Kikyou(),
+  //   // new GenjiGuruma(),
+  //   // new ChigaiTakanoha(),
+  //   // new DakiMyouga(),
+  // ];
+  var kamons = [];
   var kamon;
   // kamons = shuffle(kamons);
 
@@ -76,9 +76,9 @@ const init = async () => {
   const changeTheme = (theme) => {
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
-    kamons.forEach((kamon) => {
-      kamon.changeTheme(theme);
-    })
+    // kamons.forEach((kamon) => {
+    kamon.changeTheme(theme);
+    // })
     localStorage.setItem('theme', theme);
   }
 
@@ -96,6 +96,7 @@ const init = async () => {
 
   // アニメーションを再生
   const play = () => {
+    // console.log(window.scrollY, terminus)
     if (window.scrollY < terminus) {
       const scrollDur = kamon.scrollDur;
       nowPlaying = true;
@@ -129,37 +130,59 @@ const init = async () => {
     window.scrollTo(0, 0);
     const kamonElm = document.getElementById('kamon');
     kamonElm.innerHTML = '';
+
     if (kamon) {
       kamon.dispose();
-    } else {
-      // kamons = shuffle(kamons);
     }
-    // const randomIndex = Math.floor(Math.random() * kamons.length);
-    if (nowIndex == kamons.length - 1) {
+
+    if (!kamon || nowIndex == kamons.length) {
       nowIndex = 0;
       kamons = [
         new HidariFutatsuDomoe(),
-        // new Kikyou(),
-        // new GenjiGuruma(),
-        // new ChigaiTakanoha(),
-        // new DakiMyouga(),
+        new Kikyou(),
+        new GenjiGuruma(),
+        new ChigaiTakanoha(),
+        new DakiMyouga(),
       ];
-      // kamons = shuffle(kamons);
-    } else {
-      nowIndex ++;
+      // console.log(kamons)
+      kamons = shuffle(kamons);
     }
+
+    // console.log(kamons)
     kamon = kamons[nowIndex];
+
+    nowIndex ++;
+
+
+    // // const randomIndex = Math.floor(Math.random() * kamons.length);
+    // if (nowIndex == kamons.length - 1) {
+    //   nowIndex = 0;
+    //   // kamons = [
+    //   //   new HidariFutatsuDomoe(),
+    //   //   // new Kikyou(),
+    //   //   // new GenjiGuruma(),
+    //   //   // new ChigaiTakanoha(),
+    //   //   // new DakiMyouga(),
+    //   // ];
+    //   kamons = shuffle(kamons);
+    // } else {
+    //   nowIndex ++;
+    // }
+    // kamon = kamons[nowIndex];
 
     // console.log('start')
     kamon.init();
     // console.log('end')
 
     terminus = roll.scrollHeight - window.innerHeight;
+    myTheme = localStorage.getItem('theme');
     if (myTheme) {
       changeTheme(myTheme);
       const target = document.getElementById(myTheme);
       target.checked = true;
     }
+    kamon.windowResize();
+    terminus = roll.scrollHeight - window.innerHeight;
       // kamon.render();
       // setTimeout(() => resolve(), 500);
     // })
@@ -178,10 +201,6 @@ const init = async () => {
 
   draw();
   play();
-  // const randomIndex = Math.floor(Math.random() * kamons.length);
-  // const kamon = kamons[randomIndex];
-  // kamon.init();
-  // kamon.render();
 
 
   // 読み込み後に動きがなければガイドを表示
@@ -240,20 +259,21 @@ const init = async () => {
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {
     if (resizeTimeout) clearTimeout(resizeTimeout);
-    // resizeTimeout = setTimeout(kamon.windowResize, 200);
-    resizeTimeout = setTimeout(() => {
-      kamons.forEach((kamon) => {kamon.windowResize();});
-    }, 200);
+    resizeTimeout = setTimeout(kamon.windowResize, 200);
+    // resizeTimeout = setTimeout(() => {
+    //   kamons.forEach((kamon) => {kamon.windowResize();});
+    //   // kamon.windowResize();
+    // }, 200);
     terminus = roll.scrollHeight - window.innerHeight;
   });
 
   // テーマ名が保存されていたら適用
   // const myTheme = localStorage.getItem('theme');
-  // if (myTheme) {
-  //   changeTheme(myTheme);
-  //   const target = document.getElementById(myTheme);
-  //   target.checked = true;
-  // }
+  if (myTheme) {
+    changeTheme(myTheme);
+    const target = document.getElementById(myTheme);
+    target.checked = true;
+  }
 
   // ラジオボタンクリックでテーマ変更
   const themeChangers = document.getElementsByName('themeChanger');
