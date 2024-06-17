@@ -14,8 +14,17 @@ export default class DakiMyouga extends Kamon {
     this.angleFr = 90;
     this.angleTo = 450;
 
-    this.gridExist = true;
+    this.divCount = 1000;
+    // this.gridExist = true;
 
+    // ガイドラインの作成
+    this.generateGuidelines();
+
+    // アウトラインの作成
+    this.generateOutlines();
+
+    // 塗りつぶし図形の描画
+    this.generateShapes();
 
     // // infoの準備
     // this.jpName.innerHTML = '抱き茗荷';
@@ -28,14 +37,14 @@ export default class DakiMyouga extends Kamon {
 
     super.init()
 
-    // ガイドラインの作成
-    this.generateGuidelines();
+    // // ガイドラインの作成
+    // this.generateGuidelines();
 
-    // アウトラインの作成
-    this.generateOutlines();
+    // // アウトラインの作成
+    // this.generateOutlines();
 
-    // 塗りつぶし図形の描画
-    this.generateShapes();
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
 
     // infoの準備
     this.jpName.innerHTML = '抱き茗荷';
@@ -56,13 +65,13 @@ export default class DakiMyouga extends Kamon {
   // ガイドラインを作成
   generateGuidelines = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     // 外円
     const outCircles = new THREE.Group();
     const rs = [1600];
     rs.forEach((r) => {
-      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
       outCircles.add(circle);
     });
     this.guidelines.add(outCircles);
@@ -84,7 +93,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1555, b: - 1165, r:  865, f:   90, t:  15},
       ];
       params1.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group1.add(line);
       });
@@ -104,7 +113,7 @@ export default class DakiMyouga extends Kamon {
         {a:    278, b: -  690, r:  750, f:  135, t: 200},
       ];
       params2.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group2.add(line);
       });
@@ -121,7 +130,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1725, b: -  415, r:  900, f:  75, t:  20},
       ];
       params3.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group3.add(line);
       });
@@ -139,7 +148,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1355, b:   500, r: 1200, f: -  3, t: - 26},
       ];
       params4.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group4.add(line);
       });
@@ -156,7 +165,7 @@ export default class DakiMyouga extends Kamon {
         {a:    115, b: - 120, r: 1600, f: 137, t: 153},
       ];
       params5.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group5.add(line);
       });
@@ -174,7 +183,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1330, b:  1040, r: 1200, f: -  3, t: - 24},
       ];
       params6.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group6.add(line);
       });
@@ -192,7 +201,7 @@ export default class DakiMyouga extends Kamon {
 
       ];
       params7.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group7.add(line);
       });
@@ -226,7 +235,7 @@ export default class DakiMyouga extends Kamon {
         {a: -  105, b:  1510, r:    5, f: 175, t: -  85},
       ];
       params8.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group8.add(line);
       });
@@ -247,7 +256,7 @@ export default class DakiMyouga extends Kamon {
   // アウトラインを作成
   generateOutlines = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     for (var i = 0;i <= 1;i ++) {
 
@@ -264,7 +273,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1555  , b: - 1165, r:  865, f:   80.5, t:   17  },
       ];
       params1.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.frontColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -285,7 +294,7 @@ export default class DakiMyouga extends Kamon {
         {a:    278, b: -  690, r:  750, f:  140  , t: 197  },
       ];
       params2.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.frontColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -304,7 +313,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1725, b: -  415, r:  900, f:  67.2, t:  20  },
       ];
       params3.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -323,7 +332,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1355, b:   500, r: 1200, f: -  6.5, t: - 26  },
       ];
       params4.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -342,7 +351,7 @@ export default class DakiMyouga extends Kamon {
         {a:    115, b: - 120, r: 1600, f: 140.1, t: 152  },
       ];
       params5.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -361,7 +370,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1330, b:  1040, r: 1200, f: -  5.4, t: - 24  },
       ];
       params6.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -380,7 +389,7 @@ export default class DakiMyouga extends Kamon {
         {a: - 1845, b: 1055, r: 1200, f:   11.2, t: -  4.6},
       ];
       params7.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -430,7 +439,7 @@ export default class DakiMyouga extends Kamon {
         {a: -  105, b:  1509, r:    5, f: 135  , t: -  45  },
       ];
       params8.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, divCount, this.guideColor);
+        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         this.outlines.add(line);
       });
@@ -442,7 +451,7 @@ export default class DakiMyouga extends Kamon {
   // 塗りつぶし図形を生成
   generateShapes = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     for (var i = 0;i <= 1;i ++) {
 
@@ -465,12 +474,12 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints1 = [];
       shapeParams1.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints1 = shapePoints1.concat(arc);
       });
       var pathPoints1 = [];
       pathParams1.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         pathPoints1 = pathPoints1.concat(arc);
       });
       const shape1 = this.clipShapeGen(shapePoints1, pathPoints1, this.frontColor);
@@ -497,7 +506,7 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints2 = [];
       shapeParams2.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints2 = shapePoints2.concat(arc);
       });
       const shape2 = this.shapeGen(shapePoints2, this.frontColor);
@@ -524,12 +533,12 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints3 = [];
       shapeParams3.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints3 = shapePoints3.concat(arc);
       });
       var pathPoints3 = [];
       pathParams3.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         pathPoints3 = pathPoints3.concat(arc);
       });
       const shape3 = this.clipShapeGen(shapePoints3, pathPoints3, this.frontColor);
@@ -556,12 +565,12 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints4 = [];
       shapeParams4.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints4 = shapePoints4.concat(arc);
       });
       var pathPoints4 = [];
       pathParams4.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         pathPoints4 = pathPoints4.concat(arc);
       });
       const shape4 = this.clipShapeGen(shapePoints4, pathPoints4, this.frontColor);
@@ -588,12 +597,12 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints5 = [];
       shapeParams5.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints5 = shapePoints5.concat(arc);
       });
       var pathPoints5 = [];
       pathParams5.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         pathPoints5 = pathPoints5.concat(arc);
       });
       const shape5 = this.clipShapeGen(shapePoints5, pathPoints5, this.frontColor);
@@ -620,12 +629,12 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints6 = [];
       shapeParams6.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints6 = shapePoints6.concat(arc);
       });
       var pathPoints6 = [];
       pathParams6.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         pathPoints6 = pathPoints6.concat(arc);
       });
       const shape6 = this.clipShapeGen(shapePoints6, pathPoints6, this.frontColor);
@@ -653,12 +662,12 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints7 = [];
       shapeParams7.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints7 = shapePoints7.concat(arc);
       });
       var pathPoints7 = [];
       pathParams7.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         pathPoints7 = pathPoints7.concat(arc);
       });
       const shape7 = this.clipShapeGen(shapePoints7, pathPoints7, this.frontColor);
@@ -674,7 +683,7 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints8 = [];
       shapeParams8.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints8 = shapePoints8.concat(arc);
       });
       const shape8 = this.shapeGen(shapePoints8, this.frontColor);
@@ -722,7 +731,7 @@ export default class DakiMyouga extends Kamon {
       ];
       var shapePoints9 = [];
       shapeParams9.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, divCount);
+        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         shapePoints9 = shapePoints9.concat(arc);
       });
       const shape9 = this.shapeGen(shapePoints9, this.frontColor);
@@ -771,19 +780,19 @@ export default class DakiMyouga extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.02, 0.02);
+    this.guidelinesDisplayControl(0.05, 0.3, 0.35, 0.45, this.divCount, 0.02, 0.02);
 
     // アウトラインの表示アニメーション制御
-    this.outlinesDisplayControl(0.4, 0.6, 0.65, 0.75, 1000);
+    this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.65, 0.75, 0.95, 1.0);
+    this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.75, 0.95);
+    this.shapesRotationControl(0.6, 0.8);
 
     // descの表示アニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
+    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
 
     super.render();
   }

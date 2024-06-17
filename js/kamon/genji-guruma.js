@@ -17,16 +17,17 @@ export default class GenjiGuruma extends Kamon {
     this.angleTo = 450;
     this.circlesD = [];   // ベースの4つの中心円
 
-    this.gridExist = true;
+    this.divCount = 1000;
+    // this.gridExist = true;
 
-    // // ガイドラインの作成
-    // this.generateGuidelines();
+    // ガイドラインの作成
+    this.generateGuidelines();
 
-    // // アウトラインの作成
-    // this.generateOutlines();
+    // アウトラインの作成
+    this.generateOutlines();
 
-    // // 塗りつぶし図形の描画
-    // this.generateShapes();
+    // 塗りつぶし図形の描画
+    this.generateShapes();
 
     // infoの準備
     // this.jpName.innerHTML = '源氏車';
@@ -39,14 +40,14 @@ export default class GenjiGuruma extends Kamon {
 
     super.init()
 
-    // ガイドラインの作成
-    this.generateGuidelines();
+    // // ガイドラインの作成
+    // this.generateGuidelines();
 
-    // アウトラインの作成
-    this.generateOutlines();
+    // // アウトラインの作成
+    // this.generateOutlines();
 
-    // 塗りつぶし図形の描画
-    this.generateShapes();
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
 
     // infoの準備
     this.jpName.innerHTML = '源氏車';
@@ -58,13 +59,13 @@ export default class GenjiGuruma extends Kamon {
   // ガイドラインを作成
   generateGuidelines = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     // 円
     const circles = new THREE.Group();
     const rs = [1600, 1300, 1265, 970, 935, 260, 225];
     rs.forEach((r) => {
-      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
       circles.add(circle);
     });
     this.guidelines.add(circles);
@@ -75,7 +76,7 @@ export default class GenjiGuruma extends Kamon {
       // 車輪のスポーク部分
       const spokes = new THREE.Group();
       for (var i = 0;i <= 1;i ++) {
-        const line = this.lineGen(1, 0, 0, 1600, - 1600, divCount, this.guideColor);
+        const line = this.lineGen(1, 0, 0, 1600, - 1600, this.divCount, this.guideColor);
         const piece = 22.5;
         const rotA1 = i == 0 ? piece / 2 : - piece / 2;
         const rotA2 = 360 / this.verNum * v;
@@ -88,7 +89,7 @@ export default class GenjiGuruma extends Kamon {
       const inSeam = new THREE.Group();
       for (var i = 0;i <= 3;i ++) {
         const intercept = i == 0 || i == 2 ? - this.pathW / 2 : this.pathW / 2;
-        const line = this.lineGen(1, 0, intercept, - 1600, 1600, divCount, this.guideColor);
+        const line = this.lineGen(1, 0, intercept, - 1600, 1600, this.divCount, this.guideColor);
         const piece = 16.875
         const rotA1 = (i <= 1 ? piece : - piece) * Math.PI / 180;
         const rotA2 = 360 / this.verNum * v * Math.PI / 180;
@@ -101,7 +102,7 @@ export default class GenjiGuruma extends Kamon {
       const outSeam = new THREE.Group();
       for (var i = 0;i <= 1;i ++) {
         const intercept = i == 0 ? - this.pathW / 2 : this.pathW / 2;
-        const line = this.lineGen(1, 0, intercept, 1600, - 1600, divCount, this.guideColor);
+        const line = this.lineGen(1, 0, intercept, 1600, - 1600, this.divCount, this.guideColor);
         const rotA = - 360 / this.verNum * v * Math.PI / 180;
         line.rotation.z = rotA;
         outSeam.add(line);
@@ -113,17 +114,17 @@ export default class GenjiGuruma extends Kamon {
 
   // アウトラインを作成
   generateOutlines = () => {
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     // 中央の円
-    const centerCircle = this.outlineCircleGen(0, 0, 225, 90, 450, divCount, this.frontColor);
+    const centerCircle = this.outlineCircleGen(0, 0, 225, 90, 450, this.divCount, this.frontColor);
     this.outlines.add(centerCircle);
 
     // スポーク
     for (var v = 0;v <= this.verNum - 1;v ++) {
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
-      const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, divCount, this.frontColor);
-      const lArc = this.outlineCircleGen(0, 0, 935, 78.75, 101.25, divCount, this.frontColor);
+      const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, this.divCount, this.frontColor);
+      const lArc = this.outlineCircleGen(0, 0, 935, 78.75, 101.25, this.divCount, this.frontColor);
 
       const sArcF = this.circle(0, 0, 260, 101.25);
       const sArcT = this.circle(0, 0, 260,  78.75);
@@ -133,8 +134,8 @@ export default class GenjiGuruma extends Kamon {
       const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
       const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
 
-      const lLine = this.outlineGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, divCount, this.frontColor);
-      const rLine = this.outlineGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, divCount, this.frontColor);
+      const lLine = this.outlineGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, this.divCount, this.frontColor);
+      const rLine = this.outlineGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, this.divCount, this.frontColor);
       sArc.rotation.z = copyAngle;
       lArc.rotation.z = copyAngle;
       lLine.rotation.z = copyAngle;
@@ -147,8 +148,8 @@ export default class GenjiGuruma extends Kamon {
       const copyAngle = - 360 / this.verNum * v * Math.PI / 180;
       const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
       const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
-      const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount, this.frontColor);
-      const oArc = this.outlineCircleGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, divCount, this.frontColor);
+      const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, this.divCount, this.frontColor);
+      const oArc = this.outlineCircleGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, this.divCount, this.frontColor);
 
       const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
       const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
@@ -158,8 +159,8 @@ export default class GenjiGuruma extends Kamon {
       const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
       const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
 
-      const lLine  = this.outlineGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, divCount, this.frontColor);
-      const rLine  = this.outlineGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, divCount, this.frontColor);
+      const lLine  = this.outlineGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, this.divCount, this.frontColor);
+      const rLine  = this.outlineGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, this.divCount, this.frontColor);
       iArc.rotation.z = copyAngle;
       oArc.rotation.z = copyAngle;
       lLine.rotation.z = copyAngle;
@@ -174,10 +175,10 @@ export default class GenjiGuruma extends Kamon {
       const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
       const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
       const lArcAngleT = 16.875 + Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI
-      const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount, this.frontColor);
-      const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount, this.frontColor);
-      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, divCount, this.frontColor);
-      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, divCount, this.frontColor);
+      const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, this.divCount, this.frontColor);
+      const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, this.divCount, this.frontColor);
+      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, this.divCount, this.frontColor);
+      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, this.divCount, this.frontColor);
 
       const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
       const iArcT = this.circle(0, 0,  970, 90 + iArcAngle  - 45);
@@ -193,10 +194,10 @@ export default class GenjiGuruma extends Kamon {
       const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
       const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
 
-      const ilLine  = this.outlineGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, divCount, this.frontColor);
-      const irLine  = this.outlineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount, this.frontColor);
-      const olLine  = this.outlineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount, this.frontColor);
-      const orLine  = this.outlineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount, this.frontColor);
+      const ilLine  = this.outlineGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, this.divCount, this.frontColor);
+      const irLine  = this.outlineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, this.divCount, this.frontColor);
+      const olLine  = this.outlineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, this.divCount, this.frontColor);
+      const orLine  = this.outlineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, this.divCount, this.frontColor);
 
       iArc.rotation.z = copyAngle;
       oArc.rotation.z = copyAngle;
@@ -216,11 +217,11 @@ export default class GenjiGuruma extends Kamon {
   // 塗りつぶし図形を生成
   generateShapes = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     // 中央の円
     const group = new THREE.Group();
-    const centerCircle = this.circleShapeGen(0, 0, 225, 90, 450, divCount, this.frontColor);
+    const centerCircle = this.circleShapeGen(0, 0, 225, 90, 450, this.divCount, this.frontColor);
     group.add(centerCircle);
     this.shapes.add(group);
 
@@ -228,8 +229,8 @@ export default class GenjiGuruma extends Kamon {
     for (var v = 0;v <= this.verNum - 1;v ++) {
       const group = new THREE.Group();
 
-      const sArc = this.circlePointGen(0, 0, 260, 101.25, 78.75, divCount);
-      const lArc = this.circlePointGen(0, 0, 935, 78.75, 101.25, divCount);
+      const sArc = this.circlePointGen(0, 0, 260, 101.25, 78.75, this.divCount);
+      const lArc = this.circlePointGen(0, 0, 935, 78.75, 101.25, this.divCount);
 
       const sArcF = this.circle(0, 0, 260, 101.25);
       const sArcT = this.circle(0, 0, 260,  78.75);
@@ -239,8 +240,8 @@ export default class GenjiGuruma extends Kamon {
       const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
       const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
 
-      const lLine = this.linePointGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, divCount);
-      const rLine = this.linePointGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, divCount);
+      const lLine = this.linePointGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, this.divCount);
+      const rLine = this.linePointGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, this.divCount);
 
       const points = sArc.concat(rLine, lArc, lLine);
 
@@ -264,8 +265,8 @@ export default class GenjiGuruma extends Kamon {
       const group = new THREE.Group();
       const iArcAngle = 16.875 - Math.atan(this.pathW / 2 /  970) * 180 / Math.PI
       const oArcAngle = 16.875 - Math.atan(this.pathW / 2 / 1265) * 180 / Math.PI
-      const iArc = this.circlePointGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, divCount);
-      const oArc = this.circlePointGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, divCount);
+      const iArc = this.circlePointGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, this.divCount);
+      const oArc = this.circlePointGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, this.divCount);
 
       const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
       const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
@@ -275,8 +276,8 @@ export default class GenjiGuruma extends Kamon {
       const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
       const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
 
-      const lLine  = this.linePointGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, divCount);
-      const rLine  = this.linePointGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, divCount);
+      const lLine  = this.linePointGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, this.divCount);
+      const rLine  = this.linePointGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, this.divCount);
 
       const points = iArc.concat(rLine, oArc, lLine);
 
@@ -302,10 +303,10 @@ export default class GenjiGuruma extends Kamon {
       const oArcAngle = Math.atan(this.pathW / 2 / 1600) * 180 / Math.PI;
       const lArcAngleF = Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI;
       const lArcAngleT = 16.875 + Math.atan(this.pathW / 2 / 1300) * 180 / Math.PI
-      const iArc = this.circlePointGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, divCount);
-      const oArc = this.circlePointGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, divCount);
-      const lArc = this.circlePointGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, divCount);
-      const rArc = this.circlePointGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, divCount);
+      const iArc = this.circlePointGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, this.divCount);
+      const oArc = this.circlePointGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, this.divCount);
+      const lArc = this.circlePointGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, this.divCount);
+      const rArc = this.circlePointGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, this.divCount);
 
       const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
       const iArcT = this.circle(0, 0,  970, 90 + iArcAngle - 45);
@@ -321,10 +322,10 @@ export default class GenjiGuruma extends Kamon {
       const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
       const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
 
-      const ilLine  = this.linePointGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, divCount);
-      const irLine  = this.linePointGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, divCount);
-      const olLine  = this.linePointGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, divCount);
-      const orLine  = this.linePointGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, divCount);
+      const ilLine  = this.linePointGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, this.divCount);
+      const irLine  = this.linePointGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, this.divCount);
+      const olLine  = this.linePointGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, this.divCount);
+      const orLine  = this.linePointGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, this.divCount);
 
       const points = iArc.concat(irLine, rArc, orLine, oArc, olLine, lArc, ilLine);
 
@@ -375,19 +376,19 @@ export default class GenjiGuruma extends Kamon {
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.45, 0.5, 0.6, 1000, 0.05, 0.02);
+    this.guidelinesDisplayControl(0.05, 0.3, 0.3, 0.4, 1000, 0.05, 0.02);
 
     // アウトラインの表示アニメーション制御
-    this.outlinesDisplayControl(0.4, 0.6, 0.6, 0.7, 1000);
+    this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, 1000);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.6, 0.7, 0.95, 1.0);
+    this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.7, 0.95);
+    this.shapesRotationControl(0.6, 0.8);
 
     // descの表示アニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
+    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
 
     super.render();
   }

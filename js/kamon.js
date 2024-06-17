@@ -60,6 +60,9 @@ export default class Kamon {
     this.shapes = new THREE.Group();
 
     // 共有マテリアル
+    this.guideMat = new THREE.LineBasicMaterial({
+      transparent: true
+    });
     this.lineMat = new THREE.LineBasicMaterial({
       transparent: true
     });
@@ -154,6 +157,8 @@ export default class Kamon {
     })
 
     // ガイドラインの色を変更
+    this.guideMat.color = new THREE.Color(this.guideColor);
+
     this.guidelines.children.forEach((child) => {
       if (child.isGroup) {
         child.children.forEach((line) => {
@@ -581,10 +586,10 @@ export default class Kamon {
       traRatio = (1.0 - inRatio) * 100;
     } else if (outRatio > 0.0) {
       opaRaio = 1.0 - outRatio;
-      traRatio = outRatio * 100;
+      traRatio = 0;
     } else if (outRatio >= 1.0) {
       opaRaio = 0.0;
-      traRatio = 100;
+      traRatio = 0;
     } else {
       opaRaio = 0.0;
       traRatio = 100;

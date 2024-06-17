@@ -18,14 +18,16 @@ export default class Kikyou extends Kamon {
     this.vertices = [];
     this.sides = [];
 
-    // // ガイドラインの作成
-    // this.generateGuidelines();
+    this.divCount = 1000;
 
-    // // アウトラインの作成
-    // this.generateOutlines();
+    // ガイドラインの作成
+    this.generateGuidelines();
 
-    // // 塗りつぶし図形の描画
-    // this.generateShapes();
+    // アウトラインの作成
+    this.generateOutlines();
+
+    // 塗りつぶし図形の描画
+    this.generateShapes();
 
     // infoの準備
     // this.jpName.innerHTML = '桔梗';
@@ -38,14 +40,14 @@ export default class Kikyou extends Kamon {
 
     super.init()
 
-    // ガイドラインの作成
-    this.generateGuidelines();
+    // // ガイドラインの作成
+    // this.generateGuidelines();
 
-    // アウトラインの作成
-    this.generateOutlines();
+    // // アウトラインの作成
+    // this.generateOutlines();
 
-    // 塗りつぶし図形の描画
-    this.generateShapes();
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
 
     // infoの準備
     this.jpName.innerHTML = '桔梗';
@@ -57,13 +59,13 @@ export default class Kikyou extends Kamon {
   // ガイドラインを作成
   generateGuidelines = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     // ４つの中心円
     const rs = [191, 245, 520, 1600];
     rs.forEach((r) => {
       const circles = new THREE.Group();
-      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
       circles.add(circle);
       this.guidelines.add(circles);
     });
@@ -77,7 +79,7 @@ export default class Kikyou extends Kamon {
       const v2 = this.circle(0, 0, 1600, r2);
       const coef = this.from2Points(v1.x, v1.y, v2.x, v2.y);
       this.sides.push(coef);
-      const line = this.lineGen(coef.a, 1, coef.b, v1.x, v2.x, divCount, this.guideColor);
+      const line = this.lineGen(coef.a, 1, coef.b, v1.x, v2.x, this.divCount, this.guideColor);
       pentagon.add(line);
       this.vertices.push(v1);
       this.guidelines.add(pentagon);
@@ -91,7 +93,7 @@ export default class Kikyou extends Kamon {
 
         // 対角線
         const c = i == 0 ? - this.pathW : this.pathW;
-        const line = this.lineGen(1, 0, c, -1600, 1600, divCount, this.guideColor);
+        const line = this.lineGen(1, 0, c, -1600, 1600, this.divCount, this.guideColor);
         pieces.add(line);
 
         // 大きな円
@@ -100,12 +102,12 @@ export default class Kikyou extends Kamon {
         const origin = this.straight2(side.a, 1, side.b, c, undefined);
         const base = r / Math.tan(45 * Math.PI / 180);
         const center = new THREE.Vector3(origin.x + (i == 0 ? - r : r), origin.y + base);
-        const circleL = this.circleGen(center.x, center.y, r, this.angleFr, this.angleTo, divCount, this.guideColor);
+        const circleL = this.circleGen(center.x, center.y, r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
         pieces.add(circleL);
       }
 
       // 小さな円
-      const circleS = this.circleGen(0, 520 - this.pathW, this.pathW, this.angleFr, this.angleTo, divCount, this.guideColor);
+      const circleS = this.circleGen(0, 520 - this.pathW, this.pathW, this.angleFr, this.angleTo, this.divCount, this.guideColor);
       pieces.add(circleS);
 
       pieces.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
@@ -118,29 +120,29 @@ export default class Kikyou extends Kamon {
   // アウトラインを作成
   generateOutlines = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
-    const circle0 = this.outlineCircleGen(0, 0, 191, this.angleFr, this.angleTo, divCount, this.frontColor);
+    const circle0 = this.outlineCircleGen(0, 0, 191, this.angleFr, this.angleTo, this.divCount, this.frontColor);
     this.outlines.add(circle0);
 
     for (var i = 0;i <= this.verNum - 1;i ++) {
       for (var j = 0;j <= 1;j ++) {
 
         // 小さい円の弧
-        const circle1 = this.outlineCircleGen(0, 520 - this.pathW, this.pathW, 90, 180, divCount, this.frontColor);
+        const circle1 = this.outlineCircleGen(0, 520 - this.pathW, this.pathW, 90, 180, this.divCount, this.frontColor);
         if (j == 1) circle1.rotation.y = THREE.MathUtils.degToRad(- 180);
         circle1.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(circle1);
 
         // 対角線
         const theta2 = Math.asin(this.pathW / 245);
-        const line1 = this.outlineGen(1, 0, - this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), divCount, this.frontColor);
+        const line1 = this.outlineGen(1, 0, - this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), this.divCount, this.frontColor);
         if (j == 1) line1.rotation.y = THREE.MathUtils.degToRad(- 180);
         line1.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(line1);
 
         // 中心円の弧
-        const circle2 = this.outlineCircleGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), divCount, this.frontColor);
+        const circle2 = this.outlineCircleGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), this.divCount, this.frontColor);
         if (j == 1) circle2.rotation.y = THREE.MathUtils.degToRad(- 180);
         circle2.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(circle2);
@@ -156,21 +158,21 @@ export default class Kikyou extends Kamon {
         const line2Basis = this.getIntersect(straight1.a, straight1.b, straight2.a, straight2.b);
         const line2End = new THREE.Vector3(line2Basis.x + r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), line2Basis.y - r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
         const straight3 =this.from2Points(line2Start.x, line2Start.y, line2End.x, line2End.y);
-        const line2 = this.outlineGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, divCount, this.frontColor);
+        const line2 = this.outlineGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, this.divCount, this.frontColor);
         if (j == 1) line2.rotation.y = THREE.MathUtils.degToRad(-180);
         line2.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(line2);
 
         // 大きい円の弧
         const center = new THREE.Vector3(line2End.x + r * Math.cos(THREE.MathUtils.degToRad(36)), line2End.y + r * Math.sin(THREE.MathUtils.degToRad(36)), 0);
-        const circle3 = this.outlineCircleGen(center.x, center.y, r, -144, -234, divCount, this.frontColor);
+        const circle3 = this.outlineCircleGen(center.x, center.y, r, -144, -234, this.divCount, this.frontColor);
         if (j == 1) circle3.rotation.y = THREE.MathUtils.degToRad(-180);
         circle3.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(circle3);
 
         // 頂点までの直線
         const point3 = new THREE.Vector3(center.x - r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), center.y + r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-        const line3 = this.outlineGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, divCount, this.frontColor);
+        const line3 = this.outlineGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, this.divCount, this.frontColor);
         if (j == 1) line3.rotation.y = THREE.MathUtils.degToRad(- 180);
         line3.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(line3);
@@ -183,10 +185,10 @@ export default class Kikyou extends Kamon {
   // 塗りつぶし図形を生成
   generateShapes = () => {
 
-    const divCount = 1000;
+    // const this.divCount = 1000;
 
     const group = new THREE.Group();
-    const circle0 = this.circleShapeGen(0, 0, 191, this.angleFr, this.angleTo, divCount, this.frontColor);
+    const circle0 = this.circleShapeGen(0, 0, 191, this.angleFr, this.angleTo, this.divCount, this.frontColor);
     group.add(circle0);
     this.shapes.add(group);
 
@@ -195,14 +197,14 @@ export default class Kikyou extends Kamon {
       for (var j = 0;j <= 1;j ++) {
 
         // 小さい円の弧
-        const circle1 = this.circlePointGen(0, 520 - this.pathW, this.pathW, 90, 180, divCount);
+        const circle1 = this.circlePointGen(0, 520 - this.pathW, this.pathW, 90, 180, this.divCount);
 
         // 対角線
         const theta2 = Math.asin(this.pathW / 245);
-        const line1 = this.linePointGen(1, 0, this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), divCount);
+        const line1 = this.linePointGen(1, 0, this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), this.divCount);
 
         // 中心円の弧
-        const circle2 = this.circlePointGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), divCount);
+        const circle2 = this.circlePointGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), this.divCount);
 
         // 対角線
         const r = 361;
@@ -215,15 +217,15 @@ export default class Kikyou extends Kamon {
         const line2Basis = this.getIntersect(straight1.a, straight1.b, straight2.a, straight2.b);
         const line2End = new THREE.Vector3(line2Basis.x + r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), line2Basis.y - r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
         const straight3 =this.from2Points(line2Start.x, line2Start.y, line2End.x, line2End.y);
-        const line2 = this.linePointGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, divCount);
+        const line2 = this.linePointGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, this.divCount);
 
         // 大きい円の弧
         const center = new THREE.Vector3(line2End.x + r * Math.cos(THREE.MathUtils.degToRad(36)), line2End.y + r * Math.sin(THREE.MathUtils.degToRad(36)), 0);
-        const circle3 = this.circlePointGen(center.x, center.y, r, -144, -234, divCount);
+        const circle3 = this.circlePointGen(center.x, center.y, r, -144, -234, this.divCount);
 
         // 頂点までの直線
         const point3 = new THREE.Vector3(center.x - r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), center.y + r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-        const line3 = this.linePointGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, divCount);
+        const line3 = this.linePointGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, this.divCount);
 
         const points = circle1.concat(line1, circle2, line2, circle3, line3);
         const mesh = this.shapeGen(points, this.frontColor);
@@ -270,22 +272,22 @@ export default class Kikyou extends Kamon {
     this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
-    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.4, 0.5);
+    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.3, 0.45);
 
     // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.45, 0.55, 0.65, 1000, 0.03, 0.06);
+    this.guidelinesDisplayControl(0.05, 0.3, 0.35, 0.45, this.divCount, 0.03, 0.06);
 
     // アウトラインの表示アニメーション制御
-    this.outlinesDisplayControl(0.4, 0.6, 0.6, 0.7, 1000);
+    this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
 
     // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.65, 0.75, 0.95, 1.0);
+    this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
 
     // 図形を回転
-    this.shapesRotationControl(0.8, 0.95);
+    this.shapesRotationControl(0.6, 0.8);
 
     // descの表示アニメーションを制御
-    this.descDisplayControl(0.8, 0.95, 0.95, 1.0);
+    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
 
     super.render();
   }

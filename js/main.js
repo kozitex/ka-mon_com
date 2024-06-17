@@ -34,16 +34,14 @@ const init = async () => {
   const pauseBtn = document.getElementById('pauseBtn');
   var terminus;
   var myTheme = localStorage.getItem('theme');
-  // var terminus = roll.scrollHeight - window.innerHeight;
 
-  // var kamons = [
-  //   new HidariFutatsuDomoe(),
-  //   // new Kikyou(),
-  //   // new GenjiGuruma(),
-  //   // new ChigaiTakanoha(),
-  //   // new DakiMyouga(),
-  // ];
-  var kamons = [];
+  var kamons = [
+    new HidariFutatsuDomoe(),
+    // new Kikyou(),
+    // new GenjiGuruma(),
+    // new ChigaiTakanoha(),
+    // new DakiMyouga(),
+  ];
   var kamon;
   // kamons = shuffle(kamons);
 
@@ -74,6 +72,7 @@ const init = async () => {
 
   // テーマカラーを適用
   const changeTheme = (theme) => {
+    myTheme = theme;
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
     // kamons.forEach((kamon) => {
@@ -117,89 +116,54 @@ const init = async () => {
 
   // アニメーションを先頭まで戻す
   const back = () => {
-    backBtn.classList.add('disabled');
-    window.scrollTo(0, 0);
-    kamon.scrolled(window.scrollY);
+    if (window.scrollY == 0) {
+      draw('back');
+    } else {
+      // backBtn.classList.add('disabled');
+      window.scrollTo(0, 0);
+      kamon.scrolled(window.scrollY);
+    }
+  }
+
+  // アニメーションを先頭まで戻す
+  const forward = () => {
+    if (window.scrollY == terminus) {
+      draw('forward');
+    } else {
+      // backBtn.classList.add('disabled');
+      window.scrollTo(0, terminus);
+      kamon.scrolled(window.scrollY);
+    }
   }
 
   // 次の家紋アニメーションを抽選する
-  const draw = () => {
-    // await new Promise((resolve) => {
-      // document.body.classList.add('loading');
+  const draw = (direction) => {
 
     window.scrollTo(0, 0);
     const kamonElm = document.getElementById('kamon');
     kamonElm.innerHTML = '';
 
-    if (kamon) {
-      kamon.dispose();
-    }
-
-    if (!kamon || nowIndex == kamons.length) {
+    if (direction == 'forward' && nowIndex == kamons.length - 1) {
       nowIndex = 0;
-      kamons = [
-        new HidariFutatsuDomoe(),
-        new Kikyou(),
-        new GenjiGuruma(),
-        new ChigaiTakanoha(),
-        new DakiMyouga(),
-      ];
-      // console.log(kamons)
-      kamons = shuffle(kamons);
+    } else if (direction == 'back' && nowIndex == 0) {
+      nowIndex = kamons.length - 1;
+    } else {
+      direction == 'forward' ? nowIndex ++ : nowIndex --;
     }
 
-    // console.log(kamons)
     kamon = kamons[nowIndex];
-
-    nowIndex ++;
-
-
-    // // const randomIndex = Math.floor(Math.random() * kamons.length);
-    // if (nowIndex == kamons.length - 1) {
-    //   nowIndex = 0;
-    //   // kamons = [
-    //   //   new HidariFutatsuDomoe(),
-    //   //   // new Kikyou(),
-    //   //   // new GenjiGuruma(),
-    //   //   // new ChigaiTakanoha(),
-    //   //   // new DakiMyouga(),
-    //   // ];
-    //   kamons = shuffle(kamons);
-    // } else {
-    //   nowIndex ++;
-    // }
-    // kamon = kamons[nowIndex];
-
-    // console.log('start')
     kamon.init();
-    // console.log('end')
-
-    terminus = roll.scrollHeight - window.innerHeight;
-    myTheme = localStorage.getItem('theme');
-    if (myTheme) {
-      changeTheme(myTheme);
-      const target = document.getElementById(myTheme);
-      target.checked = true;
-    }
+    kamon.changeTheme(myTheme);
     kamon.windowResize();
     terminus = roll.scrollHeight - window.innerHeight;
-      // kamon.render();
-      // setTimeout(() => resolve(), 500);
-    // })
     document.body.classList.remove('loading');
   }
 
-  // const draw = () => {
-  //   window.scrollTo(0, 0);
-  //   const kamonElm = document.getElementById('kamon');
-  //   kamonElm.innerHTML = '';
-  //   const randomIndex = Math.floor(Math.random() * kamons.length);
-  //   kamon = kamons[randomIndex];
-  //   kamon.init();
-  //   kamon.render();
-  // }
-
-  draw();
+  // kamons = shuffle(kamons);
+  kamon = kamons[nowIndex];
+  kamon.init();
+  window.scrollTo(0, 0);
+  terminus = roll.scrollHeight - window.innerHeight;
   play();
 
 
@@ -234,21 +198,21 @@ const init = async () => {
     if (window.scrollY == 0) {
       if (!nowPlaying) {
         playBtn.classList.remove('disabled', 'running');
-        backBtn.classList.add('disabled');
+        // backBtn.classList.add('disabled');
       }
     } else if (window.scrollY > 0 && window.scrollY < terminus) {
       playBtn.classList.remove('disabled');
       if (!nowPlaying) backBtn.classList.remove('disabled');
     } else if (window.scrollY == terminus) {
       // nowPlaying = false;
-      playBtn.classList.add('disabled');
+      // playBtn.classList.add('disabled');
       playBtn.classList.remove('running');
       pauseBtn.classList.add('disabled');
       backBtn.classList.remove('disabled');
       if (nowPlaying) {
         document.body.classList.add('loading');
         setTimeout(() => {
-          draw();
+          draw('forward');
           play();
         }, 1);
       }

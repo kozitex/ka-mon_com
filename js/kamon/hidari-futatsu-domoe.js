@@ -9,19 +9,19 @@ export default class HidariFutatsuDomoe extends Kamon {
 
     super();
 
-    this.angleFr = 90;
-    this.angleTo = 450;
+    // 90 = 90;
+    // 450 = 450;
 
     this.divCount = 10000;
 
-    // // ガイドラインの作成
-    // this.generateGuidelines();
+    // ガイドラインの作成
+    this.generateGuidelines();
 
-    // // アウトラインの作成
-    // this.generateOutlines();
+    // アウトラインの作成
+    this.generateOutlines();
 
-    // // 塗りつぶし図形の描画
-    // this.generateShapes();
+    // 塗りつぶし図形の描画
+    this.generateShapes();
 
     // // infoの準備
     // this.jpName.textContent = '左二つ巴';
@@ -34,14 +34,14 @@ export default class HidariFutatsuDomoe extends Kamon {
 
     super.init()
 
-    // ガイドラインの作成
-    this.generateGuidelines();
+    // // ガイドラインの作成
+    // this.generateGuidelines();
 
-    // アウトラインの作成
-    this.generateOutlines();
+    // // アウトラインの作成
+    // this.generateOutlines();
 
-    // 塗りつぶし図形の描画
-    this.generateShapes();
+    // // 塗りつぶし図形の描画
+    // this.generateShapes();
 
     // infoの準備
     this.jpName.textContent = '左二つ巴';
@@ -52,24 +52,52 @@ export default class HidariFutatsuDomoe extends Kamon {
 
   // ガイドラインを作成
   generateGuidelines = () => {
-    const circle0 = this.circleGen(0, 0, 1600, this.angleFr, this.angleTo, this.divCount, this.guideColor);
     const group = new THREE.Group();
+    const points0 = this.circlePointGen(0, 0, 1600, 90, 450, this.divCount);
+    const geometry0 = new THREE.BufferGeometry().setFromPoints(points0);
+    geometry0.setDrawRange(0, 0);
+    const circle0 = new THREE.Line(geometry0, this.guideMat);
     group.add(circle0);
+
     const params = [
       {a:    0, b:  825, r:  750},
       {a: -110, b:  490, r: 1100},
     ];
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const circle = this.circleGen(param.a, param.b, param.r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
-        const rad = THREE.MathUtils.degToRad(180);
-        if (i == 1) circle.rotation.z = rad;
+        const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        geometry.setDrawRange(0, 0);
+        const circle = new THREE.Line(geometry, this.guideMat);
+        circle.rotation.z = THREE.MathUtils.degToRad(180) * i;
+        // const rad = THREE.MathUtils.degToRad(180);
+        // if (i == 1) circle.rotation.z = rad;
         group.add(circle);
       })
     }
     this.guidelines.add(group);
     this.scene.add(this.guidelines);
   }
+
+  // generateGuidelines = () => {
+  //   const circle0 = this.circleGen(0, 0, 1600, 90, 450, this.divCount, this.guideColor);
+  //   const group = new THREE.Group();
+  //   group.add(circle0);
+  //   const params = [
+  //     {a:    0, b:  825, r:  750},
+  //     {a: -110, b:  490, r: 1100},
+  //   ];
+  //   for (var i = 0;i <= 1;i ++) {
+  //     params.forEach((param) => {
+  //       const circle = this.circleGen(param.a, param.b, param.r, 90, 450, this.divCount, this.guideColor);
+  //       const rad = THREE.MathUtils.degToRad(180);
+  //       if (i == 1) circle.rotation.z = rad;
+  //       group.add(circle);
+  //     })
+  //   }
+  //   this.guidelines.add(group);
+  //   this.scene.add(this.guidelines);
+  // }
 
   // アウトラインを作成
   generateOutlines = () => {
