@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import Kamon from '../kamon.js';
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
 export default class HidariFutatsuDomoe extends Kamon {
 
@@ -51,27 +52,43 @@ export default class HidariFutatsuDomoe extends Kamon {
   }
 
   // ガイドラインを作成
+  // generateGuidelines = () => {
+  //   const group = new THREE.Group();
+  //   const points0 = this.circlePointGen(0, 0, 1600, 90, 450, this.divCount);
+  //   const geometry0 = new THREE.BufferGeometry().setFromPoints(points0);
+  //   geometry0.setDrawRange(0, 0);
+  //   const circle0 = new THREE.Line(geometry0, this.guideMat);
+  //   group.add(circle0);
+
+  //   const params = [
+  //     {a:    0, b:  825, r:  750},
+  //     {a: -110, b:  490, r: 1100},
+  //   ];
+  //   for (var i = 0;i <= 1;i ++) {
+  //     params.forEach((param) => {
+  //       const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
+  //       const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //       geometry.setDrawRange(0, 0);
+  //       const circle = new THREE.Line(geometry, this.guideMat);
+  //       circle.rotation.z = THREE.MathUtils.degToRad(180) * i;
+  //       group.add(circle);
+  //     })
+  //   }
+  //   this.guidelines.add(group);
+  //   this.scene.add(this.guidelines);
+  // }
   generateGuidelines = () => {
     const group = new THREE.Group();
-    const points0 = this.circlePointGen(0, 0, 1600, 90, 450, this.divCount);
-    const geometry0 = new THREE.BufferGeometry().setFromPoints(points0);
-    geometry0.setDrawRange(0, 0);
-    const circle0 = new THREE.Line(geometry0, this.guideMat);
+    const circle0 = this.guidelineGen('circle', 0, 0, 1600, 90, 450, this.divCount);
     group.add(circle0);
-
     const params = [
       {a:    0, b:  825, r:  750},
       {a: -110, b:  490, r: 1100},
     ];
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        geometry.setDrawRange(0, 0);
-        const circle = new THREE.Line(geometry, this.guideMat);
+        const circle = this.guidelineGen('circle', param.a, param.b, param.r, 90, 450, this.divCount);
         circle.rotation.z = THREE.MathUtils.degToRad(180) * i;
-        // const rad = THREE.MathUtils.degToRad(180);
-        // if (i == 1) circle.rotation.z = rad;
         group.add(circle);
       })
     }
@@ -79,27 +96,30 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.scene.add(this.guidelines);
   }
 
-  // generateGuidelines = () => {
-  //   const circle0 = this.circleGen(0, 0, 1600, 90, 450, this.divCount, this.guideColor);
-  //   const group = new THREE.Group();
-  //   group.add(circle0);
+  // アウトラインを作成
+  // generateOutlines = () => {
   //   const params = [
-  //     {a:    0, b:  825, r:  750},
-  //     {a: -110, b:  490, r: 1100},
+  //     {a:    0, b:    0, r: 1600, f: 107, t: 290  },
+  //     {a:    0, b:  825, r:  750, f: 421, t: 218  },
+  //     {a: -110, b:  490, r: 1100, f: 110, t:  64  },
+  //     {a:  110, b: -490, r: 1100, f: 290, t: 129.5},
   //   ];
   //   for (var i = 0;i <= 1;i ++) {
   //     params.forEach((param) => {
-  //       const circle = this.circleGen(param.a, param.b, param.r, 90, 450, this.divCount, this.guideColor);
-  //       const rad = THREE.MathUtils.degToRad(180);
-  //       if (i == 1) circle.rotation.z = rad;
-  //       group.add(circle);
-  //     })
-  //   }
-  //   this.guidelines.add(group);
-  //   this.scene.add(this.guidelines);
-  // }
+  //       // const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+  //       // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //       // geometry.setDrawRange(0, 0);
+  //       const circle = this.outlineGen('circle', param.a, param.b, param.r, param.f, param.t, this.divCount);
+  //       circle.rotation.z = THREE.MathUtils.degToRad(180) * i;
 
-  // アウトラインを作成
+  //       // const circle = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
+  //       // const rad = THREE.MathUtils.degToRad(180);
+  //       // if (i == 1) circle.rotation.z = rad;
+  //       this.outlines.add(circle);
+  //     })
+  //     this.scene.add(this.outlines);
+  //   }
+  // }
   generateOutlines = () => {
     const params = [
       {a:    0, b:    0, r: 1600, f: 107, t: 290  },
@@ -109,10 +129,17 @@ export default class HidariFutatsuDomoe extends Kamon {
     ];
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const circle = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
-        const rad = THREE.MathUtils.degToRad(180);
-        if (i == 1) circle.rotation.z = rad;
-        this.outlines.add(circle);
+        // const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        // geometry.setDrawRange(0, 0);
+        // const circle = new THREE.Line(geometry, this.guideMat);
+        // circle.rotation.z = THREE.MathUtils.degToRad(180) * i;
+
+        const group = this.outlineGen('circle', param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
+        group.rotation.z = THREE.MathUtils.degToRad(180) * i;
+        // const rad = THREE.MathUtils.degToRad(180);
+        // if (i == 1) circle.rotation.z = rad;
+        this.outlines.add(group);
       })
       this.scene.add(this.outlines);
     }
@@ -130,19 +157,54 @@ export default class HidariFutatsuDomoe extends Kamon {
     const group = new THREE.Group();
     for (var i = 0;i <= 1;i ++) {
       var points = [];
+      const geometries = [];
       params.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, this.divCount);
-        points = points.concat(arc);
+        // const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, this.divCount);
+        const arc = this.pointGen('circle', param.a, param.b, param.r + param.g, param.f, param.t, this.divCount);
+        // const geometry = new THREE.BufferGeometry().setFromPoints(arc);
+        const shape = new THREE.Shape(arc);
+        const geometry = new THREE.ShapeGeometry(shape);
+            geometries.push(geometry);
+        // points = points.concat(arc);
       })
-      const mesh = this.shapeGen(points, this.frontColor);
-      const rad = THREE.MathUtils.degToRad(180);
-      if (i == 1) mesh.rotation.z = rad;
-      mesh.visible = false;
+      const mergedGeo = BufferGeometryUtils.mergeGeometries(geometries);
+      const mesh = new THREE.Mesh(mergedGeo, this.shapeMat);
+      // const mesh = this.shapeGen(points, this.frontColor);
+      // const rad = THREE.MathUtils.degToRad(180);
+      // if (i == 1) mesh.rotation.z = rad;
+      mesh.rotation.z = THREE.MathUtils.degToRad(180) * i;
+      // mesh.visible = false;
       group.add(mesh);
     }
     this.shapes.add(group);
     this.scene.add(this.shapes);
   }
+  // generateShapes = () => {
+  //   const params = [
+  //     {a:    0, b:  825, r:  750, f:  217, t:  420, g: -6},
+  //     {a: -110, b:  490, r: 1100, f:   70, t:  110, g: -6},
+  //     {a:    0, b:    0, r: 1600, f:  110, t:  270, g: -6},
+  //     {a:  110, b: -490, r: 1100, f:  -95, t: -231, g:  6},
+  //   ];
+
+  //   const group = new THREE.Group();
+  //   for (var i = 0;i <= 1;i ++) {
+  //     var points = [];
+  //     params.forEach((param) => {
+  //       // const arc = this.circlePointGen(param.a, param.b, param.r + param.g, param.f, param.t, this.divCount);
+  //       const arc = this.pointGen('circle', param.a, param.b, param.r + param.g, param.f, param.t, this.divCount);
+  //       points = points.concat(arc);
+  //     })
+  //     const mesh = this.shapeGen(points, this.frontColor);
+  //     // const rad = THREE.MathUtils.degToRad(180);
+  //     // if (i == 1) mesh.rotation.z = rad;
+  //     mesh.rotation.z = THREE.MathUtils.degToRad(180) * i;
+  //     mesh.visible = false;
+  //     group.add(mesh);
+  //   }
+  //   this.shapes.add(group);
+  //   this.scene.add(this.shapes);
+  // }
 
   // 図形を回転させるアニメーション制御
   shapesRotationControl(start, end) {
@@ -153,7 +215,7 @@ export default class HidariFutatsuDomoe extends Kamon {
         const posRatio = - 4 * ratio ** 2 + 4 * ratio;
         const pos = 1500 * posRatio;
         if (i == 0) {
-          shape.position.set(-pos, 0, 0);
+          shape.position.set(- pos, 0, 0);
         } else {
           shape.position.set(pos, 0, 0);
         }
@@ -167,7 +229,7 @@ export default class HidariFutatsuDomoe extends Kamon {
 
     // ファウンダーの表示アニメーション制御
     // this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6);
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
+    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.3, 0.95, 1.0);
 
     // グリッドの表示アニメーション制御
     this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.3, 0.45);
