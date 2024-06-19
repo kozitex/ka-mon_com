@@ -26,8 +26,6 @@ export default class Kamon {
     // スクローラーの高さ
     this.rollHeight = 4000;
     this.roll = document.getElementById('roll');
-    // this.roll.style = 'height: ' + this.rollHeight + 'vh;'
-    // this.rollLength = this.roll.scrollHeight - this.h;
 
     // スクロールの所要時間
     this.scrollDur = 15000;
@@ -45,7 +43,6 @@ export default class Kamon {
 
     // // DOMにレンダラーのcanvasを追加
     this.kamon = document.getElementById('kamon');
-    // this.kamon.appendChild(this.renderer.domElement);
 
     // カメラ
     this.camZ = 4000;
@@ -58,6 +55,7 @@ export default class Kamon {
     // オブジェクト格納用のグループ
     this.guidelines = new THREE.Group();
     this.outlines = new THREE.Group();
+    this.outlineEdges = new THREE.Group();
     this.shapes = new THREE.Group();
 
     // 共有マテリアル
@@ -70,18 +68,14 @@ export default class Kamon {
     this.outlineMat = new THREE.LineBasicMaterial({
       transparent: true
     });
+    this.edgeMat = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
     this.shapeMat = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
       transparent: true,
     });
-
-    // this.lineMat = new THREE.LineBasicMaterial({
-    //   transparent: true
-    // });
-    // this.meshMat = new THREE.MeshBasicMaterial({
-    //   side: THREE.DoubleSide,
-    //   transparent: true,
-    // });
 
     // フレーム・グリッドの描画
     this.grid = new Grid();
@@ -103,24 +97,16 @@ export default class Kamon {
 
   init() {
 
-    // this.progRatio = 0;
-
-    // ファウンダーを生成
-    // this.foundersGen();
-
     // DOMにレンダラーのcanvasを追加
-    // this.kamon = document.getElementById('kamon');
     this.kamon.appendChild(this.renderer.domElement);
 
     this.roll.style = 'height: ' + this.rollHeight + 'vh;'
     this.rollLength = this.roll.scrollHeight - this.h;
-
   }
 
   // 画面のスクロール量を取得
   scrolled = (y) => {
     this.progRatio = y / this.rollLength;
-    // this.render();
   }
 
   // ウィンドウサイズ変更
@@ -159,85 +145,46 @@ export default class Kamon {
 
     // ファウンダーの色を変更
     this.founderMat.color = new THREE.Color(this.guideColor);
-    // this.founders.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       line.material.color = new THREE.Color(this.guideColor);
-    //     })
-    //   } else {
-    //     child.material.color = new THREE.Color(this.guideColor);
-    //   }
-    // })
 
     // ガイドラインの色を変更
     this.guideMat.color = new THREE.Color(this.guideColor);
 
-    // this.guidelines.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       line.material.color = new THREE.Color(this.guideColor);
-    //     })
-    //   } else {
-    //     child.material.color = new THREE.Color(this.guideColor);
-    //   }
-    // })
-
     // アウトラインの色を変更
     this.outlineMat.color = new THREE.Color(this.frontColor);
 
-    // this.outlines.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       line.material.color = new THREE.Color(this.frontColor);
-    //     })
-    //   } else {
-    //     child.material.color = new THREE.Color(this.frontColor);
-    //   }
-    // })
-
     // 図形の色を変更
     this.shapeMat.color = new THREE.Color(this.frontColor);
-    // this.shapes.children.forEach((child) => {
-    //   if (child.isGroup) {
-    //     child.children.forEach((line) => {
-    //       line.material.color = new THREE.Color(this.frontColor);
-    //     })
-    //   } else {
-    //     child.material.color = new THREE.Color(this.frontColor);
-    //   }
-    // })
   }
 
-  // オブジェクトやシーンをすべてクリア
-  dispose = () => {
-    const objects = [
-      // this.grids, this.guidelines, this.outlines, this.shapes,
-      this.founders, this.grids, this.guidelines, this.outlines, this.shapes,
-    ];
-    objects.forEach((object) => {
-      if (object.isGroup) {
-        object.children.forEach((child) => {
-          if (child.isGroup) {
-            child.children.forEach((line) => {
-              line.material.dispose();
-              line.geometry.dispose();
-              this.scene.remove(line);
-            })
-          } else {
-            child.material.dispose();
-            child.geometry.dispose();
-            this.scene.remove(child);
-          }
-        })
-        this.scene.remove(object);
-      } else {
-        object.material.dispose();
-        object.geometry.dispose();
-        this.scene.remove(object);
-      }
-    })
+  // // オブジェクトやシーンをすべてクリア
+  // dispose = () => {
+  //   const objects = [
+  //     this.founders, this.grids, this.guidelines, this.outlines, this.shapes,
+  //   ];
+  //   objects.forEach((object) => {
+  //     if (object.isGroup) {
+  //       object.children.forEach((child) => {
+  //         if (child.isGroup) {
+  //           child.children.forEach((line) => {
+  //             line.material.dispose();
+  //             line.geometry.dispose();
+  //             this.scene.remove(line);
+  //           })
+  //         } else {
+  //           child.material.dispose();
+  //           child.geometry.dispose();
+  //           this.scene.remove(child);
+  //         }
+  //       })
+  //       this.scene.remove(object);
+  //     } else {
+  //       object.material.dispose();
+  //       object.geometry.dispose();
+  //       this.scene.remove(object);
+  //     }
+  //   })
 
-  }
+  // }
 
   // 直線の方程式
   straight = (a, b, x, y) => {
@@ -327,7 +274,6 @@ export default class Kamon {
   outlineGen = (k, a, b, r, f, t, d) => {
     const group = new THREE.Group();
     const w = 6;
-    // var edgeF, edgeT;
     if (k == 'line') {
       for (var i = 0;i <= w - 1;i ++) {
         for (var j = 0;j <= 1;j ++) {
@@ -345,14 +291,56 @@ export default class Kamon {
           group.add(circle);
         }
       }
-      // 両端を丸く処理
-      const edgeF = this.straight2(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
-      const edgeT = this.straight2(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
-      const edgeCircleF = this.circleShapeGen(edgeF.x, edgeF.y, 5, 0, 360, 100);
-      const edgeCircleT = this.circleShapeGen(edgeT.x, edgeT.y, 5, 0, 360, 100);
-      edgeCircleF.geometry.setDrawRange(0, 0);
-      edgeCircleT.geometry.setDrawRange(0, 0);
-      group.add(edgeCircleF, edgeCircleT);
+      // // 両端を丸く処理
+      // const edgeF = this.straight2(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
+      // const edgeT = this.straight2(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
+      // // console.log(edgeF, edgeT)
+      // const edges = [edgeF, edgeT];
+      // edges.forEach((edge) => {
+      //   // var points = [];
+      //   // for (var g = 0;g <= w;g ++) {
+      //   const points = this.shapePointGen('circle', edge.x, edge.y, w, 0, 0, 360, false);
+      //   // points = points.concat(point);
+      //     // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      //     // geometry.setDrawRange(0, 0);
+      //     // const circle = new THREE.Line(geometry, this.outlineMat);
+      //     // group.add(circle);
+      //   // }
+      //   // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      //   // geometry.setDrawRange(0, 0);
+      //   const circle = this.shapeGen(points);
+      //   group.add(circle);
+      //   // this.outlineEdges.add(circle);
+      // })
+
+
+      // edges.forEach((edge) => {
+      //   var points = [];
+      //   for (var g = 0;g <= w;g ++) {
+      //     const point = this.pointGen('circle', edge.x, edge.y, g, 90, 450, 100);
+      //     points = points.concat(point);
+      //     // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      //     // geometry.setDrawRange(0, 0);
+      //     // const circle = new THREE.Line(geometry, this.outlineMat);
+      //     // group.add(circle);
+      //   }
+      //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      //   geometry.setDrawRange(0, 0);
+      //   const circle = new THREE.Line(geometry, this.outlineMat);
+      //   group.add(circle);
+      // })
+
+      // const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      // geometry.setDrawRange(0, 0);
+      // const edgeCircleF = new THREE.Line(geometry, this.outlineMat);
+      // const edgeCircleT = new THREE.Line(geometry, this.outlineMat);
+      // const edgeCircleF = this.pointGen('circle', edgeF.x, edgeF.y, w, 0, 360, d);
+      // const edgeCircleT = this.pointGen('circle', edgeT.x, edgeT.y, w, 0, 360, d);
+      // const edgeCircleF = this.circleShapeGen(edgeF.x, edgeF.y, w, 0, 360, 500);
+      // const edgeCircleT = this.circleShapeGen(edgeT.x, edgeT.y, w, 0, 360, 500);
+      // edgeCircleF.geometry.setDrawRange(0, 0);
+      // edgeCircleT.geometry.setDrawRange(0, 0);
+      // group.add(edgeCircleF, edgeCircleT);
 
     } else if (k == 'circle') {
       for (var g = - w;g <= w;g ++) {
@@ -362,10 +350,29 @@ export default class Kamon {
         const circle = new THREE.Line(geometry, this.outlineMat);
         group.add(circle);
       }
-    }
 
+    }
     return group;
   }
+
+  // アウトラインの両端を丸く処理
+  outlineEdgeGen = (a, b, r, f, t) => {
+    const group = new THREE.Group();
+    const w = 6;
+    const edgeF = this.straight2(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
+    const edgeT = this.straight2(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
+    const edges = [edgeF, edgeT];
+    edges.forEach((edge) => {
+      const points = this.shapePointGen('circle', edge.x, edge.y, w, 0, 0, 360, false);
+      // const circle = this.shapeGen(points);
+      const shape = new THREE.Shape(points);
+      const geometry = new THREE.ShapeGeometry(shape);
+      const mesh = new THREE.Mesh(geometry, this.edgeMat);
+      group.add(mesh);
+    })
+    return group;
+  }
+
 
   // // 円弧を生成
   // circleGen(a, b, r, f, t, d) {
@@ -454,14 +461,15 @@ export default class Kamon {
     }
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
-    const material = this.meshMat.clone();
+    // const material = this.meshMat.clone();
     // const material = new THREE.MeshBasicMaterial({
     //   // color: c,
     //   side: THREE.DoubleSide,
     //   transparent: true,
     // });
-    material.opacity = 0.0;
-    return new THREE.Mesh(geometry, material);
+    // material.opacity = 0.0;
+    return new THREE.Mesh(geometry, this.shapeMat);
+    // return new THREE.Mesh(geometry, material);
   }
 
   // 図形の座標を生成
@@ -480,6 +488,21 @@ export default class Kamon {
         point = this.circle(a, b, r, p);
       }
       points.push(point);
+    }
+    return points;
+  }
+
+  // shape用の図形の座標を生成
+  shapePointGen = (k, a, b, r, g, f, t, c) => {
+    var points;
+    if (k == 'line') {
+    } else if (k == 'circle') {
+      const curve = new THREE.EllipseCurve(
+        a, b, r + g, r + g,
+        THREE.MathUtils.degToRad(f), THREE.MathUtils.degToRad(t),
+        c, 0
+      );
+      points = curve.getPoints(100);
     }
     return points;
   }
@@ -678,6 +701,28 @@ export default class Kamon {
         } else {
           line.visible = false;
         }
+      })
+    });
+    this.outlineEdges.children.forEach((group) => {
+      group.children.forEach((edge) => {
+        // edge.visible = true;
+      // edge.material.opacity = 1.0;
+        edge.material.opacity = inRatio - outRatio * 1.2;
+        // console.log(edge)
+        // if (inRatio >= 0.5 && outRatio <= 0.5) {
+        //   console.log('visible')
+        //   edge.visible = true;
+        //   // edge.material.opacity = inRatio;
+        // } else if (outRatio > 0.5) {
+        //   console.log('invisible')
+        //   edge.visible = false;
+        //   // edge.material.opacity = 1.0 - outRatio * 2;
+        //   // edge.visible = false;
+        // } else {
+        //   console.log('invisible')
+        //   edge.visible = false;
+
+        // }
       })
     });
   }

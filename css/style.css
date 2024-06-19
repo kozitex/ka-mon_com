@@ -230,11 +230,25 @@ body.light #info .desc {
 
 
 
-
-#themeChanger {
+#control {
   position: fixed;
   top: 4.8rem;
   right: 3.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4.8rem;
+}
+
+
+
+
+
+#themeChanger {
+  /* position: fixed;
+  top: 4.8rem;
+  right: 3.2rem; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -310,10 +324,11 @@ body.light #themeChanger input[type="radio"]:checked + label {
 
 
 
-#auto {
-  position: fixed;
+#play,
+#ward {
+  /* position: fixed;
   top: 17.6rem;
-  right: 3.2rem;
+  right: 3.2rem; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -322,15 +337,17 @@ body.light #themeChanger input[type="radio"]:checked + label {
   z-index: 1;
 }
 
-#auto .button {
+#play .button,
+#ward .button {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 1.6rem;
 }
 
-#auto .button .icon {
+#play .button .icon,
+#ward .button .icon {
   width: 6.4rem;
   height: 4.8rem;
   font-size: 3.2rem;
@@ -343,17 +360,20 @@ body.light #themeChanger input[type="radio"]:checked + label {
   transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-#auto .button .icon.disabled {
+#play .button .icon.disabled,
+#ward .button .icon.disabled {
   pointer-events: none;
   opacity: 0.4;
 }
 
-#auto .button .icon:hover {
+#play .button .icon:hover,
+#ward .button .icon:hover {
   border: 1px solid #808080;
   cursor: pointer;
 }
 
-#auto .button .icon.running {
+#play .button .icon.running,
+#ward .button .icon.running {
   background-color: #808080;
   animation: softBlink 2.0s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
   pointer-events: none;
@@ -363,15 +383,18 @@ body.light #themeChanger input[type="radio"]:checked + label {
   50% { opacity: 0.0; }
 }
 
-body.dark #auto .button .icon.running {
+body.dark #play .button .icon.running,
+body.dark #ward .button .icon.running {
   color: #111;
 }
 
-body.light #auto .button .icon.running {
+body.light #play .button .icon.running,
+body.light #ward .button .icon.running {
   color: #fff;
 }
 
-#auto .caption {
+#play .caption,
+#ward .caption {
   font-family: "Roboto";
   font-size: 1.5rem;
   text-align: center;

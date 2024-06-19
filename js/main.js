@@ -13,37 +13,27 @@ window.addEventListener('DOMContentLoaded', () => {
 const init = async () => {
   let resizeTimeout = 0;
   let promptTimeout = 0;
-  // let playTimeout = 0;
   let nowPlaying = false;
   let nowIndex = 0;
-  // let autoScrolling = false;
-
-  // const kamon = new KageIgeta();
-  // const kamon = new HidariFutatsuDomoe();
-  // const kamon = Kikyou();
-  // const kamon = new GenjiGuruma();
-  // const kamon = new ChigaiTakanoha();
-  // const kamon = new DakiMyouga();
 
   document.body.classList.remove('loading');
-  // window.scrollTo(0, 0);
 
   const roll = document.getElementById('roll');
   const playBtn = document.getElementById('playBtn');
-  const backBtn = document.getElementById('backBtn');
   const pauseBtn = document.getElementById('pauseBtn');
+  const backBtn = document.getElementById('backBtn');
+  const forwardBtn = document.getElementById('forwardBtn');
   var terminus;
   var myTheme = localStorage.getItem('theme');
 
   var kamons = [
-    new HidariFutatsuDomoe(),
-    // new Kikyou(),
+    // new HidariFutatsuDomoe(),
+    new Kikyou(),
     // new GenjiGuruma(),
     // new ChigaiTakanoha(),
     // new DakiMyouga(),
   ];
   var kamon;
-  // kamons = shuffle(kamons);
 
   // アニメーションスクロール関数の定義
   const autoScroll = (target, duration = 10000) => {
@@ -55,12 +45,10 @@ const init = async () => {
     const performAnimation = (currentTime) => {
       const elapsedTime = currentTime - animationStart;
       const progress = elapsedTime / adjustDur;
-      // console.log(progress)
       if (progress < 1) {
         const easedProgress = progress;
         const currentPosition = initialPosition +
           ((targetPosition - initialPosition) * easedProgress);
-      // console.log(nowPlaying, currentPosition)
         window.scrollTo(0, currentPosition);
         if (nowPlaying) requestAnimationFrame(performAnimation);
       } else {
@@ -75,9 +63,7 @@ const init = async () => {
     myTheme = theme;
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
-    // kamons.forEach((kamon) => {
     kamon.changeTheme(theme);
-    // })
     localStorage.setItem('theme', theme);
   }
 
@@ -95,12 +81,12 @@ const init = async () => {
 
   // アニメーションを再生
   const play = () => {
-    // console.log(window.scrollY, terminus)
     if (window.scrollY < terminus) {
       const scrollDur = kamon.scrollDur;
       nowPlaying = true;
       playBtn.classList.add('running');
       pauseBtn.classList.remove('disabled');
+      forwardBtn.classList.add('disabled');
       backBtn.classList.add('disabled');
       autoScroll(terminus, scrollDur);
     }
@@ -111,6 +97,7 @@ const init = async () => {
     nowPlaying = false;
     playBtn.classList.remove('running');
     pauseBtn.classList.add('disabled');
+    forwardBtn.classList.remove('disabled');
     backBtn.classList.remove('disabled');
   }
 
@@ -119,7 +106,6 @@ const init = async () => {
     if (window.scrollY == 0) {
       draw('back');
     } else {
-      // backBtn.classList.add('disabled');
       window.scrollTo(0, 0);
       kamon.scrolled(window.scrollY);
     }
@@ -130,7 +116,6 @@ const init = async () => {
     if (window.scrollY == terminus) {
       draw('forward');
     } else {
-      // backBtn.classList.add('disabled');
       window.scrollTo(0, terminus);
       kamon.scrolled(window.scrollY);
     }
@@ -198,16 +183,17 @@ const init = async () => {
     if (window.scrollY == 0) {
       if (!nowPlaying) {
         playBtn.classList.remove('disabled', 'running');
-        // backBtn.classList.add('disabled');
       }
     } else if (window.scrollY > 0 && window.scrollY < terminus) {
       playBtn.classList.remove('disabled');
-      if (!nowPlaying) backBtn.classList.remove('disabled');
+      if (!nowPlaying) {
+        forwardBtn.classList.remove('disabled');
+        backBtn.classList.remove('disabled');
+      }
     } else if (window.scrollY == terminus) {
-      // nowPlaying = false;
-      // playBtn.classList.add('disabled');
       playBtn.classList.remove('running');
       pauseBtn.classList.add('disabled');
+      forwardBtn.classList.remove('disabled');
       backBtn.classList.remove('disabled');
       if (nowPlaying) {
         document.body.classList.add('loading');
@@ -224,15 +210,10 @@ const init = async () => {
   window.addEventListener('resize', () => {
     if (resizeTimeout) clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(kamon.windowResize, 200);
-    // resizeTimeout = setTimeout(() => {
-    //   kamons.forEach((kamon) => {kamon.windowResize();});
-    //   // kamon.windowResize();
-    // }, 200);
     terminus = roll.scrollHeight - window.innerHeight;
   });
 
   // テーマ名が保存されていたら適用
-  // const myTheme = localStorage.getItem('theme');
   if (myTheme) {
     changeTheme(myTheme);
     const target = document.getElementById(myTheme);
@@ -245,20 +226,8 @@ const init = async () => {
     themeChanger.addEventListener('change', () => changeTheme(themeChanger.value));
   })
 
-
-
-  // const backward = document.getElementById('backward');
-  // backward.addEventListener('click', () => {
-  //   if (window.scrollY > 0) {
-  //     autoScrolling = true;
-  //     forward.classList.add('disabled');
-  //     backward.classList.add('running');
-  //     autoScroll(0, scrollDur);
-  //   }
-  // });
-
   playBtn.addEventListener('click', play);
   pauseBtn.addEventListener('click', pause);
   backBtn.addEventListener('click', back);
-
+  forwardBtn.addEventListener('click', forward);
 }
