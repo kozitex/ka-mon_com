@@ -27,9 +27,9 @@ const init = async () => {
   var myTheme = localStorage.getItem('theme');
 
   var kamons = [
-    // new HidariFutatsuDomoe(),
+    new HidariFutatsuDomoe(),
     new Kikyou(),
-    // new GenjiGuruma(),
+    new GenjiGuruma(),
     // new ChigaiTakanoha(),
     // new DakiMyouga(),
   ];
@@ -144,7 +144,7 @@ const init = async () => {
     document.body.classList.remove('loading');
   }
 
-  // kamons = shuffle(kamons);
+  kamons = shuffle(kamons);
   kamon = kamons[nowIndex];
   kamon.init();
   window.scrollTo(0, 0);

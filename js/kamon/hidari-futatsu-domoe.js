@@ -35,16 +35,18 @@ export default class HidariFutatsuDomoe extends Kamon {
   // ガイドラインを作成
   generateGuidelines = () => {
     const group = new THREE.Group();
-    const circle0 = this.guidelineGen('circle', 0, 0, 1600, 90, 450, this.divCount);
+    const points0 = this.circlePointGen(0, 0, 1600, 90, 450, this.divCount);
+    const circle0 = this.guidelineGen(points0);
     group.add(circle0);
 
     const params = [
-      {a:    0, b:  825, r:  750},
-      {a: -110, b:  490, r: 1100},
+      {a:     0, b:  825, r:  750},
+      {a: - 110, b:  490, r: 1100},
     ];
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const circle = this.guidelineGen('circle', param.a, param.b, param.r, 90, 450, this.divCount);
+        const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
+        const circle = this.guidelineGen(points);
         circle.rotation.z = THREE.MathUtils.degToRad(180) * i;
         group.add(circle);
       })
@@ -56,15 +58,15 @@ export default class HidariFutatsuDomoe extends Kamon {
   // アウトラインを作成
   generateOutlines = () => {
     const params = [
-      {a:    0, b:    0, r: 1600, f: 107, t: 290  },
-      {a:    0, b:  825, r:  750, f: 421, t: 218  },
-      {a: -110, b:  490, r: 1100, f: 110, t:  64  },
-      {a:  110, b: -490, r: 1100, f: 290, t: 129.5},
+      {a:     0, b:     0, r: 1600, f: 107, t: 290  },
+      {a:     0, b:   825, r:  750, f: 421, t: 218  },
+      {a: - 110, b:   490, r: 1100, f: 110, t:  64  },
+      {a:   110, b: - 490, r: 1100, f: 290, t: 129.5},
     ];
 
     for (var i = 0;i <= 1;i ++) {
       params.forEach((param) => {
-        const group = this.outlineGen('circle', param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
+        const group = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
         group.rotation.z = THREE.MathUtils.degToRad(180) * i;
         this.outlines.add(group);
       })
@@ -85,19 +87,15 @@ export default class HidariFutatsuDomoe extends Kamon {
     for (var i = 0;i <= 1;i ++) {
       var points = [];
       params.forEach((param) => {
-        // const curve = new THREE.EllipseCurve(
-        //   param.a, param.b,
-        //   param.r + param.g, param.r + param.g,
-        //   THREE.MathUtils.degToRad(param.f), THREE.MathUtils.degToRad(param.t),
-        //   param.c, 0
-        // );
-        // const curvePoints = curve.getPoints(100);
-        const curvePoints = this.shapePointGen('circle' , param.a, param.b, param.r, param.g, param.f, param.t, param.c);
+        const curve = new THREE.EllipseCurve(
+          param.a, param.b,
+          param.r + param.g, param.r + param.g,
+          THREE.MathUtils.degToRad(param.f), THREE.MathUtils.degToRad(param.t),
+          param.c, 0
+        );
+        const curvePoints = curve.getPoints(100);
         points = points.concat(curvePoints);
       })
-      // const shape = new THREE.Shape(points);
-      // const geometry = new THREE.ShapeGeometry(shape);
-      // const mesh = new THREE.Mesh(geometry, this.shapeMat);
       const mesh = this.shapeGen(points);
       mesh.rotation.z = THREE.MathUtils.degToRad(180) * i;
       group.add(mesh);

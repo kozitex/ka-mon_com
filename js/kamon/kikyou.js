@@ -9,8 +9,6 @@ export default class Kikyou extends Kamon {
 
     super();
 
-    // this.rollHeight = 4000;
-
     this.pathW = 27;
     this.verNum = 5;
     this.vertices = [];
@@ -44,13 +42,14 @@ export default class Kikyou extends Kamon {
   generateGuidelines = () => {
 
     // ４つの中心円
+    const circles = new THREE.Group();
     const rs = [191, 245, 520, 1600];
     rs.forEach((r) => {
-      const circles = new THREE.Group();
-      const circle = this.guidelineGen('circle', 0, 0, r, 90, 450, this.divCount);
+      const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
+      const circle = this.guidelineGen(points);
       circles.add(circle);
-      this.guidelines.add(circles);
     });
+    this.guidelines.add(circles);
 
     // 五角形の辺
     for (var i = 0;i <= this.verNum - 1;i ++) {
@@ -61,7 +60,8 @@ export default class Kikyou extends Kamon {
       const v2 = this.circle(0, 0, 1600, r2);
       const coef = this.from2Points(v1.x, v1.y, v2.x, v2.y);
       this.sides.push(coef);
-      const line = this.guidelineGen('line', coef.a, 1, coef.b, v1.x, v2.x, this.divCount);
+      const points = this.linePointGen(coef.a, 1, coef.b, v1.x, v2.x, this.divCount);
+      const line = this.guidelineGen(points);
       pentagon.add(line);
       this.vertices.push(v1);
       this.guidelines.add(pentagon);
@@ -75,21 +75,24 @@ export default class Kikyou extends Kamon {
 
         // 対角線
         const c = i == 0 ? - this.pathW : this.pathW;
-        const line = this.guidelineGen('line', 1, 0, c, - 1600, 1600, this.divCount);
+        const linePoints = this.linePointGen(1, 0, c, - 1600, 1600, this.divCount);
+        const line = this.guidelineGen(linePoints);
         pieces.add(line);
 
         // 大きな円
         const r = 361;
         const side = this.sides[2];
-        const origin = this.straight2(side.a, 1, side.b, c, undefined);
+        const origin = this.straight(side.a, 1, side.b, c, undefined);
         const base = r / Math.tan(45 * Math.PI / 180);
         const center = new THREE.Vector3(origin.x + (i == 0 ? - r : r), origin.y + base);
-        const circleL = this.guidelineGen('circle', center.x, center.y, r, 90, 450, this.divCount);
+        const circlePoints = this.circlePointGen(center.x, center.y, r, 90, 450, this.divCount);
+        const circleL = this.guidelineGen(circlePoints);
         pieces.add(circleL);
       }
 
       // 小さな円
-      const circleS = this.guidelineGen('circle', 0, 520 - this.pathW, this.pathW, 90, 450, this.divCount);
+      const points = this.circlePointGen(0, 520 - this.pathW, this.pathW, 90, 450, this.divCount);
+      const circleS = this.guidelineGen(points);
       pieces.add(circleS);
 
       pieces.rotation.z = (- (360 / this.verNum) * v) * Math.PI / 180;
@@ -102,21 +105,21 @@ export default class Kikyou extends Kamon {
   // アウトラインを作成
   generateOutlines = () => {
 
-    const circle0 = this.outlineGen('circle', 0, 0, 191, 90, 450, this.divCount);
+    const circle0 = this.outlineCircleGen(0, 0, 191, 90, 450, this.divCount);
     this.outlines.add(circle0);
 
     for (var i = 0;i <= this.verNum - 1;i ++) {
       for (var j = 0;j <= 1;j ++) {
 
         // 小さい円の弧
-        const circle1 = this.outlineGen('circle', 0, 520 - this.pathW, this.pathW, 90, 180, this.divCount);
+        const circle1 = this.outlineCircleGen(0, 520 - this.pathW, this.pathW, 90, 180, this.divCount);
         circle1.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         circle1.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(circle1);
 
         // 対角線
         const theta2 = Math.asin(this.pathW / 245);
-        const line1 = this.outlineGen('line', 1, 0, - this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), this.divCount);
+        const line1 = this.outlineLineGen(1, 0, - this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), this.divCount);
         line1.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         line1.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(line1);
@@ -127,7 +130,7 @@ export default class Kikyou extends Kamon {
         this.outlineEdges.add(edge1);
 
         // 中心円の弧
-        const circle2 = this.outlineGen('circle', 0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), this.divCount);
+        const circle2 = this.outlineCircleGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), this.divCount);
         circle2.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         circle2.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(circle2);
@@ -139,11 +142,11 @@ export default class Kikyou extends Kamon {
         const point1 = this.circle(0, 0, 1600, 126 - THREE.MathUtils.radToDeg(theta3));
         const point2 = new THREE.Vector3(this.pathW * Math.cos(THREE.MathUtils.degToRad(45)), this.pathW * Math.sin(THREE.MathUtils.degToRad(45)), 0);
         const straight1 = this.from2Points(point1.x, point1.y, point2.x, point2.y);
-        const straight2 = this.from2Points(this.vertices[4].x, this.vertices[4].y, this.vertices[0].x, this.vertices[0].y);
-        const line2Basis = this.getIntersect(straight1.a, straight1.b, straight2.a, straight2.b);
+        const straight = this.from2Points(this.vertices[4].x, this.vertices[4].y, this.vertices[0].x, this.vertices[0].y);
+        const line2Basis = this.getIntersect(straight1.a, straight1.b, straight.a, straight.b);
         const line2End = new THREE.Vector3(line2Basis.x + r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), line2Basis.y - r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
         const straight3 =this.from2Points(line2Start.x, line2Start.y, line2End.x, line2End.y);
-        const line2 = this.outlineGen('line', straight3.a, 1, straight3.b, line2Start.x, line2End.x, this.divCount);
+        const line2 = this.outlineLineGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, this.divCount);
         line2.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         line2.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(line2);
@@ -155,19 +158,19 @@ export default class Kikyou extends Kamon {
 
         // 大きい円の弧
         const center = new THREE.Vector3(line2End.x + r * Math.cos(THREE.MathUtils.degToRad(36)), line2End.y + r * Math.sin(THREE.MathUtils.degToRad(36)), 0);
-        const circle3 = this.outlineGen('circle', center.x, center.y, r, -144, -234, this.divCount);
+        const circle3 = this.outlineCircleGen(center.x, center.y, r, -144, -234, this.divCount);
         circle3.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         circle3.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(circle3);
 
         // 頂点までの直線
         const point3 = new THREE.Vector3(center.x - r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), center.y + r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-        const line3 = this.outlineGen('line', straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, this.divCount);
+        const line3 = this.outlineLineGen(straight.a, 1, straight.b, point3.x, this.vertices[0].x, this.divCount);
         line3.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         line3.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlines.add(line3);
 
-        const edge3 = this.outlineEdgeGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x);
+        const edge3 = this.outlineEdgeGen(straight.a, 1, straight.b, point3.x, this.vertices[0].x);
         edge3.rotation.y = THREE.MathUtils.degToRad(- 180 * j);
         edge3.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
         this.outlineEdges.add(edge3);
@@ -180,14 +183,17 @@ export default class Kikyou extends Kamon {
   // 塗りつぶし図形を生成
   generateShapes = () => {
 
-    const group = new THREE.Group();
-
-    // const circle0 = this.circleShapeGen(0, 0, 191, 90, 450, this.divCount, this.frontColor);
-    const circle0 = this.shapePointGen('circle', 0, 0, 191, - 6, 0, 360, false);
-    const mesh0 = this.shapeGen(circle0);
-
-    group.add(mesh0);
-    this.shapes.add(group);
+    const group0 = new THREE.Group();
+    const curve0 = new THREE.EllipseCurve(
+      0, 0,
+      191 - 6, 191 - 6,
+      THREE.MathUtils.degToRad(0), THREE.MathUtils.degToRad(360),
+      false, 0
+    );
+    const points0 = curve0.getPoints(100);
+    const mesh0 = this.shapeGen(points0);
+    group0.add(mesh0);
+    this.shapes.add(group0);
 
     for (var i = 0;i <= this.verNum - 1;i ++) {
 
@@ -196,51 +202,79 @@ export default class Kikyou extends Kamon {
       for (var j = 0;j <= 1;j ++) {
 
         // 小さい円の弧
-        const circle1 = this.shapePointGen('circle', 0, 520 - this.pathW, this.pathW, 6, 90, 180, false);
-        // const circle1 = this.circlePointGen(0, 520 - this.pathW, this.pathW, 90, 180, this.divCount);
+        const curve1 = new THREE.EllipseCurve(
+          0, 520 - this.pathW,
+          this.pathW + 6, this.pathW + 6,
+          THREE.MathUtils.degToRad(90), THREE.MathUtils.degToRad(180),
+          false, 0
+        );
+        const circle1 = curve1.getPoints(100);
 
         // 対角線
         const theta2 = Math.asin(this.pathW / 245);
-        const line1 = [new THREE.Vector3(- this.pathW - 6, 520 - this.pathW, 0), new THREE.Vector3(- this.pathW - 6, 245 * Math.cos(theta2), 0)];
-        // const line1 = new THREE.LineCurve(new THREE.Vector2(- this.pathW, 520 - this.pathW), new THREE.Vector2(- this.pathW, 245 * Math.cos(theta2)));
-        // const line1 = this.linePointGen(1, 0, this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), this.divCount);
+        const line1 = [
+          new THREE.Vector3(- this.pathW - 6, 520 - this.pathW, 0),
+          new THREE.Vector3(- this.pathW - 6, 245 * Math.cos(theta2), 0)
+        ];
 
         // 中心円の弧
-        const circle2 = this.shapePointGen('circle', 0, 0, 245, 6, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 34 - THREE.MathUtils.radToDeg(theta2), false);
-        // const circle2 = this.circlePointGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), this.divCount);
+        const curve2 = new THREE.EllipseCurve(
+          0, 0,
+          245 + 6, 245 + 6,
+          THREE.MathUtils.degToRad(90) + theta2, THREE.MathUtils.degToRad(90 + 34) - theta2,
+          false, 0
+        );
+        const circle2 = curve2.getPoints(100);
 
         // 対角線
         const r = 361;
         const line2Start = this.circle(0, 0, 245, 90 + 36 - THREE.MathUtils.radToDeg(theta2));
         const theta3 = Math.asin(this.pathW / 1600);
         const point1 = this.circle(0, 0, 1600, 126 - THREE.MathUtils.radToDeg(theta3));
-        const point2 = new THREE.Vector3(this.pathW * Math.cos(THREE.MathUtils.degToRad(45)), this.pathW * Math.sin(THREE.MathUtils.degToRad(45)), 0);
+        const point2 = new THREE.Vector3(
+          this.pathW * Math.cos(THREE.MathUtils.degToRad(45)),
+          this.pathW * Math.sin(THREE.MathUtils.degToRad(45)), 0
+        );
         const straight1 = this.from2Points(point1.x, point1.y, point2.x, point2.y);
-        const straight2 = this.from2Points(this.vertices[4].x, this.vertices[4].y, this.vertices[0].x, this.vertices[0].y);
-        const line2Basis = this.getIntersect(straight1.a, straight1.b, straight2.a, straight2.b);
-        const line2End = new THREE.Vector3(line2Basis.x + r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), line2Basis.y - r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-        // const straight3 =this.from2Points(line2Start.x, line2Start.y, line2End.x, line2End.y);
+        const straight = this.from2Points(this.vertices[4].x, this.vertices[4].y, this.vertices[0].x, this.vertices[0].y);
+        const line2Basis = this.getIntersect(straight1.a, straight1.b, straight.a, straight.b);
+        const line2End = new THREE.Vector3(
+          line2Basis.x + r * Math.cos(THREE.MathUtils.degToRad(90 - 36)),
+          line2Basis.y - r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0
+        );
         const gX1 = 6 * Math.cos(THREE.MathUtils.degToRad(90 - theta3));
         const gY1 = 6 * Math.sin(THREE.MathUtils.degToRad(90 - theta3));
-        const line2 = [new THREE.Vector3(line2Start.x + gX1, line2Start.y + gY1, line2Start.z), new THREE.Vector3(line2End.x + gX1, line2End.y + gY1, line2End.z)];
-        // const line2 = new THREE.LineCurve(new THREE.Vector2(line2Start.x, line2Start.y), new THREE.Vector2(line2End.x, line2End.y));
-        // const line2 = this.linePointGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, this.divCount);
+        const line2 = [
+          new THREE.Vector3(line2Start.x + gX1, line2Start.y + gY1, line2Start.z),
+          new THREE.Vector3(line2End.x + gX1, line2End.y + gY1, line2End.z)
+        ];
 
         // 大きい円の弧
-        const center = new THREE.Vector3(line2End.x + r * Math.cos(THREE.MathUtils.degToRad(36)), line2End.y + r * Math.sin(THREE.MathUtils.degToRad(36)), 0);
-        const circle3 = this.shapePointGen('circle', center.x, center.y, r, - 4, - 144, - 234, true);
-        // const circle3 = this.circlePointGen(center.x, center.y, r, -144, -234, this.divCount);
+        const center = new THREE.Vector3(
+          line2End.x + r * Math.cos(THREE.MathUtils.degToRad(36)),
+          line2End.y + r * Math.sin(THREE.MathUtils.degToRad(36)), 0
+        );
+        const curve3 = new THREE.EllipseCurve(
+          center.x, center.y,
+          r - 4, r - 4,
+          THREE.MathUtils.degToRad(- 144), THREE.MathUtils.degToRad(- 234),
+          true, 0
+        );
+        const circle3 = curve3.getPoints(100);
 
         // 頂点までの直線
-        const point3 = new THREE.Vector3(center.x - r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), center.y + r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-        const theta4 = Math.atan(straight2.a);
+        const point3 = new THREE.Vector3(
+          center.x - r * Math.cos(THREE.MathUtils.degToRad(90 - 36)),
+          center.y + r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0
+        );
+        const theta4 = Math.atan(straight.a);
         const gX2 = 6 * Math.cos(THREE.MathUtils.degToRad(theta4));
         const gY2 = 6 * Math.sin(THREE.MathUtils.degToRad(theta4));
-        const line3 = [new THREE.Vector3(point3.x + gX2, point3.y - gY2, point3.z), new THREE.Vector3(this.vertices[0].x, this.vertices[0].y - gY2, this.vertices[0].z)];
-        // const line3 = new THREE.LineCurve(new THREE.Vector2(point3.x, point3.y), new THREE.Vector2(this.vertices[0].x, this.vertices[0].y));
-        // const line3 = this.linePointGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, this.divCount);
+        const line3 = [
+          new THREE.Vector3(point3.x + gX2, point3.y - gY2, point3.z),
+          new THREE.Vector3(this.vertices[0].x, this.vertices[0].y - gY2, this.vertices[0].z)
+        ];
 
-        // const points = circle1.concat(line1, circle2, line2, circle3, line3);
         const points = circle1.concat(line1, circle2, line2, circle3, line3);
         const mesh = this.shapeGen(points);
         mesh.rotation.y = THREE.MathUtils.degToRad(180 * j);
@@ -252,59 +286,6 @@ export default class Kikyou extends Kamon {
     }
     this.scene.add(this.shapes);
   }
-  // generateShapes = () => {
-
-  //   const group = new THREE.Group();
-  //   const circle0 = this.circleShapeGen(0, 0, 191, 90, 450, this.divCount, this.frontColor);
-  //   group.add(circle0);
-  //   this.shapes.add(group);
-
-  //   for (var i = 0;i <= this.verNum - 1;i ++) {
-  //     const group1 = new THREE.Group();
-  //     for (var j = 0;j <= 1;j ++) {
-
-  //       // 小さい円の弧
-  //       const circle1 = this.circlePointGen(0, 520 - this.pathW, this.pathW, 90, 180, this.divCount);
-
-  //       // 対角線
-  //       const theta2 = Math.asin(this.pathW / 245);
-  //       const line1 = this.linePointGen(1, 0, this.pathW, 520 - this.pathW, 245 * Math.cos(theta2), this.divCount);
-
-  //       // 中心円の弧
-  //       const circle2 = this.circlePointGen(0, 0, 245, 90 + THREE.MathUtils.radToDeg(theta2), 90 + 36 - THREE.MathUtils.radToDeg(theta2), this.divCount);
-
-  //       // 対角線
-  //       const r = 361;
-  //       const line2Start = this.circle(0, 0, 245, 90 + 36 - THREE.MathUtils.radToDeg(theta2));
-  //       const theta3 = Math.asin(this.pathW / 1600);
-  //       const point1 = this.circle(0, 0, 1600, 126 - THREE.MathUtils.radToDeg(theta3));
-  //       const point2 = new THREE.Vector3(this.pathW * Math.cos(THREE.MathUtils.degToRad(45)), this.pathW * Math.sin(THREE.MathUtils.degToRad(45)), 0);
-  //       const straight1 = this.from2Points(point1.x, point1.y, point2.x, point2.y);
-  //       const straight2 = this.from2Points(this.vertices[4].x, this.vertices[4].y, this.vertices[0].x, this.vertices[0].y);
-  //       const line2Basis = this.getIntersect(straight1.a, straight1.b, straight2.a, straight2.b);
-  //       const line2End = new THREE.Vector3(line2Basis.x + r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), line2Basis.y - r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-  //       const straight3 =this.from2Points(line2Start.x, line2Start.y, line2End.x, line2End.y);
-  //       const line2 = this.linePointGen(straight3.a, 1, straight3.b, line2Start.x, line2End.x, this.divCount);
-
-  //       // 大きい円の弧
-  //       const center = new THREE.Vector3(line2End.x + r * Math.cos(THREE.MathUtils.degToRad(36)), line2End.y + r * Math.sin(THREE.MathUtils.degToRad(36)), 0);
-  //       const circle3 = this.circlePointGen(center.x, center.y, r, -144, -234, this.divCount);
-
-  //       // 頂点までの直線
-  //       const point3 = new THREE.Vector3(center.x - r * Math.cos(THREE.MathUtils.degToRad(90 - 36)), center.y + r * Math.sin(THREE.MathUtils.degToRad(90 - 36)), 0);
-  //       const line3 = this.linePointGen(straight2.a, 1, straight2.b, point3.x, this.vertices[0].x, this.divCount);
-
-  //       const points = circle1.concat(line1, circle2, line2, circle3, line3);
-  //       const mesh = this.shapeGen(points, this.frontColor);
-  //       mesh.rotation.y = THREE.MathUtils.degToRad(180 * j);
-  //       mesh.visible = false;
-  //       group1.add(mesh);
-  //     }
-  //     group1.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);
-  //     this.shapes.add(group1);
-  //   }
-  //   this.scene.add(this.shapes);
-  // }
 
   // 図形のアニメーション制御
   shapesRotationControl(start, end) {
