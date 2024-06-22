@@ -258,6 +258,79 @@ export default class Kamon {
     return new THREE.Line(geometry, this.guideMat);
   }
 
+  // outlineMeshGroupGen = (geometry) => {
+  //   // geometry.setDrawRange(0, 0);
+  //   const mesh = new THREE.Line(geometry, this.outlineMat);
+  //   const group = new THREE.Group();
+  //   group.add(mesh);
+  //   return group;
+  // }
+
+  // アウトラインの円弧のジオメトリを生成
+  outlineCircleGeoGen = (a, b, r, f, t, d) => {
+    const points = this.circlePointGen(a, b, r , f, t, d);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    return geometry;
+  }
+
+  // アウトラインの円弧のメッシュを生成
+  outlineCircleMeshGen = (geometry, r, g, rotZ) => {
+    const group = new THREE.Group();
+    const mesh = new THREE.Line(geometry, this.outlineMat);
+    const scale = (r + g) / r;
+    mesh.scale.set(scale, scale);
+    mesh.rotation.set(0, 0, rotZ);
+    group.add(mesh);
+    return group;
+  }
+
+  // アウトラインの直線のジオメトリを生成
+  outlineLineGeoGen = (a, b, r, f, t, d) => {
+    const points = this.linePointGen(a, b, r, f, t, d);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    return geometry;
+  }
+
+  // アウトラインの直線のメッシュを生成
+  outlineLineMeshGen = (geometry, a, g, rotZ) => {
+    const group = new THREE.Group();
+    const mesh = new THREE.Line(geometry, this.outlineMat);
+    const theta = Math.atan(a) + rotZ;
+    const rad = theta + THREE.MathUtils.degToRad(90);
+    const x = g * Math.cos(rad);
+    const y = g * Math.sin(rad);
+    mesh.position.set(x, y, 0);
+    mesh.rotation.set(0, 0, rotZ);
+    group.add(mesh);
+    return group;
+  }
+
+  // アウトラインの直線エッジのジオメトリを生成
+  outlineEdgeGeoGen = (a, b, r, f, t) => {
+    var geometries = [];
+    const w = 6;
+    const edgeF = this.straight(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
+    const edgeT = this.straight(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
+    const edges = [edgeF, edgeT];
+    edges.forEach((edge) => {
+      const points = this.curvePointGen(edge.x, edge.y, w, 0, 360, false);
+      const shape = new THREE.Shape(points);
+      const geometry = new THREE.ShapeGeometry(shape);
+      geometries.push(geometry);
+    })
+    return geometries;
+  }
+
+  // アウトラインの直線エッジのメッシュを生成
+  outlineEdgeMeshGen = (geometry, rotZ) => {
+    const group = new THREE.Group();
+    const mesh = new THREE.Mesh(geometry, this.edgeMat);
+    mesh.rotation.set(0, 0, rotZ);
+    group.add(mesh);
+    return group;
+  }
+
+
   // アウトラインのメッシュを生成
   outlineGen = (points) => {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -284,18 +357,63 @@ export default class Kamon {
     }
     return group;
   }
+  // outlineLineGeoGen = (a, b, r, f, t, d) => {
+  //   var points = [];
+  //   const w = 6;
+  //   for (var i = 0;i <= w - 1;i ++) {
+  //     for (var j = 0;j <= 1;j ++) {
+  //       const theta = Math.abs(Math.atan(a));
+  //       const rad = THREE.MathUtils.degToRad(90) - theta;
+  //       const pSign = a > 0 ? j == 0 ? - 1 :   1 : j == 0 ? 1 : - 1;
+  //       const qSign = a > 0 ? j == 0 ?   1 : - 1 : j == 0 ? 1 : - 1;
+  //       const p = pSign * i * Math.cos(rad);
+  //       const q = qSign * i * Math.sin(rad);
+  //       const point = this.linePointGen(a, b, - a * p + r + q, f + p, t + p, d);
+  //       points = points.concat(point);
+  //     }
+  //   }
+  //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //   // geometry.setDrawRange(0, 0);
+  //   return geometry;
+  // }
 
   // 円弧のアウトラインを生成
   outlineCircleGen = (a, b, r, f, t, d) => {
     const group = new THREE.Group();
+    const points = this.circlePointGen(a, b, r, f, t, d);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const w = 6;
     for (var g = - w;g <= w;g ++) {
-      const points = this.circlePointGen(a, b, r + g, f, t, d);
-      const mesh = this.outlineGen(points);
+      const mesh = new THREE.Line(geometry, this.outlineMat);
+      const scale = (r + g) / r;
+      mesh.scale.set(scale, scale);
       group.add(mesh);
     }
     return group;
   }
+  // outlineCircleGen = (a, b, r, f, t, d) => {
+  //   const group = new THREE.Group();
+  //   const w = 6;
+  //   for (var g = - w;g <= w;g ++) {
+  //     const points = this.circlePointGen(a, b, r + g, f, t, d);
+  //     const mesh = this.outlineGen(points);
+  //     group.add(mesh);
+  //   }
+  //   return group;
+  // }
+  // outlineCircleGeoGen = (a, b, r, f, t, d) => {
+  //   var points = [];
+  //   const w = 0;
+  //   for (var g = - w;g <= w;g ++) {
+  //     const point = this.circlePointGen(a, b, r + g, f, t, d);
+  //     points = points.concat(point);
+  //     // points.push(point);
+  //   }
+  //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //   // geometry.setDrawRange(0, 0);
+  //   return geometry;
+  // }
+
 
   // アウトラインの両端を丸く処理
   outlineEdgeGen = (a, b, r, f, t) => {
@@ -306,13 +424,6 @@ export default class Kamon {
     const edges = [edgeF, edgeT];
     edges.forEach((edge) => {
       const points = this.curvePointGen(edge.x, edge.y, w, 0, 360, false);
-      // const curve = new THREE.EllipseCurve(
-      //   edge.x, edge.y,
-      //   w, w,
-      //   THREE.MathUtils.degToRad(0), THREE.MathUtils.degToRad(360),
-      //   false, 0
-      // );
-      // const points = curve.getPoints(100);
       const shape = new THREE.Shape(points);
       const geometry = new THREE.ShapeGeometry(shape);
       const mesh = new THREE.Mesh(geometry, this.edgeMat);
@@ -348,6 +459,17 @@ export default class Kamon {
     }
     return points;
   }
+  // circleGeoGen = (a, b, r, f, t, d) => {
+  //   const points = [];
+  //   for (var i = 0;i <= d - 1;i ++) {
+  //     const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+  //     const point = this.circle(a, b, r, p);
+  //     points.push(point);
+  //   }
+  //   const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  //   geometry.setDrawRange(0, 0);
+  //   return geometry;
+  // }
 
   // 円弧の図形用座標を生成
   curvePointGen = (a, b, r, f, t, c) => {

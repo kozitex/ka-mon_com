@@ -98,126 +98,142 @@ export default class GenjiGuruma extends Kamon {
     this.outlines.add(centerCircle);
 
     // スポーク
+
+    const sArcGeo1 = this.outlineCircleGeoGen(0, 0, 260, 101.25, 78.75, this.divCount);
+    const lArcGeo1 = this.outlineCircleGeoGen(0, 0, 935, 78.75, 101.25, this.divCount);
+
+    const sArcF1 = this.circle(0, 0, 260, 101.25);
+    const sArcT1 = this.circle(0, 0, 260,  78.75);
+    const lArcF1 = this.circle(0, 0, 935, 101.25);
+    const lArcT1 = this.circle(0, 0, 935,  78.75);
+
+    const lLineParam1 = this.from2Points(lArcF1.x, lArcF1.y, sArcF1.x, sArcF1.y);
+    const rLineParam1 = this.from2Points(sArcT1.x, sArcT1.y, lArcT1.x, lArcT1.y);
+
+    const lLineGeo1 = this.outlineLineGeoGen(lLineParam1.a, 1, lLineParam1.b, lArcF1.x, sArcF1.x, this.divCount);
+    const rLineGeo1 = this.outlineLineGeoGen(rLineParam1.a, 1, rLineParam1.b, sArcT1.x, lArcT1.x, this.divCount);
+
+    const lEdgeGeoArr1 = this.outlineEdgeGeoGen(lLineParam1.a, 1, lLineParam1.b, lArcF1.x, sArcF1.x);
+    const rEdgeGeoArr1 = this.outlineEdgeGeoGen(rLineParam1.a, 1, rLineParam1.b, sArcT1.x, lArcT1.x);
+
     for (var v = 0;v <= this.verNum - 1;v ++) {
 
-      const sArc = this.outlineCircleGen(0, 0, 260, 101.25, 78.75, this.divCount);
-      const lArc = this.outlineCircleGen(0, 0, 935, 78.75, 101.25, this.divCount);
-
-      const sArcF = this.circle(0, 0, 260, 101.25);
-      const sArcT = this.circle(0, 0, 260,  78.75);
-      const lArcF = this.circle(0, 0, 935, 101.25);
-      const lArcT = this.circle(0, 0, 935,  78.75);
-
-      const lLineParam = this.from2Points(lArcF.x, lArcF.y, sArcF.x, sArcF.y);
-      const rLineParam = this.from2Points(sArcT.x, sArcT.y, lArcT.x, lArcT.y);
-
-      const lLine = this.outlineLineGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x, this.divCount);
-      const rLine = this.outlineLineGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x, this.divCount);
-
-      const lEdge = this.outlineEdgeGen(lLineParam.a, 1, lLineParam.b, lArcF.x, sArcF.x);
-      const rEdge = this.outlineEdgeGen(rLineParam.a, 1, rLineParam.b, sArcT.x, lArcT.x);
-
       const copyAngle = THREE.MathUtils.degToRad(- 360 / this.verNum * v);
-      sArc.rotation.z = copyAngle;
-      lArc.rotation.z = copyAngle;
-      lLine.rotation.z = copyAngle;
-      rLine.rotation.z = copyAngle;
-      lEdge.rotation.z = copyAngle;
-      rEdge.rotation.z = copyAngle;
-
-      this.outlines.add(sArc, lArc, lLine, rLine);
-      this.outlineEdges.add(lEdge, rEdge);
+      const w = 6;
+      for (var g = - w;g <= w;g ++) {
+        const sArc  = this.outlineCircleMeshGen(sArcGeo1, 260, g, copyAngle);
+        const lArc  = this.outlineCircleMeshGen(lArcGeo1, 935, g, copyAngle);
+        const lLine = this.outlineLineMeshGen(lLineGeo1, lLineParam1.a, g, copyAngle);
+        const rLine = this.outlineLineMeshGen(rLineGeo1, rLineParam1.a, g, copyAngle);
+        this.outlines.add(sArc, lArc, lLine, rLine);
+      }
+      const lEdgeF = this.outlineEdgeMeshGen(lEdgeGeoArr1[0], copyAngle);
+      const lEdgeT = this.outlineEdgeMeshGen(lEdgeGeoArr1[1], copyAngle);
+      const rEdgeF = this.outlineEdgeMeshGen(rEdgeGeoArr1[0], copyAngle);
+      const rEdgeT = this.outlineEdgeMeshGen(rEdgeGeoArr1[1], copyAngle);
+      this.outlineEdges.add(lEdgeF, lEdgeT, rEdgeF, rEdgeT);
     }
 
     // 内側の継ぎ目
+    const iArcAngle2 = 16.875 - THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 /  970));
+    const oArcAngle2 = 16.875 - THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1265));
+
+    const iArcGeo2 = this.outlineCircleGeoGen(0, 0,  970, 90 + iArcAngle2, 90 - iArcAngle2, this.divCount);
+    const oArcGeo2 = this.outlineCircleGeoGen(0, 0, 1265, 90 - oArcAngle2, 90 + oArcAngle2, this.divCount);
+
+    const iArcF2 = this.circle(0, 0,  970, 90 + iArcAngle2);
+    const iArcT2 = this.circle(0, 0,  970, 90 - iArcAngle2);
+    const oArcF2 = this.circle(0, 0, 1265, 90 + oArcAngle2);
+    const oArcT2 = this.circle(0, 0, 1265, 90 - oArcAngle2);
+
+    const lLineParam2 = this.from2Points(oArcF2.x, oArcF2.y, iArcF2.x, iArcF2.y);
+    const rLineParam2 = this.from2Points(iArcT2.x, iArcT2.y, oArcT2.x, oArcT2.y);
+
+    const lLineGeo2 = this.outlineLineGeoGen(lLineParam2.a, 1, lLineParam2.b, oArcF2.x, iArcF2.x, this.divCount);
+    const rLineGeo2 = this.outlineLineGeoGen(rLineParam2.a, 1, rLineParam2.b, iArcT2.x, oArcT2.x, this.divCount);
+
+    const lEdgeGeoArr2 = this.outlineEdgeGeoGen(lLineParam2.a, 1, lLineParam2.b, oArcF2.x, iArcF2.x);
+    const rEdgeGeoArr2 = this.outlineEdgeGeoGen(rLineParam2.a, 1, rLineParam2.b, iArcT2.x, oArcT2.x);
+
     for (var v = 0;v <= this.verNum - 1;v ++) {
 
-      const iArcAngle = 16.875 - THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 /  970));
-      const oArcAngle = 16.875 - THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1265));
-
-      const iArc = this.outlineCircleGen(0, 0,  970, 90 + iArcAngle, 90 - iArcAngle, this.divCount);
-      const oArc = this.outlineCircleGen(0, 0, 1265, 90 - oArcAngle, 90 + oArcAngle, this.divCount);
-
-      const iArcF = this.circle(0, 0,  970, 90 + iArcAngle);
-      const iArcT = this.circle(0, 0,  970, 90 - iArcAngle);
-      const oArcF = this.circle(0, 0, 1265, 90 + oArcAngle);
-      const oArcT = this.circle(0, 0, 1265, 90 - oArcAngle);
-
-      const lLineParam = this.from2Points(oArcF.x, oArcF.y, iArcF.x, iArcF.y);
-      const rLineParam = this.from2Points(iArcT.x, iArcT.y, oArcT.x, oArcT.y);
-
-      const lLine = this.outlineLineGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x, this.divCount);
-      const rLine = this.outlineLineGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x, this.divCount);
-
-      const lEdge = this.outlineEdgeGen(lLineParam.a, 1, lLineParam.b, oArcF.x, iArcF.x);
-      const rEdge = this.outlineEdgeGen(rLineParam.a, 1, rLineParam.b, iArcT.x, oArcT.x);
-
       const copyAngle = THREE.MathUtils.degToRad(- 360 / this.verNum * v);
-      iArc.rotation.z = copyAngle;
-      oArc.rotation.z = copyAngle;
-      lLine.rotation.z = copyAngle;
-      rLine.rotation.z = copyAngle;
-      lEdge.rotation.z = copyAngle;
-      rEdge.rotation.z = copyAngle;
+      const w = 6;
+      for (var g = - w;g <= w;g ++) {
+        const iArc  = this.outlineCircleMeshGen(iArcGeo2,  970, g, copyAngle);
+        const oArc  = this.outlineCircleMeshGen(oArcGeo2, 1265, g, copyAngle);
+        const lLine = this.outlineLineMeshGen(lLineGeo2, lLineParam2.a, g, copyAngle);
+        const rLine = this.outlineLineMeshGen(rLineGeo2, rLineParam2.a, g, copyAngle);
+        this.outlines.add(iArc, oArc, lLine, rLine);
+      }
+      const lEdgeF = this.outlineEdgeMeshGen(lEdgeGeoArr2[0], copyAngle);
+      const lEdgeT = this.outlineEdgeMeshGen(lEdgeGeoArr2[1], copyAngle);
+      const rEdgeF = this.outlineEdgeMeshGen(rEdgeGeoArr2[0], copyAngle);
+      const rEdgeT = this.outlineEdgeMeshGen(rEdgeGeoArr2[1], copyAngle);
+      this.outlineEdges.add(lEdgeF, lEdgeT, rEdgeF, rEdgeT);
 
-      this.outlines.add(iArc, oArc, lLine, rLine);
-      this.outlineEdges.add(lEdge, rEdge);
     }
 
     // 外側の継ぎ目の円弧
+    const iArcAngle3 = 16.875 + THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 970));
+    const oArcAngle3 = THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1600));
+    const lArcAngleF3 = THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1300));
+    const lArcAngleT3 = 16.875 + THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1300));
+
+    const iArcGeo3 = this.outlineCircleGeoGen(0, 0,  970, 90 - iArcAngle3, 90 + iArcAngle3 - 45, this.divCount);
+    const oArcGeo3 = this.outlineCircleGeoGen(0, 0, 1600, 90 + oArcAngle3 - 45, 90 - oArcAngle3, this.divCount);
+    const lArcGeo3 = this.outlineCircleGeoGen(0, 0, 1300, 90 - lArcAngleF3, 90 - lArcAngleT3, this.divCount);
+    const rArcGeo3 = this.outlineCircleGeoGen(0, 0, 1300, 90 + lArcAngleT3 - 45, 90 + lArcAngleF3 - 45, this.divCount);
+
+    const iArcF3 = this.circle(0, 0,  970, 90 - iArcAngle3);
+    const iArcT3 = this.circle(0, 0,  970, 90 + iArcAngle3  - 45);
+    const rArcF3 = this.circle(0, 0, 1300, 90 + lArcAngleT3 - 45);
+    const rArcT3 = this.circle(0, 0, 1300, 90 + lArcAngleF3 - 45);
+    const oArcF3 = this.circle(0, 0, 1600, 90 - oArcAngle3);
+    const oArcT3 = this.circle(0, 0, 1600, 90 + oArcAngle3  - 45);
+    const lArcF3 = this.circle(0, 0, 1300, 90 - lArcAngleF3);
+    const lArcT3 = this.circle(0, 0, 1300, 90 - lArcAngleT3);
+
+    const ilLineParam3 = this.from2Points(lArcT3.x, lArcT3.y, iArcF3.x, iArcF3.y);
+    const irLineParam3 = this.from2Points(iArcT3.x, iArcT3.y, rArcF3.x, rArcF3.y);
+    const olLineParam3 = this.from2Points(oArcF3.x, oArcF3.y, lArcF3.x, lArcF3.y);
+    const orLineParam3 = this.from2Points(rArcT3.x, rArcT3.y, oArcT3.x, oArcT3.y);
+
+    const ilLineGeo3 = this.outlineLineGeoGen(ilLineParam3.a, 1, ilLineParam3.b, lArcT3.x, iArcF3.x, this.divCount);
+    const irLineGeo3 = this.outlineLineGeoGen(irLineParam3.a, 1, irLineParam3.b, iArcT3.x, rArcF3.x, this.divCount);
+    const olLineGeo3 = this.outlineLineGeoGen(olLineParam3.a, 1, olLineParam3.b, oArcF3.x, lArcF3.x, this.divCount);
+    const orLineGeo3 = this.outlineLineGeoGen(orLineParam3.a, 1, orLineParam3.b, rArcT3.x, oArcT3.x, this.divCount);
+
+    const ilEdgeGeoArr3 = this.outlineEdgeGeoGen(ilLineParam3.a, 1, ilLineParam3.b, lArcT3.x, iArcF3.x);
+    const irEdgeGeoArr3 = this.outlineEdgeGeoGen(irLineParam3.a, 1, irLineParam3.b, iArcT3.x, rArcF3.x);
+    const olEdgeGeoArr3 = this.outlineEdgeGeoGen(olLineParam3.a, 1, olLineParam3.b, oArcF3.x, lArcF3.x);
+    const orEdgeGeoArr3 = this.outlineEdgeGeoGen(orLineParam3.a, 1, orLineParam3.b, rArcT3.x, oArcT3.x);
+
     for (var v = 0;v <= this.verNum - 1;v ++) {
 
-      const iArcAngle = 16.875 + THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 970));
-      const oArcAngle = THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1600));
-      const lArcAngleF = THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1300));
-      const lArcAngleT = 16.875 + THREE.MathUtils.radToDeg(Math.atan(this.pathW / 2 / 1300));
-
-      const iArc = this.outlineCircleGen(0, 0,  970, 90 - iArcAngle, 90 + iArcAngle - 45, this.divCount);
-      const oArc = this.outlineCircleGen(0, 0, 1600, 90 + oArcAngle - 45, 90 - oArcAngle, this.divCount);
-      const lArc = this.outlineCircleGen(0, 0, 1300, 90 - lArcAngleF, 90 - lArcAngleT, this.divCount);
-      const rArc = this.outlineCircleGen(0, 0, 1300, 90 + lArcAngleT - 45, 90 + lArcAngleF - 45, this.divCount);
-
-      const iArcF = this.circle(0, 0,  970, 90 - iArcAngle);
-      const iArcT = this.circle(0, 0,  970, 90 + iArcAngle  - 45);
-      const rArcF = this.circle(0, 0, 1300, 90 + lArcAngleT - 45);
-      const rArcT = this.circle(0, 0, 1300, 90 + lArcAngleF - 45);
-      const oArcF = this.circle(0, 0, 1600, 90 - oArcAngle);
-      const oArcT = this.circle(0, 0, 1600, 90 + oArcAngle  - 45);
-      const lArcF = this.circle(0, 0, 1300, 90 - lArcAngleF);
-      const lArcT = this.circle(0, 0, 1300, 90 - lArcAngleT);
-
-      const ilLineParam = this.from2Points(lArcT.x, lArcT.y, iArcF.x, iArcF.y);
-      const irLineParam = this.from2Points(iArcT.x, iArcT.y, rArcF.x, rArcF.y);
-      const olLineParam = this.from2Points(oArcF.x, oArcF.y, lArcF.x, lArcF.y);
-      const orLineParam = this.from2Points(rArcT.x, rArcT.y, oArcT.x, oArcT.y);
-
-      const ilLine = this.outlineLineGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x, this.divCount);
-      const irLine = this.outlineLineGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x, this.divCount);
-      const olLine = this.outlineLineGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x, this.divCount);
-      const orLine = this.outlineLineGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x, this.divCount);
-
-      const ilEdge = this.outlineEdgeGen(ilLineParam.a, 1, ilLineParam.b, lArcT.x, iArcF.x);
-      const irEdge = this.outlineEdgeGen(irLineParam.a, 1, irLineParam.b, iArcT.x, rArcF.x);
-      const olEdge = this.outlineEdgeGen(olLineParam.a, 1, olLineParam.b, oArcF.x, lArcF.x);
-      const orEdge = this.outlineEdgeGen(orLineParam.a, 1, orLineParam.b, rArcT.x, oArcT.x);
-
       const copyAngle = THREE.MathUtils.degToRad(- 360 / this.verNum * v);
-      iArc.rotation.z = copyAngle;
-      oArc.rotation.z = copyAngle;
-      lArc.rotation.z = copyAngle;
-      rArc.rotation.z = copyAngle;
-      ilLine.rotation.z = copyAngle;
-      irLine.rotation.z = copyAngle;
-      olLine.rotation.z = copyAngle;
-      orLine.rotation.z = copyAngle;
-      ilEdge.rotation.z = copyAngle;
-      irEdge.rotation.z = copyAngle;
-      olEdge.rotation.z = copyAngle;
-      orEdge.rotation.z = copyAngle;
+      const w = 6;
+      for (var g = - w;g <= w;g ++) {
+        const iArc  = this.outlineCircleMeshGen(iArcGeo3,  970, g, copyAngle);
+        const oArc  = this.outlineCircleMeshGen(oArcGeo3, 1600, g, copyAngle);
+        const lArc  = this.outlineCircleMeshGen(lArcGeo3, 1300, g, copyAngle);
+        const rArc  = this.outlineCircleMeshGen(rArcGeo3, 1300, g, copyAngle);
+        const ilLine = this.outlineLineMeshGen(ilLineGeo3, ilLineParam3.a, g, copyAngle);
+        const irLine = this.outlineLineMeshGen(irLineGeo3, irLineParam3.a, g, copyAngle);
+        const olLine = this.outlineLineMeshGen(olLineGeo3, olLineParam3.a, g, copyAngle);
+        const orLine = this.outlineLineMeshGen(orLineGeo3, orLineParam3.a, g, copyAngle);
+        this.outlines.add(iArc, oArc, lArc, rArc, ilLine, irLine, olLine, orLine);
+      }
+      const ilEdgeF = this.outlineEdgeMeshGen(ilEdgeGeoArr3[0], copyAngle);
+      const ilEdgeT = this.outlineEdgeMeshGen(ilEdgeGeoArr3[1], copyAngle);
+      const irEdgeF = this.outlineEdgeMeshGen(irEdgeGeoArr3[0], copyAngle);
+      const irEdgeT = this.outlineEdgeMeshGen(irEdgeGeoArr3[1], copyAngle);
+      const olEdgeF = this.outlineEdgeMeshGen(olEdgeGeoArr3[0], copyAngle);
+      const olEdgeT = this.outlineEdgeMeshGen(olEdgeGeoArr3[1], copyAngle);
+      const orEdgeF = this.outlineEdgeMeshGen(orEdgeGeoArr3[0], copyAngle);
+      const orEdgeT = this.outlineEdgeMeshGen(orEdgeGeoArr3[1], copyAngle);
+      this.outlineEdges.add(ilEdgeF, ilEdgeT, irEdgeF, irEdgeT, olEdgeF, olEdgeT, orEdgeF, orEdgeT);
 
-      this.outlines.add(iArc, oArc, lArc, rArc);
-      this.outlines.add(ilLine, irLine, olLine, orLine);
-      this.outlineEdges.add(ilEdge, irEdge, olEdge, orEdge);
     }
     this.scene.add(this.outlines, this.outlineEdges);
   }

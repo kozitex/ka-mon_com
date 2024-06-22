@@ -27,8 +27,8 @@ const init = async () => {
   var myTheme = localStorage.getItem('theme');
 
   var kamons = [
-    new HidariFutatsuDomoe(),
-    new Kikyou(),
+    // new HidariFutatsuDomoe(),
+    // new Kikyou(),
     new GenjiGuruma(),
     // new ChigaiTakanoha(),
     // new DakiMyouga(),
@@ -77,6 +77,13 @@ const init = async () => {
       return clone;
     })
     return result;
+  }
+
+  // クリック音を再生
+  const soundPlay = () => {
+    const sound = document.getElementById('sound');
+    sound.currentTime = 0;
+    sound.play();
   }
 
   // アニメーションを再生
@@ -144,13 +151,12 @@ const init = async () => {
     document.body.classList.remove('loading');
   }
 
-  kamons = shuffle(kamons);
+  if (kamons.length > 1) kamons = shuffle(kamons);
   kamon = kamons[nowIndex];
   kamon.init();
   window.scrollTo(0, 0);
   terminus = roll.scrollHeight - window.innerHeight;
   play();
-
 
   // 読み込み後に動きがなければガイドを表示
   const prompt = document.getElementById('prompt');
@@ -223,11 +229,29 @@ const init = async () => {
   // ラジオボタンクリックでテーマ変更
   const themeChangers = document.getElementsByName('themeChanger');
   themeChangers.forEach((themeChanger) => {
-    themeChanger.addEventListener('change', () => changeTheme(themeChanger.value));
+    themeChanger.addEventListener('change', () => {
+      soundPlay();
+      changeTheme(themeChanger.value);
+    });
   })
 
-  playBtn.addEventListener('click', play);
-  pauseBtn.addEventListener('click', pause);
-  backBtn.addEventListener('click', back);
-  forwardBtn.addEventListener('click', forward);
+  playBtn.addEventListener('click', () => {
+    soundPlay();
+    play();
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    soundPlay();
+    pause();
+  });
+
+  backBtn.addEventListener('click', () => {
+    soundPlay();
+    back();
+  });
+
+  forwardBtn.addEventListener('click', () => {
+    soundPlay();
+    forward();
+  });
 }
