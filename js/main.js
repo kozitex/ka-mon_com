@@ -29,8 +29,8 @@ const init = async () => {
   var kamons = [
     // new HidariFutatsuDomoe(),
     // new Kikyou(),
-    new GenjiGuruma(),
-    // new ChigaiTakanoha(),
+    // new GenjiGuruma(),
+    new ChigaiTakanoha(),
     // new DakiMyouga(),
   ];
   var kamon;

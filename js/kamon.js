@@ -258,6 +258,23 @@ export default class Kamon {
     return new THREE.Line(geometry, this.guideMat);
   }
 
+  // ガイドラインの円弧のジオメトリを生成
+  guidelineCircleGeoGen = (points) => {
+    // const points = this.circlePointGen(a, b, r , f, t, d);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    geometry.setDrawRange(0, 0);
+    return geometry;
+  }
+
+  // ガイドラインの円弧のメッシュを生成
+  guidelineCircleMeshGen = (geometry, r, br, rotZ) => {
+    const mesh = new THREE.Line(geometry, this.guideMat);
+    const scale = r / br;
+    mesh.scale.set(scale, scale);
+    mesh.rotation.set(0, 0, rotZ);
+    return mesh;
+  }
+
   // outlineMeshGroupGen = (geometry) => {
   //   // geometry.setDrawRange(0, 0);
   //   const mesh = new THREE.Line(geometry, this.outlineMat);
@@ -274,14 +291,16 @@ export default class Kamon {
   }
 
   // アウトラインの円弧のメッシュを生成
-  outlineCircleMeshGen = (geometry, r, g, rotZ) => {
-    const group = new THREE.Group();
+  outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
+    // const group = new THREE.Group();
     const mesh = new THREE.Line(geometry, this.outlineMat);
     const scale = (r + g) / r;
-    mesh.scale.set(scale, scale);
-    mesh.rotation.set(0, 0, rotZ);
-    group.add(mesh);
-    return group;
+    mesh.position.set(rotY == Math.PI * 2 ? a > 0 ? - g : g : a > 0 ? - g : g, rotY == Math.PI * 2 ? b > 0 ? - g: g : b > 0 ? - g: g, 0);
+    mesh.scale.set(scale, scale, 0);
+    mesh.rotation.set(rotX, rotY, rotZ);
+    return mesh;
+    // group.add(mesh);
+    // return group;
   }
 
   // アウトラインの直線のジオメトリを生成
@@ -292,17 +311,23 @@ export default class Kamon {
   }
 
   // アウトラインの直線のメッシュを生成
-  outlineLineMeshGen = (geometry, a, g, rotZ) => {
-    const group = new THREE.Group();
+  outlineLineMeshGen = (geometry, a, b, g, rotX, rotY, rotZ) => {
+    // const group = new THREE.Group();
     const mesh = new THREE.Line(geometry, this.outlineMat);
-    const theta = Math.atan(a) + rotZ;
+    const theta = (Math.atan(b == 0 ? 90 : a) + rotZ) * (rotY == Math.PI ? - 1 : 1);
+    // const theta = b == 0 ? THREE.MathUtils.degToRad(90) : (Math.atan(a) + rotZ) * (rotY == Math.PI ? - 1 : 1);
+    // const theta = (Math.atan(a) + rotZ) * (rotY == 0 ? 1 : rotY / Math.PI * 2);
+    // console.log((rotY / Math.PI * 2))
     const rad = theta + THREE.MathUtils.degToRad(90);
+    // const x = b == 0 ? g : g * Math.cos(rad);
+    // const y = b == 0 ? 0 : g * Math.sin(rad);
     const x = g * Math.cos(rad);
     const y = g * Math.sin(rad);
     mesh.position.set(x, y, 0);
-    mesh.rotation.set(0, 0, rotZ);
-    group.add(mesh);
-    return group;
+    mesh.rotation.set(rotX, rotY, rotZ);
+    return mesh;
+    // group.add(mesh);
+    // return group;
   }
 
   // アウトラインの直線エッジのジオメトリを生成
@@ -323,11 +348,12 @@ export default class Kamon {
 
   // アウトラインの直線エッジのメッシュを生成
   outlineEdgeMeshGen = (geometry, rotZ) => {
-    const group = new THREE.Group();
+    // const group = new THREE.Group();
     const mesh = new THREE.Mesh(geometry, this.edgeMat);
     mesh.rotation.set(0, 0, rotZ);
-    group.add(mesh);
-    return group;
+    return mesh;
+    // group.add(mesh);
+    // return group;
   }
 
 
@@ -494,6 +520,20 @@ export default class Kamon {
     return mesh;
   }
 
+  // ポイントからシェイプを生成
+  shapeGeoGen = (shapes, pathes) => {
+    const shape = new THREE.Shape(shapes);
+    if (pathes) {
+      const path  = new THREE.Path(pathes);
+      shape.holes.push(path);
+    }
+    const geometry = new THREE.ShapeGeometry(shape);
+    return geometry;
+    // const mesh = new THREE.Mesh(geometry, this.shapeMat);
+    // return mesh;
+  }
+
+
   // プログレスバーのアニメーション制御
   progressBarControl() {
     const bar = document.querySelector('#progress .bar');
@@ -570,26 +610,46 @@ export default class Kamon {
   outlinesDisplayControl = (inStart, inEnd, outStart, outEnd, divCount) => {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
-    this.outlines.children.forEach((group) => {
-      group.children.forEach((line) => {
-        if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
-          line.visible = true;
-          line.geometry.setDrawRange(0, divCount * inRatio);
-          line.material.opacity = 1.0 - outRatio;
-        } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio < 1.0) {
-          line.visible = true;
-          line.geometry.setDrawRange(0, divCount * inRatio);
-          line.material.opacity = 1.0 - outRatio;
-        } else {
-          line.visible = false;
-        }
-      })
+    this.outlines.children.forEach((line) => {
+      // group.children.forEach((line) => {
+      if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
+        line.visible = true;
+        line.geometry.setDrawRange(0, divCount * inRatio);
+        line.material.opacity = 1.0 - outRatio;
+      } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio < 1.0) {
+        line.visible = true;
+        line.geometry.setDrawRange(0, divCount * inRatio);
+        line.material.opacity = 1.0 - outRatio;
+      } else {
+        line.visible = false;
+      }
+      // })
     });
-    this.outlineEdges.children.forEach((group) => {
-      group.children.forEach((edge) => {
-        edge.material.opacity = inRatio - outRatio * 1.2;
-      })
+    // this.outlines.children.forEach((group) => {
+    //   group.children.forEach((line) => {
+    //     if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
+    //       line.visible = true;
+    //       line.geometry.setDrawRange(0, divCount * inRatio);
+    //       line.material.opacity = 1.0 - outRatio;
+    //     } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio < 1.0) {
+    //       line.visible = true;
+    //       line.geometry.setDrawRange(0, divCount * inRatio);
+    //       line.material.opacity = 1.0 - outRatio;
+    //     } else {
+    //       line.visible = false;
+    //     }
+    //   })
+    // });
+    this.outlineEdges.children.forEach((edge) => {
+      // group.children.forEach((edge) => {
+      edge.material.opacity = inRatio - outRatio * 1.2;
+      // })
     });
+    // this.outlineEdges.children.forEach((group) => {
+    //   group.children.forEach((edge) => {
+    //     edge.material.opacity = inRatio - outRatio * 1.2;
+    //   })
+    // });
   }
 
   // 図形の表示制御
@@ -597,17 +657,29 @@ export default class Kamon {
     const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
     const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
     this.shapes.children.forEach((group) => {
-      group.children.forEach((shape) => {
+      if (group.isGroup) {
+        group.children.forEach((shape) => {
+          if (inRatio > 0.0 && outRatio == 0.0) {
+            shape.visible = true;
+            shape.material.opacity = inRatio;
+          } else if (outRatio > 0.0) {
+            shape.visible = true;
+            shape.material.opacity = 1.0 - outRatio;
+          } else {
+            shape.visible = false;
+          }
+        })
+      } else {
         if (inRatio > 0.0 && outRatio == 0.0) {
-          shape.visible = true;
-          shape.material.opacity = inRatio;
+          group.visible = true;
+          group.material.opacity = inRatio;
         } else if (outRatio > 0.0) {
-          shape.visible = true;
-          shape.material.opacity = 1.0 - outRatio;
+          group.visible = true;
+          group.material.opacity = 1.0 - outRatio;
         } else {
-          shape.visible = false;
+          group.visible = false;
         }
-      })
+      }
     })
   }
 
