@@ -292,15 +292,21 @@ export default class Kamon {
 
   // アウトラインの円弧のメッシュを生成
   outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
-    // const group = new THREE.Group();
     const mesh = new THREE.Line(geometry, this.outlineMat);
     const scale = (r + g) / r;
-    mesh.position.set(rotY == Math.PI * 2 ? a > 0 ? - g : g : a > 0 ? - g : g, rotY == Math.PI * 2 ? b > 0 ? - g: g : b > 0 ? - g: g, 0);
+    var posX, posY;
+    if (rotY == Math.PI && rotZ == 0 || rotY == Math.PI * 2) {
+      posX = a > 0 ? g : - g;
+      posY = b > 0 ? - g : g;
+    } else {
+      posX = a > 0 ? - g : g;
+      posY = b > 0 ? - g : g;
+
+    }
+    mesh.position.set(posX, posY, 0);
     mesh.scale.set(scale, scale, 0);
     mesh.rotation.set(rotX, rotY, rotZ);
     return mesh;
-    // group.add(mesh);
-    // return group;
   }
 
   // アウトラインの直線のジオメトリを生成
