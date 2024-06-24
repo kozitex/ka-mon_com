@@ -260,7 +260,6 @@ export default class Kamon {
 
   // ガイドラインの円弧のジオメトリを生成
   guidelineCircleGeoGen = (points) => {
-    // const points = this.circlePointGen(a, b, r , f, t, d);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.setDrawRange(0, 0);
     return geometry;
@@ -294,14 +293,15 @@ export default class Kamon {
   outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
     const mesh = new THREE.Line(geometry, this.outlineMat);
     const scale = (r + g) / r;
-    var posX, posY;
-    if (rotY == Math.PI && rotZ == 0 || rotY == Math.PI * 2) {
-      posX = a > 0 ? g : - g;
-      posY = b > 0 ? - g : g;
-    } else {
-      posX = a > 0 ? - g : g;
-      posY = b > 0 ? - g : g;
-
+    var posX = 0, posY = 0;
+    if (a != 0 || b != 0) {
+      if (rotY == Math.PI && rotZ == 0 || rotY == Math.PI * 2) {
+        posX = a > 0 ? g : - g;
+        posY = b > 0 ? - g : g;
+      } else {
+        posX = a > 0 ? - g : g;
+        posY = b > 0 ? - g : g;
+      }
     }
     mesh.position.set(posX, posY, 0);
     mesh.scale.set(scale, scale, 0);
@@ -353,10 +353,10 @@ export default class Kamon {
   }
 
   // アウトラインの直線エッジのメッシュを生成
-  outlineEdgeMeshGen = (geometry, rotZ) => {
+  outlineEdgeMeshGen = (geometry, rotX, rotY, rotZ) => {
     // const group = new THREE.Group();
     const mesh = new THREE.Mesh(geometry, this.edgeMat);
-    mesh.rotation.set(0, 0, rotZ);
+    mesh.rotation.set(rotX, rotY, rotZ);
     return mesh;
     // group.add(mesh);
     // return group;

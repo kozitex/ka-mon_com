@@ -9,13 +9,7 @@ export default class DakiMyouga extends Kamon {
 
     super();
 
-    // this.rollHeight = 4000;
-
-    this.angleFr = 90;
-    this.angleTo = 450;
-
     this.divCount = 1000;
-    // this.gridExist = true;
 
     // ガイドラインの作成
     this.generateGuidelines();
@@ -24,27 +18,13 @@ export default class DakiMyouga extends Kamon {
     this.generateOutlines();
 
     // 塗りつぶし図形の描画
-    this.generateShapes();
+    // this.generateShapes();
 
-    // // infoの準備
-    // this.jpName.innerHTML = '抱き茗荷';
-    // this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
-    // this.enName.innerHTML = 'Daki-Myouga';
-    // this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
   }
 
   init = () => {
 
     super.init()
-
-    // // ガイドラインの作成
-    // this.generateGuidelines();
-
-    // // アウトラインの作成
-    // this.generateOutlines();
-
-    // // 塗りつぶし図形の描画
-    // this.generateShapes();
 
     // infoの準備
     this.jpName.innerHTML = '抱き茗荷';
@@ -53,25 +33,39 @@ export default class DakiMyouga extends Kamon {
     this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
   }
 
-  // // テーマカラー変更
-  // changeTheme = (theme) => {
-  //   super.changeTheme(theme);
-
-  //   this.blackBoard.children.forEach((shape) => {
-  //     shape.material.color = new THREE.Color(this.backColor);
-  //   })
-  // }
+  // アウトラインの円弧のメッシュを生成
+  outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
+    const mesh = new THREE.Line(geometry, this.outlineMat);
+    const scale = (r + g) / r;
+    const theta = Math.atan(b / a);
+    var oblique;
+    if (a == 0 && b == 0) {
+      oblique = 0;
+    } else if (a == 0 && b != 0) {
+      oblique = Math.abs(b);
+    } else if (a != 0 && b == 0) {
+      oblique = Math.abs(a);
+    } else {
+      oblique = a / Math.cos(theta);
+    }
+    const d = oblique - oblique * scale;
+    const posX = a == 0 ? 0 : (rotY == Math.PI ? -1 : 1) * d * Math.cos(theta);
+    const posY = b == 0 ? 0 : d * Math.sin(theta);
+    mesh.scale.set(scale, scale, 0);
+    mesh.position.set(posX, posY, 0);
+    mesh.rotation.set(rotX, rotY, rotZ);
+    return mesh;
+  }
 
   // ガイドラインを作成
   generateGuidelines = () => {
-
-    // const this.divCount = 1000;
 
     // 外円
     const outCircles = new THREE.Group();
     const rs = [1600];
     rs.forEach((r) => {
-      const circle = this.circleGen(0, 0, r, this.angleFr, this.angleTo, this.divCount, this.guideColor);
+      const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
+      const circle = this.guidelineGen(points);
       outCircles.add(circle);
     });
     this.guidelines.add(outCircles);
@@ -93,7 +87,8 @@ export default class DakiMyouga extends Kamon {
         {a: - 1555, b: - 1165, r:  865, f:   90, t:  15},
       ];
       params1.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group1.add(line);
       });
@@ -113,7 +108,8 @@ export default class DakiMyouga extends Kamon {
         {a:    278, b: -  690, r:  750, f:  135, t: 200},
       ];
       params2.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group2.add(line);
       });
@@ -130,7 +126,8 @@ export default class DakiMyouga extends Kamon {
         {a: - 1725, b: -  415, r:  900, f:  75, t:  20},
       ];
       params3.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group3.add(line);
       });
@@ -148,7 +145,8 @@ export default class DakiMyouga extends Kamon {
         {a: - 1355, b:   500, r: 1200, f: -  3, t: - 26},
       ];
       params4.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group4.add(line);
       });
@@ -165,7 +163,8 @@ export default class DakiMyouga extends Kamon {
         {a:    115, b: - 120, r: 1600, f: 137, t: 153},
       ];
       params5.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group5.add(line);
       });
@@ -183,7 +182,8 @@ export default class DakiMyouga extends Kamon {
         {a: - 1330, b:  1040, r: 1200, f: -  3, t: - 24},
       ];
       params6.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group6.add(line);
       });
@@ -201,7 +201,8 @@ export default class DakiMyouga extends Kamon {
 
       ];
       params7.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group7.add(line);
       });
@@ -235,7 +236,8 @@ export default class DakiMyouga extends Kamon {
         {a: -  105, b:  1510, r:    5, f: 175, t: -  85},
       ];
       params8.forEach((param) => {
-        const line = this.circleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+        const points = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+        const line = this.guidelineGen(points);
         line.rotation.y = THREE.MathUtils.degToRad(180 * i);
         group8.add(line);
       });
@@ -256,194 +258,248 @@ export default class DakiMyouga extends Kamon {
   // アウトラインを作成
   generateOutlines = () => {
 
-    // const this.divCount = 1000;
+    // for (var i = 0;i <= 1;i ++) {
 
-    for (var i = 0;i <= 1;i ++) {
+    const params1 = [
+      {a:      0  , b:      0, r: 1600, f: 262   , t:  187  },
+      {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98  },
+      {a:      0.5, b: -  880, r:  586, f:  232  , t:  186.5},
+      {a: - 1415  , b: - 1020, r:  837, f:    5  , t:  102  },
+      {a:     10  , b: -   22, r: 1512, f:  189.8, t:  240  },
+      {a:    270  , b:     90, r: 1750, f:  194.7, t:  234  },
+      {a: - 2155  , b: - 1477, r: 1377, f:   57.5, t:   20  },
+      {a: - 2230  , b: - 1620, r: 1500, f:   57.5, t:   24  },
+      {a: - 1480  , b: - 1045, r:  760, f:   90  , t:   10  },
+      {a: - 1555  , b: - 1165, r:  865, f:   80.5, t:   17  },
+    ];
+    params1.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+    });
 
-      const params1 = [
-        {a:      0  , b:      0, r: 1600, f: 262   , t:  187  },
-        {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98  },
-        {a:      0.5, b: -  880, r:  586, f:  232  , t:  186.5},
-        {a: - 1415  , b: - 1020, r:  837, f:    5  , t:  102  },
-        {a:     10  , b: -   22, r: 1512, f:  189.8, t:  240  },
-        {a:    270  , b:     90, r: 1750, f:  194.7, t:  234  },
-        {a: - 2155  , b: - 1477, r: 1377, f:   57.5, t:   20  },
-        {a: - 2230  , b: - 1620, r: 1500, f:   57.5, t:   24  },
-        {a: - 1480  , b: - 1045, r:  760, f:   90  , t:   10  },
-        {a: - 1555  , b: - 1165, r:  865, f:   80.5, t:   17  },
-      ];
-      params1.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+    const params2 = [
+      {a: -  200, b: - 1410, r:  208, f:  102.6, t: 145.8},
+      {a:      0, b: -  880, r:  550, f:  228  , t: 185  },
+      {a: - 1415, b: - 1020, r:  872, f:    6  , t:  27.5},
+      {a: - 1415, b: - 1020, r:  872, f:   31  , t:  51  },
+      {a: -  300, b: -  840, r:  750, f:  139  , t:  70.5},
+      {a:    670, b: -  820, r: 1000, f:  203  , t: 136.5},
 
-      const params2 = [
-        {a: -  200, b: - 1410, r:  208, f:  102.6, t: 145.8},
-        {a:      0, b: -  880, r:  550, f:  228  , t: 185  },
-        {a: - 1415, b: - 1020, r:  872, f:    6  , t:  27.5},
-        {a: - 1415, b: - 1020, r:  872, f:   31  , t:  51  },
-        {a: -  300, b: -  840, r:  750, f:  139  , t:  70.5},
-        {a:    670, b: -  820, r: 1000, f:  203  , t: 136.5},
+      {a: -  330, b: -  665, r:  510, f:   75.5, t: 145  },
+      {a: -  310, b: -  850, r:  650, f:   97  , t: 135  },
+      {a:     33, b: -  828, r:  750, f:  124  , t: 160  },
+      {a: -   15, b: -  790, r:  650, f:  116  , t: 165  },
+      {a:    450, b: -  785, r:  900, f:  137  , t: 188  },
+      {a:    278, b: -  690, r:  750, f:  140  , t: 197  },
+    ];
+    params2.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+    });
 
-        {a: -  330, b: -  665, r:  510, f:   75.5, t: 145  },
-        {a: -  310, b: -  850, r:  650, f:   97  , t: 135  },
-        {a:     33, b: -  828, r:  750, f:  124  , t: 160  },
-        {a: -   15, b: -  790, r:  650, f:  116  , t: 165  },
-        {a:    450, b: -  785, r:  900, f:  137  , t: 188  },
-        {a:    278, b: -  690, r:  750, f:  140  , t: 197  },
-      ];
-      params2.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.frontColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+    const params3 = [
+      {a:      0, b:      0, r: 1600, f: 186,   t: 159.4},
+      {a: -  300, b: -  840, r:  785, f: 139.3, t: 121.5},
+      {a: - 1415, b: - 1020, r:  872, f:   53 , t: 102  },
+      {a: - 1800, b: -  550, r: 1150, f:  18.9, t:  75  },
 
-      const params3 = [
-        {a:      0, b:      0, r: 1600, f: 186,   t: 159.4},
-        {a: -  300, b: -  840, r:  785, f: 139.3, t: 121.5},
-        {a: - 1415, b: - 1020, r:  872, f:   53 , t: 102  },
-        {a: - 1800, b: -  550, r: 1150, f:  18.9, t:  75  },
+      {a: -   90, b:     75, r: 1400, f: 163.8, t: 186  },
+      {a:    917, b: -  175, r: 2400, f: 166.2, t: 177.5},
+      {a: - 2565, b: -  505, r: 1500, f:  38  , t:  14  },
+      {a: - 4030, b: - 1450, r: 3200, f:  35.2, t:  24  },
+      {a: - 1610, b: -  270, r:  750, f:  77  , t:  11  },
+      {a: - 1725, b: -  415, r:  900, f:  67.2, t:  20  },
+    ];
+    params3.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+    });
 
-        {a: -   90, b:     75, r: 1400, f: 163.8, t: 186  },
-        {a:    917, b: -  175, r: 2400, f: 166.2, t: 177.5},
-        {a: - 2565, b: -  505, r: 1500, f:  38  , t:  14  },
-        {a: - 4030, b: - 1450, r: 3200, f:  35.2, t:  24  },
-        {a: - 1610, b: -  270, r:  750, f:  77  , t:  11  },
-        {a: - 1725, b: -  415, r:  900, f:  67.2, t:  20  },
-      ];
-      params3.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+    const params4 = [
+      {a: - 1800, b: - 550, r: 1185, f:   19.4, t:   38.3},
+      {a: -  300, b: - 840, r:  785, f:  119.5, t:   77.5},
+      {a: -   70, b: - 650, r: 1150, f:  133.8, t:   87.4},
+      {a: - 2470, b:   670, r: 2450, f: - 17.7, t: -  4  },
 
-      const params4 = [
-        {a: - 1800, b: - 550, r: 1185, f:   19.4, t:   38.3},
-        {a: -  300, b: - 840, r:  785, f:  119.5, t:   77.5},
-        {a: -   70, b: - 650, r: 1150, f:  133.8, t:   87.4},
-        {a: - 2470, b:   670, r: 2450, f: - 17.7, t: -  4  },
+      {a: -  115, b: - 440, r:  850, f:   90  , t:  138  },
+      {a: -   10, b: - 815, r: 1200, f:  100.4, t:  128  },
+      {a:    515, b: - 580, r: 1200, f:  128  , t:  152  },
+      {a:    760, b: - 945, r: 1600, f:  125.2, t:  145  },
+      {a: - 1020, b:   480, r:  900, f: -  4.0, t: - 34.5},
+      {a: - 1355, b:   500, r: 1200, f: -  6.5, t: - 26  },
+    ];
+    params4.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
 
-        {a: -  115, b: - 440, r:  850, f:   90  , t:  138  },
-        {a: -   10, b: - 815, r: 1200, f:  100.4, t:  128  },
-        {a:    515, b: - 580, r: 1200, f:  128  , t:  152  },
-        {a:    760, b: - 945, r: 1600, f:  125.2, t:  145  },
-        {a: - 1020, b:   480, r:  900, f: -  4.0, t: - 34.5},
-        {a: - 1355, b:   500, r: 1200, f: -  6.5, t: - 26  },
-      ];
-      params4.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      // this.outlines.add(line);
+    });
 
-      const params5 = [
-        {a:      0, b:     0, r: 1600, f: 158.4, t: 135.2},
-        {a: - 1800, b: - 550, r: 1185, f:  39.6, t:  75  },
-        {a: -   70, b: - 650, r: 1185, f: 134  , t: 119.6},
-        {a: - 1700, b:   240, r: 1050, f:   7.4, t:  57.8},
+    const params5 = [
+      {a:      0, b:     0, r: 1600, f: 158.4, t: 135.2},
+      {a: - 1800, b: - 550, r: 1185, f:  39.6, t:  75  },
+      {a: -   70, b: - 650, r: 1185, f: 134  , t: 119.6},
+      {a: - 1700, b:   240, r: 1050, f:   7.4, t:  57.8},
 
-        {a: - 1710, b:   235, r:  910, f:  45  , t:  13  },
-        {a: - 1525, b:   400, r:  700, f:  54.4, t:   3.8},
-        {a: - 1910, b:   570, r:  900, f:  20  , t: - 7.8},
-        {a: - 2610, b:   330, r: 1600, f:  21  , t:   4.6},
-        {a: -  435, b:   375, r:  900, f: 138.6, t: 164  },
-        {a:    115, b: - 120, r: 1600, f: 140.1, t: 152  },
-      ];
-      params5.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+      {a: - 1710, b:   235, r:  910, f:  45  , t:  13  },
+      {a: - 1525, b:   400, r:  700, f:  54.4, t:   3.8},
+      {a: - 1910, b:   570, r:  900, f:  20  , t: - 7.8},
+      {a: - 2610, b:   330, r: 1600, f:  21  , t:   4.6},
+      {a: -  435, b:   375, r:  900, f: 138.6, t: 164  },
+      {a:    115, b: - 120, r: 1600, f: 140.1, t: 152  },
+    ];
+    params5.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      // this.outlines.add(line);
+    });
 
-      const params6 = [
-        {a: -   70, b: - 650, r: 1185, f: 118.2 , t:   91.1},
-        {a: - 1700, b:   240, r: 1085, f:    8.0, t:   29.7},
-        {a: -   60, b:    55, r: 1000, f:  134.2, t:   87.4},
-        {a: - 2470, b:  1150, r: 2450, f: - 14.7, t: -  2.1},
+    const params6 = [
+      {a: -   70, b: - 650, r: 1185, f: 118.2 , t:   91.1},
+      {a: - 1700, b:   240, r: 1085, f:    8.0, t:   29.7},
+      {a: -   60, b:    55, r: 1000, f:  134.2, t:   87.4},
+      {a: - 2470, b:  1150, r: 2450, f: - 14.7, t: -  2.1},
 
-        {a: -   70, b:   115, r:  850, f:   91.4, t:  135  },
-        {a:     30, b: - 260, r: 1200, f:  102.4, t:  126  },
-        {a:    595, b:    40, r: 1200, f:  133.2, t:  156.5},
-        {a:    835, b: - 350, r: 1600, f:  127.2, t:  146.8},
-        {a: -  995, b:  1030, r:  900, f: -  4  , t: - 32  },
-        {a: - 1330, b:  1040, r: 1200, f: -  5.4, t: - 24  },
-      ];
-      params6.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+      {a: -   70, b:   115, r:  850, f:   91.4, t:  135  },
+      {a:     30, b: - 260, r: 1200, f:  102.4, t:  126  },
+      {a:    595, b:    40, r: 1200, f:  133.2, t:  156.5},
+      {a:    835, b: - 350, r: 1600, f:  127.2, t:  146.8},
+      {a: -  995, b:  1030, r:  900, f: -  4  , t: - 32  },
+      {a: - 1330, b:  1040, r: 1200, f: -  5.4, t: - 24  },
+    ];
+    params6.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      // this.outlines.add(line);
+    });
 
-      const params7 = [
-        {a:      0, b:    0, r: 1600, f:  134  , t:  112.4},
-        {a: - 1700, b:  240, r: 1085, f:   31.1, t:   57.4},
-        {a: -   60, b:   55, r: 1035, f:  133.8, t:  119.2},
-        {a: - 1655, b: 1130, r: 1100, f: -  9.3, t:   18.7},
+    const params7 = [
+      {a:      0, b:    0, r: 1600, f:  134  , t:  112.4},
+      {a: - 1700, b:  240, r: 1085, f:   31.1, t:   57.4},
+      {a: -   60, b:   55, r: 1035, f:  133.8, t:  119.2},
+      {a: - 1655, b: 1130, r: 1100, f: -  9.3, t:   18.7},
 
-        {a: -  510, b:  885, r:  500, f:  105.5, t:  152  },
-        {a: -  395, b:  615, r:  750, f:  114  , t:  138.2},
-        {a: -   75, b:  880, r:  750, f:  145.8, t:  175  },
-        {a:    335, b:  625, r: 1200, f:  146.6, t:  164.8},
-        {a: - 1215, b: 1165, r:  600, f:   20  , t: - 19.8},
-        {a: - 1845, b: 1055, r: 1200, f:   11.2, t: -  4.6},
-      ];
-      params7.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
+      {a: -  510, b:  885, r:  500, f:  105.5, t:  152  },
+      {a: -  395, b:  615, r:  750, f:  114  , t:  138.2},
+      {a: -   75, b:  880, r:  750, f:  145.8, t:  175  },
+      {a:    335, b:  625, r: 1200, f:  146.6, t:  164.8},
+      {a: - 1215, b: 1165, r:  600, f:   20  , t: - 19.8},
+      {a: - 1845, b: 1055, r: 1200, f:   11.2, t: -  4.6},
+    ];
+    params7.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      // this.outlines.add(line);
+    });
 
-      const params8 = [
-        {a: -   60, b:    55, r: 1035, f:  117.2, t:  109.5},
-        {a: -   60, b:    55, r: 1035, f:  108.2, t:   91.2},
+    const params8 = [
+      {a: -   60, b:    55, r: 1035, f:  117.2, t:  109.5},
+      {a: -   60, b:    55, r: 1035, f:  108.2, t:   91.2},
 
-        {a: - 1655, b:  1130, r: 1135, f: -  8.0, t: -  1.6},
-        {a: - 1655, b:  1130, r: 1135, f: -  0.3, t:   16  },
+      {a: - 1655, b:  1130, r: 1135, f: -  8.0, t: -  1.6},
+      {a: - 1655, b:  1130, r: 1135, f: -  0.3, t:   16  },
 
-        {a: -  490, b:  1020, r:   80, f:     3  , t: 112  },
-        {a: -  490, b:  1020, r:  115, f:     8  , t:  25  },
-        {a: -  490, b:  1020, r:  115, f:    33  , t:  44  },
-        {a: -  490, b:  1020, r:  115, f:    53  , t:  72  },
-        {a: -  490, b:  1020, r:  115, f:    80  , t: 108  },
+      {a: -  490, b:  1020, r:   80, f:     3  , t: 112  },
+      {a: -  490, b:  1020, r:  115, f:     8  , t:  25  },
+      {a: -  490, b:  1020, r:  115, f:    33  , t:  44  },
+      {a: -  490, b:  1020, r:  115, f:    53  , t:  72  },
+      {a: -  490, b:  1020, r:  115, f:    80  , t: 108  },
 
-        {a: -  509, b:  1458, r:   56, f:  200  , t:   18  },
-        {a: -   85, b:  1146, r:   55, f:  270  , t:  440  },
+      {a: -  509, b:  1458, r:   56, f:  200  , t:   18  },
+      {a: -   85, b:  1146, r:   55, f:  270  , t:  440  },
 
-        {a: -  390, b:  1484, r:   65, f:  185  , t: - 45  },
-        {a: -   80, b:  1255, r:   55, f:  275  , t:  510  },
+      {a: -  390, b:  1484, r:   65, f:  185  , t: - 45  },
+      {a: -   80, b:  1255, r:   55, f:  275  , t:  510  },
 
-        {a: -  215, b:  1360, r:  150, f:  148.5, t:  190  },
-        {a: -  250, b:  1370, r:  150, f:  324.2, t:  286  },
+      {a: -  215, b:  1360, r:  150, f:  148.5, t:  190  },
+      {a: -  250, b:  1370, r:  150, f:  324.2, t:  286  },
 
-        {a: -  330, b:  1340, r:   33, f:  190  , t:  360  },
-        {a: -  225, b:  1255, r:   33, f:  300  , t:  118  },
+      {a: -  330, b:  1340, r:   33, f:  190  , t:  360  },
+      {a: -  225, b:  1255, r:   33, f:  300  , t:  118  },
 
-        {a: -  595, b:  1455, r:  320, f:  338.8, t:  370  },
-        {a: -   40, b:  1035, r:  320, f:  128.8, t:   98  },
+      {a: -  595, b:  1455, r:  320, f:  338.8, t:  370  },
+      {a: -   40, b:  1035, r:  320, f:  128.8, t:   98  },
 
-        {a: -  205, b:  1508, r:   75, f:  179  , t:   38  },
-        {a: -  100, b:  1425, r:   75, f:  282  , t:  412  },
-        {a: -   90, b:  1532, r:   65, f:  160  , t: - 58  },
+      {a: -  205, b:  1508, r:   75, f:  179  , t:   38  },
+      {a: -  100, b:  1425, r:   75, f:  282  , t:  412  },
+      {a: -   90, b:  1532, r:   65, f:  160  , t: - 58  },
 
-        {a: - 1350, b:  1350, r:  900, f: - 14.3, t:    3.9},
-        {a: - 1325, b:  1330, r:  900, f: - 13.4, t:    5.1},
-        {a: -  441, b:  1410, r:   12, f:  180  , t: -  0  },
+      {a: - 1350, b:  1350, r:  900, f: - 14.3, t:    3.9},
+      {a: - 1325, b:  1330, r:  900, f: - 13.4, t:    5.1},
+      {a: -  441, b:  1410, r:   12, f:  180  , t: -  0  },
 
-        {a: -   42, b:   603, r:  600, f: 126.6, t:    98.8},
-        {a:    105, b:   310, r:  900, f: 123.2, t:   105.2},
-        {a: -  132, b:  1186, r:    9, f: 100  , t: -  80  },
+      {a: -   42, b:   603, r:  600, f: 126.6, t:    98.8},
+      {a:    105, b:   310, r:  900, f: 123.2, t:   105.2},
+      {a: -  132, b:  1186, r:    9, f: 100  , t: -  80  },
 
-        {a:   1597, b: - 177, r: 2400, f: 147.6, t:   135.2},
-        {a:   1658, b: - 128, r: 2400, f: 149.4, t:   137.1},
-        {a: -  105, b:  1509, r:    5, f: 135  , t: -  45  },
-      ];
-      params8.forEach((param) => {
-        const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-        line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-        this.outlines.add(line);
-      });
-    }
+      {a:   1597, b: - 177, r: 2400, f: 147.6, t:   135.2},
+      {a:   1658, b: - 128, r: 2400, f: 149.4, t:   137.1},
+      {a: -  105, b:  1509, r:    5, f: 135  , t: -  45  },
+    ];
+    params8.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const mesh  = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, THREE.MathUtils.degToRad(180 * i), 0);
+          this.outlines.add(mesh);
+        }
+      }
+      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
+      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      // this.outlines.add(line);
+    });
+    // }
 
     this.scene.add(this.outlines);
   }

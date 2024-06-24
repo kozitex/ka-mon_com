@@ -30,8 +30,8 @@ const init = async () => {
     // new HidariFutatsuDomoe(),
     // new Kikyou(),
     // new GenjiGuruma(),
-    new ChigaiTakanoha(),
-    // new DakiMyouga(),
+    // new ChigaiTakanoha(),
+    new DakiMyouga(),
   ];
   var kamon;
 

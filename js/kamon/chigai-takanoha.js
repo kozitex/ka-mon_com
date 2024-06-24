@@ -13,6 +13,11 @@ export default class ChigaiTakanoha extends Kamon {
 
     this.blackBoard = new THREE.Group();
 
+    this.blackBoardMat = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+
     // ガイドラインの作成
     this.generateGuidelines();
 
@@ -20,7 +25,7 @@ export default class ChigaiTakanoha extends Kamon {
     this.generateOutlines();
 
     // 塗りつぶし図形の描画
-    // this.generateShapes();
+    this.generateShapes();
 
   }
 
@@ -73,10 +78,7 @@ export default class ChigaiTakanoha extends Kamon {
       params1.forEach((param) => {
         const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
         const circle = this.guidelineGen(points);
-  
-        // const line = this.circleGen(param.a, param.b, param.r, 90, 450, this.divCount);
         circle.rotation.z = THREE.MathUtils.degToRad(90 * i);
-        // if (i == 1) line.rotation.z = THREE.MathUtils.degToRad(90);
         group1.add(circle);
       });
 
@@ -93,8 +95,6 @@ export default class ChigaiTakanoha extends Kamon {
         for (var j = 0;j <= 1;j ++) {
           const points = this.linePointGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, this.divCount);
           const line = this.guidelineGen(points);
-  
-          // const line = this.lineGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, this.divCount);
           line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
           group2.add(line);
         }
@@ -106,8 +106,6 @@ export default class ChigaiTakanoha extends Kamon {
       params3.forEach((param) => {
         const points = this.linePointGen(1, 0, - param, 1100, - 1100, this.divCount);
         const line = this.guidelineGen(points);
-
-        // const line = this.lineGen(1, 0, - param, 1100, - 1100, this.divCount);
         line.rotation.z = THREE.MathUtils.degToRad(90 * i);
         group3.add(line);
       });
@@ -118,8 +116,6 @@ export default class ChigaiTakanoha extends Kamon {
       params4.forEach((param) => {
         const points = this.linePointGen(0, 1, - param, 1100, - 1100, this.divCount);
         const line = this.guidelineGen(points);
-
-        // const line = this.lineGen(0, 1, - param, 1100, - 1100, this.divCount);
         line.rotation.z = THREE.MathUtils.degToRad(90 * i);
         group4.add(line);
       });
@@ -139,7 +135,7 @@ export default class ChigaiTakanoha extends Kamon {
       const circleGeo = this.outlineCircleGeoGen(0, 0, r, 90, 450, this.divCount);
       const w = 6;
       for (var g = - w;g <= w;g ++) {
-        const circle = this.outlineCircleMeshGen(circleGeo, r, g, 0, 0, 0);
+        const circle = this.outlineCircleMeshGen(circleGeo, 0, 0, r, g, 0, 0, 0);
         this.outlines.add(circle);
       }
     });
@@ -165,7 +161,7 @@ export default class ChigaiTakanoha extends Kamon {
     ];
 
     // 羽の模様線のパラメータ
-    const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
+    const stripes1 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
 
     // 輪郭＆中心線の描画
     const sen0Params1 = [
@@ -176,12 +172,16 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen0Params1.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(1, 1, - (sens1[0].p + sens1[0].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 1, - (sens1[0].p + sens1[0].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 1, g, 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
     });
 
@@ -198,12 +198,16 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen1Params1.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(1, 1, - (sens1[1].p + sens1[1].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 1, - (sens1[1].p + sens1[1].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 1, g, 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
     });
 
@@ -212,30 +216,32 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen2Params1.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(1, 1, - (sens1[2].p + sens1[2].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 1, - (sens1[2].p + sens1[2].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 1, g, 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
     });
 
     // 輪郭円の描画
     const en0Params1 = [
       {f: 45, t: 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))},
-      {f: 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))},
-      {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))},
-      {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))},
+      {f: 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes1[5]) / ens[0].r))},
+      {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes1[4]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes1[3]) / ens[0].r))},
+      {f: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes1[2]) / ens[0].r)), t: 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes1[1]) / ens[0].r))},
     ];
     en0Params1.forEach((param) => {
-      // const circleGeo = this.outlineCircleGeoGen(ens[0].a, ens[0].b, ens[0].r, 90, 450, this.divCount);
       const circleGeo = this.outlineCircleGeoGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, this.divCount);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const circle = this.outlineCircleMeshGen(circleGeo, ens[0].a, ens[0].b, ens[0].r, g, 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
-          // const circle = this.outlineCircleMeshGen(circleGeo, ens[0].r, g, 0, 0, 0);
           this.outlines.add(circle);
         }
       }
@@ -312,10 +318,9 @@ export default class ChigaiTakanoha extends Kamon {
       }
     });
 
-
     // 羽の模様線の描画
     var index = 0;
-    stripes.forEach((sen) => {
+    stripes1.forEach((sen) => {
       const f = this.straight(1, 1, - (sens1[1].p + sens1[1].q), sen, undefined).y;
       var t;
       if (index > 1 && index <= 5) {
@@ -325,31 +330,23 @@ export default class ChigaiTakanoha extends Kamon {
       }
 
       const lineGeo = this.outlineLineGeoGen(1, 0, - sen, f, t, this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 0, - sen, f, t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 0, g, 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * i), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
       index ++;
     });
 
     // 反転した羽
-    // for (var i = 0;i <= 1;i ++) {
-
-    // 円のパラメータ
-    // const ens = [
-    //   {a:   516, b:   516, r: 516},
-    //   {a: - 416, b: - 416, r: 516},
-    //   {a: - 466, b: - 466, r: 516},
-    //   {a: - 516, b: - 516, r: 516},
-    //   {a: - 416, b: - 416, r: 550},
-    //   {a: - 466, b: - 466, r: 550},
-    // ];
 
     // 輪郭＆中心の線のパラメータ
-    // const theta = THREE.MathUtils.degToRad(45);
     const sens2 = [
       {p: - 516 * Math.cos(theta), q: - 516 * Math.cos(theta)},
       {p: -  71 * Math.cos(theta), q: -  71 * Math.cos(theta)},
@@ -359,8 +356,7 @@ export default class ChigaiTakanoha extends Kamon {
     ];
 
     // 羽の模様線のパラメータ
-    // const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446];
-
+    const stripes2 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446];
 
     // 輪郭＆中心線の描画
     const crossX0 = this.getIntersect(1, sens2[0].p + sens2[0].q, - 1,   (sens2[3].p + sens2[3].q)).x;
@@ -371,16 +367,17 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen0Params2.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(1, 1, - (sens2[0].p + sens2[0].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 1, - (sens2[0].p + sens2[0].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 1, g, 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
-      // const line = this.outlineGen(1, 1, - (sens2[0].p + sens2[0].q), param.f , param.t , this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const crossX2 = this.getIntersect(1, sens2[1].p + sens2[1].q, - 1,   (sens2[3].p + sens2[3].q)).x;
@@ -395,16 +392,17 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen1Params2.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(1, 1, - (sens2[1].p + sens2[1].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 1, - (sens2[1].p + sens2[1].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 1, g, 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
-      // const line = this.outlineGen(1, 1, - (sens2[1].p + sens2[1].q), param.f , param.t , this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const crossX4 = this.getIntersect(1, sens2[2].p + sens2[2].q, - 1,   (sens2[3].p + sens2[3].q)).x;
@@ -415,16 +413,17 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen2Params2.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(1, 1, - (sens2[2].p + sens2[2].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 1, - (sens2[2].p + sens2[2].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 1, g, 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
-      // const line = this.outlineGen(1, 1, - (sens2[2].p + sens2[2].q), param.f , param.t , this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const crossX6 = this.getIntersect(1, sens2[1].p + sens2[1].q, - 1, (sens2[3].p + sens2[3].q)).x;
@@ -438,16 +437,17 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen3Params2.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(- 1, 1, - (sens2[3].p + sens2[3].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(- 1, 1, - (sens2[3].p + sens2[3].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, - 1, 1, g, 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
-      // const line = this.outlineGen(- 1, 1, - (sens2[3].p + sens2[3].q), param.f , param.t , this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const sen4Params2 = [
@@ -458,16 +458,17 @@ export default class ChigaiTakanoha extends Kamon {
     ];
     sen4Params2.forEach((param) => {
       const lineGeo = this.outlineLineGeoGen(- 1, 1, - (sens2[4].p + sens2[4].q), param.f , param.t , this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(- 1, 1, - (sens2[4].p + sens2[4].q), param.f, param.t);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, - 1, 1, g, 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
-      // const line = this.outlineGen(- 1, 1, - (sens2[4].p + sens2[4].q), param.f , param.t , this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     // 輪郭円の描画
@@ -486,9 +487,6 @@ export default class ChigaiTakanoha extends Kamon {
           this.outlines.add(circle);
         }
       }
-      // const line = this.outlineCircleGen(ens[0].a, ens[0].b, ens[0].r, param.f, param.t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const en1Params2 = [
@@ -503,9 +501,6 @@ export default class ChigaiTakanoha extends Kamon {
           this.outlines.add(circle);
         }
       }
-      // const line = this.outlineCircleGen(ens[1].a, ens[1].b, ens[1].r, param.f, param.t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const en2Params2 = [
@@ -520,9 +515,6 @@ export default class ChigaiTakanoha extends Kamon {
           this.outlines.add(circle);
         }
       }
-      // const line = this.outlineCircleGen(ens[2].a, ens[2].b, ens[2].r, param.f, param.t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const en3Params2 = [
@@ -538,9 +530,6 @@ export default class ChigaiTakanoha extends Kamon {
           this.outlines.add(circle);
         }
       }
-      // const line = this.outlineCircleGen(ens[3].a, ens[3].b, ens[3].r, param.f, param.t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const en4Params2 = [
@@ -555,9 +544,6 @@ export default class ChigaiTakanoha extends Kamon {
           this.outlines.add(circle);
         }
       }
-      // const line = this.outlineCircleGen(ens[4].a, ens[4].b, ens[4].r, param.f, param.t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     const en5Params2 = [
@@ -572,14 +558,11 @@ export default class ChigaiTakanoha extends Kamon {
           this.outlines.add(circle);
         }
       }
-      // const line = this.outlineCircleGen(ens[5].a, ens[5].b, ens[5].r, param.f, param.t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
     });
 
     // 羽の模様線の描画
     var index = 0;
-    stripes.forEach((sen) => {
+    stripes2.forEach((sen) => {
       var f;
       if (index <= 5) {
         f = this.straight(- 1, 1, - (sens2[3].p + sens2[3].q), sen, undefined).y;
@@ -596,47 +579,33 @@ export default class ChigaiTakanoha extends Kamon {
       }
 
       const lineGeo = this.outlineLineGeoGen(1, 0, - sen, f, t, this.divCount);
+      const edgeGeoArr = this.outlineEdgeGeoGen(1, 0, - sen, f, t,);
       for (var i = 0;i <= 1;i ++) {
         const w = 6;
         for (var g = - w;g <= w;g ++) {
           const line = this.outlineLineMeshGen(lineGeo, 1, 0, g, 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
           this.outlines.add(line);
         }
+        const edge0 = this.outlineEdgeMeshGen(edgeGeoArr[0], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        const edge1 = this.outlineEdgeMeshGen(edgeGeoArr[1], 0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
+        this.outlineEdges.add(edge0, edge1);
       }
-      // const line = this.outlineGen(1, 0, - sen, f, t, this.divCount);
-      // line.rotation.set(0, THREE.MathUtils.degToRad(180 * (i + 1)), THREE.MathUtils.degToRad(90 * i));
-      // this.outlines.add(line);
       index ++;
     });
     // }
 
-    this.scene.add(this.outlines);
+    this.scene.add(this.outlines, this.outlineEdges);
   }
 
   // 塗りつぶし図形を生成
   generateShapes = () => {
 
-    // const this.divCount = 1000;
-
     // 外円
-    for (var i = 0;i <= 3;i ++) {
-      var points = [];
-      const circle1 = this.circlePointGen(0, 0, 1300, 90, 180, this.divCount);
-      const circle2 = this.circlePointGen(0, 0, 1600, 180, 90, this.divCount);
-      points = circle1.concat(circle2);
-      const shape = new THREE.Shape(points);
-      const geometry = new THREE.ShapeGeometry(shape);
-      const material = new THREE.MeshBasicMaterial({
-        color: this.frontColor,
-        side: THREE.DoubleSide,
-        transparent: true,
-      });
-      const outer = new THREE.Group();
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
-      outer.add(mesh);
-      this.shapes.add(outer);
-    }
+    const shapes = this.curvePointGen(0, 0, 1600, 0, 360, false);
+    const pathes = this.curvePointGen(0, 0, 1300, 0, 360, false);
+    const circleGeo = this.shapeGeoGen(shapes, pathes);
+    const circleMesh = new THREE.Mesh(circleGeo, this.shapeMat);
+    this.shapes.add(circleMesh);
 
     // 円のパラメータ
     const ens = [
@@ -661,132 +630,153 @@ export default class ChigaiTakanoha extends Kamon {
     const stripes = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
 
     // 黒い板
-    // this.blackBoard = new THREE.Group();
-    const line26 = this.linePointGen(  1, 1, - (sens[3].p + sens[3].q),   500, - 1300, this.divCount);
-    const line28 = this.linePointGen(  1, 1,   (sens[3].p + sens[3].q), - 500,   1300, this.divCount);
-    const points10 = line26.concat(line28);
-    this.blackBoard.add(this.shapeGen(points10));
+    const params = [
+      [- (sens[3].p + sens[3].q),    500],
+      [- (sens[3].p + sens[3].q), - 1300],
+      [  (sens[3].p + sens[3].q), -  500],
+      [  (sens[3].p + sens[3].q),   1300]
+    ];
+    var points = [];
+    params.forEach((param) => {
+      const point = this.straight(1, 1, param[0], param[1], undefined);
+      points.push(point);
+    })
+    const bbGeo = this.shapeGeoGen(points);
+    const bbMesh = new THREE.Mesh(bbGeo, this.blackBoardMat);
+    this.blackBoard.add(bbMesh);
     this.blackBoard.position.z = - 1;
     this.scene.add(this.blackBoard);
 
+
     // 羽
+
+    // 中心の棒
+    const arc0 = this.curvePointGen(ens[0].a, ens[0].b, ens[0].r, 45, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r)), false);
+    const arc1 = this.curvePointGen(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), 225, false);
+    const points0 = arc0.concat(arc1);
+    const geo0 = this.shapeGeoGen(points0);
     for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo0, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 中心の棒
-      const stick = new THREE.Group();
-      const arc0 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 45, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r)), this.divCount);
-      const arc1 = this.circlePointGen(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r)), 225, this.divCount);
-      const line0 = this.linePointGen(1, 1, - (sens[2].p + sens[2].q), this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(35 / ens[0].r))).x, this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(35 / ens[3].r))).x, this.divCount);
-      const points0 = arc0.concat(line0, arc1);
-      stick.add(this.shapeGen(points0));
-      stick.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      stick.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(stick);
+    // 羽の部品0
+    const arc2 = this.curvePointGen(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 330) / ens[0].r)), false);
+    const point1 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[5], undefined);
+    const points1 = arc2.concat(point1);
+    const geo1 = this.shapeGeoGen(points1);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo1, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品0
-      const feather0 = new THREE.Group();
-      const arc2 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - 330) / ens[0].r)), this.divCount);
-      const line1 = this.linePointGen(1, 0, - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[5]) / ens[0].r))).y, this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[5], undefined).y, this.divCount);
-      const line2 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), - stripes[5], this.circle(ens[0].a, ens[0].b, ens[0].r, 45 + THREE.MathUtils.radToDeg(Math.asin(71 / ens[0].r))).x, this.divCount);
-      const points1 = arc2.concat(line1, line2);
-      feather0.add(this.shapeGen(points1));
-      feather0.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather0.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather0);
+    // 羽の部品1
+    const arc3 = this.curvePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r)), false);
+    const point2 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined);
+    const point3 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[4], undefined);
+    const points2 = arc3.concat(point2, point3);
+    const geo2 = this.shapeGeoGen(points2);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo2, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品1
-      const feather1 = new THREE.Group();
-      const arc3 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[4]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r)), this.divCount);
-      const line3 = this.linePointGen(1, 0, - stripes[3], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, this.divCount);
-      const line4 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[3],  stripes[4], this.divCount);
-      const line5 = this.linePointGen(1, 0, - stripes[4], this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[3], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[3]) / ens[0].r))).y, this.divCount);
-      const points2 = arc3.concat(line3, line4, line5);
-      feather1.add(this.shapeGen(points2));
-      feather1.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather1.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather1);
+    // 羽の部品2
+    const arc4 = this.curvePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r)), false);
+    const point4 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined);
+    const point5 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[2], undefined);
+    const points3 = arc4.concat(point4, point5);
+    const geo3 = this.shapeGeoGen(points3);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo3, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品2
-      const feather2 = new THREE.Group();
-      const arc4 = this.circlePointGen(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r)), 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r)), this.divCount);
-      const line6 = this.linePointGen(1, 0, - stripes[1], this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[2]) / ens[0].r))).y, this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, this.divCount);
-      const line7 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[1],  stripes[2], this.divCount);
-      const line8 = this.linePointGen(1, 0, - stripes[2], this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[1], undefined).y, this.circle(ens[0].a, ens[0].b, ens[0].r, 90 + THREE.MathUtils.radToDeg(Math.asin((ens[0].a - stripes[1]) / ens[0].r))).y, this.divCount);
-      const points3 = arc4.concat(line6, line7, line8);
-      feather2.add(this.shapeGen(points3));
-      feather2.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather2.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather2);
+    // 羽の部品3
+    const point6 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[0], undefined);
+    const point7 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[11], undefined);
+    const point8 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[11], undefined);
+    const point9 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[0], undefined);
+    const points4 = [point6, point7, point8, point9];
+    const geo4 = this.shapeGeoGen(points4);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo4, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品3
-      const feather3 = new THREE.Group();
-      const line9  = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[0], stripes[11], this.divCount);
-      const line10 = this.linePointGen(1, 0, - stripes[11], this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[11], undefined).y, this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[11], undefined).y, this.divCount);
-      const line11 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[11], stripes[0], this.divCount);
-      const line12 = this.linePointGen(1, 0, - stripes[0], this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[0], undefined).y, this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[0], undefined).y, this.divCount);
-      const points4 = line9.concat(line10, line11, line12);
-      feather3.add(this.shapeGen(points4));
-      feather3.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather3.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather3);
+    // 羽の部品4
+    const point10 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[10], undefined);
+    const point11 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[9], undefined);
+    const point12 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[9], undefined);
+    const point13 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[10], undefined);
+    const points5 = [point10, point11, point12, point13];
+    const geo5 = this.shapeGeoGen(points5);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo5, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品4
-      const feather4 = new THREE.Group();
-      const line13 = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[10],  stripes[9], this.divCount);
-      const line14 = this.linePointGen(1, 0, - stripes[10], this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[10], undefined).y, this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[10], undefined).y, this.divCount);
-      const line15 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[9],  stripes[10], this.divCount);
-      const line16 = this.linePointGen(1, 0, - stripes[9], this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[9], undefined).y, this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[9], undefined).y, this.divCount);
-      const points5 = line13.concat(line14, line15, line16);
-      feather4.add(this.shapeGen(points5));
-      feather4.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather4.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather4);
+    // 羽の部品5
+    const point14 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[8], undefined);
+    const point15 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[7], undefined);
+    const point16 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[7], undefined);
+    const point17 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[8], undefined);
+    const points6 = [point14, point15, point16, point17];
+    const geo6 = this.shapeGeoGen(points6);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo6, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品5
-      const feather5 = new THREE.Group();
-      const line17 = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[8], stripes[7], this.divCount);
-      const line18 = this.linePointGen(1, 0, - stripes[8], this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[8], undefined).y, this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[8], undefined).y, this.divCount);
-      const line19 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), stripes[7], stripes[8], this.divCount);
-      const line20 = this.linePointGen(1, 0, - stripes[7], this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[7], undefined).y, this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[7], undefined).y, this.divCount);
-      const points6 = line17.concat(line18, line19, line20);
-      feather5.add(this.shapeGen(points6));
-      feather5.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather5.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather5);
+    // 羽の部品6
+    const arc5 = this.curvePointGen(ens[1].a, ens[1].b, ens[1].r, 135, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r)), false);
+    const point18 = this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[6], undefined);
+    const point19 = this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[6], undefined);
+    const points7 = arc5.concat(point18, point19);
+    const geo7 = this.shapeGeoGen(points7);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo7, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品6
-      const feather6 = new THREE.Group();
-      const line21 = this.linePointGen(1, 1, - (sens[0].p + sens[0].q), stripes[6], this.circle(ens[1].a, ens[1].b, ens[1].r, 135).x, this.divCount);
-      const arc5 = this.circlePointGen(ens[1].a, ens[1].b, ens[1].r, 135, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r)), this.divCount);
-      const line22 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[1].a, ens[1].b, ens[1].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[1].r))).x, stripes[6], this.divCount);
-      const line23 = this.linePointGen(1, 0, - stripes[6], this.straight(1, 1, - (sens[1].p + sens[1].q), stripes[6], undefined).y, this.straight(1, 1, - (sens[0].p + sens[0].q), stripes[6], undefined).y, this.divCount);
-      const points7 = line21.concat(arc5, line22, line23);
-      feather6.add(this.shapeGen(points7));
-      feather6.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather6.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather6);
+    // 羽の部品7
+    const arc6 = this.curvePointGen(ens[2].a, ens[2].b, ens[2].r, 155, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r)), false);
+    const arc7 = this.curvePointGen(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r)), 166, true);
+    const points8 = arc6.concat(arc7);
+    const geo8 = this.shapeGeoGen(points8);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo8, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
+    }
 
-      // 羽の部品7
-      const feather7 = new THREE.Group();
-      const arc6 = this.circlePointGen(ens[2].a, ens[2].b, ens[2].r, 155, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r)), this.divCount);
-      const line24 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[2].a, ens[2].b, ens[2].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[2].r))).x, this.circle(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r))).x, this.divCount);
-      const arc7 = this.circlePointGen(ens[4].a, ens[4].b, ens[4].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[4].r)), 166, this.divCount);
-      const points8 = arc6.concat(line24, arc7);
-      feather7.add(this.shapeGen(points8));
-      feather7.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather7.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather7);
-
-      // 羽の部品8
-      const feather8 = new THREE.Group();
-      const arc8 = this.circlePointGen(ens[3].a, ens[3].b, ens[3].r, 155, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r)), this.divCount);
-      const line25 = this.linePointGen(1, 1, - (sens[1].p + sens[1].q), this.circle(ens[3].a, ens[3].b, ens[3].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r))).x, this.circle(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r))).x, this.divCount);
-      const arc9 = this.circlePointGen(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r)), 166, this.divCount);
-      const points9 = arc8.concat(line25, arc9);
-      feather8.add(this.shapeGen(points9));
-      feather8.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
-      feather8.position.z = i <= 1 ? 0 : - 2;
-      this.shapes.add(feather8);
+    // 羽の部品8
+    const arc8 = this.curvePointGen(ens[3].a, ens[3].b, ens[3].r, 155, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[3].r)), false);
+    const arc9 = this.curvePointGen(ens[5].a, ens[5].b, ens[5].r, 225 - THREE.MathUtils.radToDeg(Math.asin(71 / ens[5].r)), 166, true);
+    const points9 = arc8.concat(arc9);
+    const geo9 = this.shapeGeoGen(points9);
+    for (var i = 0;i <= 3;i ++) {
+      const mesh = new THREE.Mesh(geo9, this.shapeMat);
+      mesh.rotation.set(0, THREE.MathUtils.degToRad(180 * Math.ceil(i / 2)), THREE.MathUtils.degToRad(90 * Math.trunc(i % 2)));
+      mesh.position.z = i <= 1 ? 0 : - 2;
+      this.shapes.add(mesh);
     }
 
     this.scene.add(this.shapes);

@@ -97,7 +97,7 @@ export default class GenjiGuruma extends Kamon {
     const centerCircleGeo = this.outlineCircleGeoGen(0, 0, 225, 90, 450, this.divCount);
     const w = 6;
     for (var g = - w;g <= w;g ++) {
-      const centerCircle = this.outlineCircleMeshGen(centerCircleGeo, 225, g, 0, 0, 0);
+      const centerCircle = this.outlineCircleMeshGen(centerCircleGeo, 0, 0, 225, g, 0, 0, 0);
       this.outlines.add(centerCircle);
     }
 
@@ -125,8 +125,8 @@ export default class GenjiGuruma extends Kamon {
       const copyAngle = THREE.MathUtils.degToRad(- 360 / this.verNum * v);
       const w = 6;
       for (var g = - w;g <= w;g ++) {
-        const sArc  = this.outlineCircleMeshGen(sArcGeo1, 260, g, 0, 0, copyAngle);
-        const lArc  = this.outlineCircleMeshGen(lArcGeo1, 935, g, 0, 0, copyAngle);
+        const sArc  = this.outlineCircleMeshGen(sArcGeo1, 0, 0, 260, g, 0, 0, copyAngle);
+        const lArc  = this.outlineCircleMeshGen(lArcGeo1, 0, 0, 935, g, 0, 0, copyAngle);
         const lLine = this.outlineLineMeshGen(lLineGeo1, lLineParam1.a, lLineParam1.b, g, 0, 0, copyAngle);
         const rLine = this.outlineLineMeshGen(rLineGeo1, rLineParam1.a, rLineParam1.b, g, 0, 0, copyAngle);
         this.outlines.add(sArc, lArc, lLine, rLine);
@@ -164,8 +164,8 @@ export default class GenjiGuruma extends Kamon {
       const copyAngle = THREE.MathUtils.degToRad(- 360 / this.verNum * v);
       const w = 6;
       for (var g = - w;g <= w;g ++) {
-        const iArc  = this.outlineCircleMeshGen(iArcGeo2,  970, g, 0, 0, copyAngle);
-        const oArc  = this.outlineCircleMeshGen(oArcGeo2, 1265, g, 0, 0, copyAngle);
+        const iArc  = this.outlineCircleMeshGen(iArcGeo2, 0, 0,  970, g, 0, 0, copyAngle);
+        const oArc  = this.outlineCircleMeshGen(oArcGeo2, 0, 0, 1265, g, 0, 0, copyAngle);
         const lLine = this.outlineLineMeshGen(lLineGeo2, lLineParam2.a, lLineParam2.b, g, 0, 0, copyAngle);
         const rLine = this.outlineLineMeshGen(rLineGeo2, rLineParam2.a, rLineParam2.b, g, 0, 0, copyAngle);
         this.outlines.add(iArc, oArc, lLine, rLine);
@@ -218,10 +218,10 @@ export default class GenjiGuruma extends Kamon {
       const copyAngle = THREE.MathUtils.degToRad(- 360 / this.verNum * v);
       const w = 6;
       for (var g = - w;g <= w;g ++) {
-        const iArc  = this.outlineCircleMeshGen(iArcGeo3,  970, g, 0, 0, copyAngle);
-        const oArc  = this.outlineCircleMeshGen(oArcGeo3, 1600, g, 0, 0, copyAngle);
-        const lArc  = this.outlineCircleMeshGen(lArcGeo3, 1300, g, 0, 0, copyAngle);
-        const rArc  = this.outlineCircleMeshGen(rArcGeo3, 1300, g, 0, 0, copyAngle);
+        const iArc  = this.outlineCircleMeshGen(iArcGeo3, 0, 0,  970, g, 0, 0, copyAngle);
+        const oArc  = this.outlineCircleMeshGen(oArcGeo3, 0, 0, 1600, g, 0, 0, copyAngle);
+        const lArc  = this.outlineCircleMeshGen(lArcGeo3, 0, 0, 1300, g, 0, 0, copyAngle);
+        const rArc  = this.outlineCircleMeshGen(rArcGeo3, 0, 0, 1300, g, 0, 0, copyAngle);
         const ilLine = this.outlineLineMeshGen(ilLineGeo3, ilLineParam3.a, ilLineParam3.b, g, 0, 0, copyAngle);
         const irLine = this.outlineLineMeshGen(irLineGeo3, irLineParam3.a, irLineParam3.b, g, 0, 0, copyAngle);
         const olLine = this.outlineLineMeshGen(olLineGeo3, olLineParam3.a, olLineParam3.b, g, 0, 0, copyAngle);
