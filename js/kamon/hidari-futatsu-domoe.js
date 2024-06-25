@@ -9,7 +9,7 @@ export default class HidariFutatsuDomoe extends Kamon {
 
     super();
 
-    this.divCount = 10000;
+    this.divCount = 1000;
 
     // ガイドラインの作成
     this.generateGuidelines();
@@ -64,14 +64,18 @@ export default class HidariFutatsuDomoe extends Kamon {
       {a:   110, b: - 490, r: 1100, f: 290, t: 129.5},
     ];
 
-    for (var i = 0;i <= 1;i ++) {
-      params.forEach((param) => {
-        const group = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        group.rotation.z = THREE.MathUtils.degToRad(180) * i;
-        this.outlines.add(group);
-      })
-      this.scene.add(this.outlines);
-    }
+    params.forEach((param) => {
+      const geometry = this.outlineCircleGeoGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
+      for (var i = 0;i <= 1;i ++) {
+        const w = 6;
+        for (var g = - w;g <= w;g ++) {
+          const rotZ = THREE.MathUtils.degToRad(180) * i;
+          const mesh = this.outlineCircleMeshGen(geometry, param.a, param.b, param.r, g, 0, 0, rotZ);
+          this.outlines.add(mesh);
+        }
+      }
+    })
+    this.scene.add(this.outlines);
   }
 
   // 塗りつぶし図形を生成
@@ -83,44 +87,32 @@ export default class HidariFutatsuDomoe extends Kamon {
       {a:   110, b: - 490, r: 1100, f: - 95, t: - 231, g:   6, c: true },
     ];
 
-    const group = new THREE.Group();
+    var points = [];
+    params.forEach((param) => {
+      const curve = this.curvePointGen(param.a, param.b, param.r + param.g, param.f, param.t, param.c);
+      points = points.concat(curve);
+    })
+    const geometry = this.shapeGeoGen(points);
+
     for (var i = 0;i <= 1;i ++) {
-      var points = [];
-      params.forEach((param) => {
-        const curve = new THREE.EllipseCurve(
-          param.a, param.b,
-          param.r + param.g, param.r + param.g,
-          THREE.MathUtils.degToRad(param.f), THREE.MathUtils.degToRad(param.t),
-          param.c, 0
-        );
-        const curvePoints = curve.getPoints(100);
-        points = points.concat(curvePoints);
-      })
-      const mesh = this.shapeGen(points);
+      const mesh = new THREE.Mesh(geometry, this.shapeMat);
       mesh.rotation.z = THREE.MathUtils.degToRad(180) * i;
-      group.add(mesh);
+      this.shapes.add(mesh);
     }
-    this.shapes.add(group);
     this.scene.add(this.shapes);
   }
 
   // 図形を回転させるアニメーション制御
   shapesRotationControl(start, end) {
     const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
-    this.shapes.children.forEach((group) => {
-      for (var i = 0;i <= group.children.length - 1;i ++) {
-        const shape = group.children[i];
-        const posRatio = - 4 * ratio ** 2 + 4 * ratio;
-        const pos = 1500 * posRatio;
-        if (i == 0) {
-          shape.position.set(- pos, 0, 0);
-        } else {
-          shape.position.set(pos, 0, 0);
-        }
-      }
-      this.shapes.rotation.x = - 360 * ratio * (Math.PI / 180);
-      this.shapes.rotation.z = - 360 * ratio * (Math.PI / 180);
-    })
+    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
+      const shape = this.shapes.children[i];
+      const posRatio = - 4 * ratio ** 2 + 4 * ratio;
+      const pos = 1500 * posRatio;
+      shape.position.set(i == 0 ? - pos : pos, 0, 0);
+    }
+    this.shapes.rotation.x = THREE.MathUtils.degToRad(- 360 * ratio);
+    this.shapes.rotation.z = THREE.MathUtils.degToRad(- 360 * ratio);
   }
 
   render() {

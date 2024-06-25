@@ -27,10 +27,10 @@ const init = async () => {
   var myTheme = localStorage.getItem('theme');
 
   var kamons = [
-    // new HidariFutatsuDomoe(),
-    // new Kikyou(),
-    // new GenjiGuruma(),
-    // new ChigaiTakanoha(),
+    new HidariFutatsuDomoe(),
+    new Kikyou(),
+    new GenjiGuruma(),
+    new ChigaiTakanoha(),
     new DakiMyouga(),
   ];
   var kamon;

@@ -131,10 +131,10 @@ export default class GenjiGuruma extends Kamon {
         const rLine = this.outlineLineMeshGen(rLineGeo1, rLineParam1.a, rLineParam1.b, g, 0, 0, copyAngle);
         this.outlines.add(sArc, lArc, lLine, rLine);
       }
-      const lEdgeF = this.outlineEdgeMeshGen(lEdgeGeoArr1[0], copyAngle);
-      const lEdgeT = this.outlineEdgeMeshGen(lEdgeGeoArr1[1], copyAngle);
-      const rEdgeF = this.outlineEdgeMeshGen(rEdgeGeoArr1[0], copyAngle);
-      const rEdgeT = this.outlineEdgeMeshGen(rEdgeGeoArr1[1], copyAngle);
+      const lEdgeF = this.outlineEdgeMeshGen(lEdgeGeoArr1[0], 0, 0, copyAngle);
+      const lEdgeT = this.outlineEdgeMeshGen(lEdgeGeoArr1[1], 0, 0, copyAngle);
+      const rEdgeF = this.outlineEdgeMeshGen(rEdgeGeoArr1[0], 0, 0, copyAngle);
+      const rEdgeT = this.outlineEdgeMeshGen(rEdgeGeoArr1[1], 0, 0, copyAngle);
       this.outlineEdges.add(lEdgeF, lEdgeT, rEdgeF, rEdgeT);
     }
 
@@ -170,10 +170,10 @@ export default class GenjiGuruma extends Kamon {
         const rLine = this.outlineLineMeshGen(rLineGeo2, rLineParam2.a, rLineParam2.b, g, 0, 0, copyAngle);
         this.outlines.add(iArc, oArc, lLine, rLine);
       }
-      const lEdgeF = this.outlineEdgeMeshGen(lEdgeGeoArr2[0], copyAngle);
-      const lEdgeT = this.outlineEdgeMeshGen(lEdgeGeoArr2[1], copyAngle);
-      const rEdgeF = this.outlineEdgeMeshGen(rEdgeGeoArr2[0], copyAngle);
-      const rEdgeT = this.outlineEdgeMeshGen(rEdgeGeoArr2[1], copyAngle);
+      const lEdgeF = this.outlineEdgeMeshGen(lEdgeGeoArr2[0], 0, 0, copyAngle);
+      const lEdgeT = this.outlineEdgeMeshGen(lEdgeGeoArr2[1], 0, 0, copyAngle);
+      const rEdgeF = this.outlineEdgeMeshGen(rEdgeGeoArr2[0], 0, 0, copyAngle);
+      const rEdgeT = this.outlineEdgeMeshGen(rEdgeGeoArr2[1], 0, 0, copyAngle);
       this.outlineEdges.add(lEdgeF, lEdgeT, rEdgeF, rEdgeT);
 
     }
@@ -228,14 +228,14 @@ export default class GenjiGuruma extends Kamon {
         const orLine = this.outlineLineMeshGen(orLineGeo3, orLineParam3.a, orLineParam3.b, g, 0, 0, copyAngle);
         this.outlines.add(iArc, oArc, lArc, rArc, ilLine, irLine, olLine, orLine);
       }
-      const ilEdgeF = this.outlineEdgeMeshGen(ilEdgeGeoArr3[0], copyAngle);
-      const ilEdgeT = this.outlineEdgeMeshGen(ilEdgeGeoArr3[1], copyAngle);
-      const irEdgeF = this.outlineEdgeMeshGen(irEdgeGeoArr3[0], copyAngle);
-      const irEdgeT = this.outlineEdgeMeshGen(irEdgeGeoArr3[1], copyAngle);
-      const olEdgeF = this.outlineEdgeMeshGen(olEdgeGeoArr3[0], copyAngle);
-      const olEdgeT = this.outlineEdgeMeshGen(olEdgeGeoArr3[1], copyAngle);
-      const orEdgeF = this.outlineEdgeMeshGen(orEdgeGeoArr3[0], copyAngle);
-      const orEdgeT = this.outlineEdgeMeshGen(orEdgeGeoArr3[1], copyAngle);
+      const ilEdgeF = this.outlineEdgeMeshGen(ilEdgeGeoArr3[0], 0, 0, copyAngle);
+      const ilEdgeT = this.outlineEdgeMeshGen(ilEdgeGeoArr3[1], 0, 0, copyAngle);
+      const irEdgeF = this.outlineEdgeMeshGen(irEdgeGeoArr3[0], 0, 0, copyAngle);
+      const irEdgeT = this.outlineEdgeMeshGen(irEdgeGeoArr3[1], 0, 0, copyAngle);
+      const olEdgeF = this.outlineEdgeMeshGen(olEdgeGeoArr3[0], 0, 0, copyAngle);
+      const olEdgeT = this.outlineEdgeMeshGen(olEdgeGeoArr3[1], 0, 0, copyAngle);
+      const orEdgeF = this.outlineEdgeMeshGen(orEdgeGeoArr3[0], 0, 0, copyAngle);
+      const orEdgeT = this.outlineEdgeMeshGen(orEdgeGeoArr3[1], 0, 0, copyAngle);
       this.outlineEdges.add(ilEdgeF, ilEdgeT, irEdgeF, irEdgeT, olEdgeF, olEdgeT, orEdgeF, orEdgeT);
 
     }

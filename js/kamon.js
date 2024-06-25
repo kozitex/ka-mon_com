@@ -293,21 +293,51 @@ export default class Kamon {
   outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
     const mesh = new THREE.Line(geometry, this.outlineMat);
     const scale = (r + g) / r;
-    var posX = 0, posY = 0;
-    if (a != 0 || b != 0) {
-      if (rotY == Math.PI && rotZ == 0 || rotY == Math.PI * 2) {
-        posX = a > 0 ? g : - g;
-        posY = b > 0 ? - g : g;
-      } else {
-        posX = a > 0 ? - g : g;
-        posY = b > 0 ? - g : g;
-      }
+    var bTheta, oblique;
+    if (a == 0 && b == 0) {
+      bTheta = 0;
+      oblique = 0;
+    } else if (a == 0 && b != 0) {
+      bTheta = THREE.MathUtils.degToRad(90);
+      oblique = b;
+    } else if (a != 0 && b == 0) {
+      bTheta = THREE.MathUtils.degToRad(0);
+      oblique = a;
+    } else {
+      bTheta = Math.atan(b / a);
+      oblique = a / Math.cos(bTheta);
     }
-    mesh.position.set(posX, posY, 0);
+    const d = oblique - oblique * scale;
+    const power = Math.abs(rotY) / Math.PI;
+    const sign = power % 2 == 0 ? 1 : -1;
+    const theta = bTheta + rotZ;
+    const posX = d * Math.cos(theta) * sign;
+    const posY = d * Math.sin(theta);
     mesh.scale.set(scale, scale, 0);
+    mesh.position.set(posX, posY, 0);
     mesh.rotation.set(rotX, rotY, rotZ);
     return mesh;
   }
+
+  // // アウトラインの円弧のメッシュを生成
+  // outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
+  //   const mesh = new THREE.Line(geometry, this.outlineMat);
+  //   const scale = (r + g) / r;
+  //   var posX = 0, posY = 0;
+  //   if (a != 0 || b != 0) {
+  //     if (rotY == Math.PI && rotZ == 0 || rotY == Math.PI * 2) {
+  //       posX = a > 0 ? g : - g;
+  //       posY = b > 0 ? - g : g;
+  //     } else {
+  //       posX = a > 0 ? - g : g;
+  //       posY = b > 0 ? - g : g;
+  //     }
+  //   }
+  //   mesh.position.set(posX, posY, 0);
+  //   mesh.scale.set(scale, scale, 0);
+  //   mesh.rotation.set(rotX, rotY, rotZ);
+  //   return mesh;
+  // }
 
   // アウトラインの直線のジオメトリを生成
   outlineLineGeoGen = (a, b, r, f, t, d) => {
@@ -318,23 +348,46 @@ export default class Kamon {
 
   // アウトラインの直線のメッシュを生成
   outlineLineMeshGen = (geometry, a, b, g, rotX, rotY, rotZ) => {
-    // const group = new THREE.Group();
     const mesh = new THREE.Line(geometry, this.outlineMat);
-    const theta = (Math.atan(b == 0 ? 90 : a) + rotZ) * (rotY == Math.PI ? - 1 : 1);
-    // const theta = b == 0 ? THREE.MathUtils.degToRad(90) : (Math.atan(a) + rotZ) * (rotY == Math.PI ? - 1 : 1);
-    // const theta = (Math.atan(a) + rotZ) * (rotY == 0 ? 1 : rotY / Math.PI * 2);
-    // console.log((rotY / Math.PI * 2))
+    var bTheta;
+    if (b == 0) {
+      bTheta = THREE.MathUtils.degToRad(90);
+    } else if (a == 0) {
+      bTheta = THREE.MathUtils.degToRad(0);
+    } else {
+      bTheta = Math.atan(a);
+    }
+    const power = Math.abs(rotY) / Math.PI;
+    const sign = power % 2 == 0 ? 1 : -1;
+    const theta = (bTheta + rotZ) * sign;
     const rad = theta + THREE.MathUtils.degToRad(90);
-    // const x = b == 0 ? g : g * Math.cos(rad);
-    // const y = b == 0 ? 0 : g * Math.sin(rad);
     const x = g * Math.cos(rad);
     const y = g * Math.sin(rad);
     mesh.position.set(x, y, 0);
     mesh.rotation.set(rotX, rotY, rotZ);
     return mesh;
-    // group.add(mesh);
-    // return group;
   }
+
+  // // アウトラインの直線のメッシュを生成
+  // outlineLineMeshGen = (geometry, a, b, g, rotX, rotY, rotZ) => {
+  //   // const group = new THREE.Group();
+  //   const mesh = new THREE.Line(geometry, this.outlineMat);
+  //   const theta = (Math.atan(b == 0 ? THREE.MathUtils.degToRad(90) : a) + rotZ) * (Math.abs(rotY) == Math.PI ? - 1 : 1);
+  //   // const theta = b == 0 ? THREE.MathUtils.degToRad(90) : (Math.atan(a) + rotZ) * (rotY == Math.PI ? - 1 : 1);
+  //   // const theta = (Math.atan(a) + rotZ) * (rotY == 0 ? 1 : rotY / Math.PI * 2);
+  //   // console.log((rotY / Math.PI * 2))
+  //   const rad = theta + THREE.MathUtils.degToRad(90);
+  //   // const x = b == 0 ? g : g * Math.cos(rad);
+  //   // const y = b == 0 ? 0 : g * Math.sin(rad);
+  //   const x = g * Math.cos(rad);
+  //   const y = g * Math.sin(rad);
+  //   mesh.position.set(x, y, 0);
+  //   mesh.rotation.set(rotX, rotY, rotZ);
+  //   return mesh;
+  //   // group.add(mesh);
+  //   // return group;
+  // }
+
 
   // アウトラインの直線エッジのジオメトリを生成
   outlineEdgeGeoGen = (a, b, r, f, t) => {
@@ -646,9 +699,11 @@ export default class Kamon {
     //     }
     //   })
     // });
-    this.outlineEdges.children.forEach((edge) => {
+    this.outlineEdges.children.forEach((mesh) => {
       // group.children.forEach((edge) => {
-      edge.material.opacity = inRatio - outRatio * 1.2;
+      // console.log(inRatio - outRatio * 1.2)
+      // console.log(mesh.material.opacity)
+      mesh.material.opacity = inRatio - outRatio * 1.2;
       // })
     });
     // this.outlineEdges.children.forEach((group) => {

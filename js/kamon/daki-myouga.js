@@ -18,7 +18,7 @@ export default class DakiMyouga extends Kamon {
     this.generateOutlines();
 
     // 塗りつぶし図形の描画
-    // this.generateShapes();
+    this.generateShapes();
 
   }
 
@@ -31,30 +31,6 @@ export default class DakiMyouga extends Kamon {
     this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
     this.enName.innerHTML = 'Daki-Myouga';
     this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
-  }
-
-  // アウトラインの円弧のメッシュを生成
-  outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
-    const mesh = new THREE.Line(geometry, this.outlineMat);
-    const scale = (r + g) / r;
-    const theta = Math.atan(b / a);
-    var oblique;
-    if (a == 0 && b == 0) {
-      oblique = 0;
-    } else if (a == 0 && b != 0) {
-      oblique = Math.abs(b);
-    } else if (a != 0 && b == 0) {
-      oblique = Math.abs(a);
-    } else {
-      oblique = a / Math.cos(theta);
-    }
-    const d = oblique - oblique * scale;
-    const posX = a == 0 ? 0 : (rotY == Math.PI ? -1 : 1) * d * Math.cos(theta);
-    const posY = b == 0 ? 0 : d * Math.sin(theta);
-    mesh.scale.set(scale, scale, 0);
-    mesh.position.set(posX, posY, 0);
-    mesh.rotation.set(rotX, rotY, rotZ);
-    return mesh;
   }
 
   // ガイドラインを作成
@@ -258,8 +234,6 @@ export default class DakiMyouga extends Kamon {
   // アウトラインを作成
   generateOutlines = () => {
 
-    // for (var i = 0;i <= 1;i ++) {
-
     const params1 = [
       {a:      0  , b:      0, r: 1600, f: 262   , t:  187  },
       {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98  },
@@ -355,10 +329,6 @@ export default class DakiMyouga extends Kamon {
           this.outlines.add(mesh);
         }
       }
-
-      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      // this.outlines.add(line);
     });
 
     const params5 = [
@@ -383,9 +353,6 @@ export default class DakiMyouga extends Kamon {
           this.outlines.add(mesh);
         }
       }
-      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      // this.outlines.add(line);
     });
 
     const params6 = [
@@ -410,9 +377,6 @@ export default class DakiMyouga extends Kamon {
           this.outlines.add(mesh);
         }
       }
-      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      // this.outlines.add(line);
     });
 
     const params7 = [
@@ -437,9 +401,6 @@ export default class DakiMyouga extends Kamon {
           this.outlines.add(mesh);
         }
       }
-      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      // this.outlines.add(line);
     });
 
     const params8 = [
@@ -495,11 +456,7 @@ export default class DakiMyouga extends Kamon {
           this.outlines.add(mesh);
         }
       }
-      // const line = this.outlineCircleGen(param.a, param.b, param.r, param.f, param.t, this.divCount, this.guideColor);
-      // line.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      // this.outlines.add(line);
     });
-    // }
 
     this.scene.add(this.outlines);
   }
@@ -507,294 +464,296 @@ export default class DakiMyouga extends Kamon {
   // 塗りつぶし図形を生成
   generateShapes = () => {
 
-    // const this.divCount = 1000;
+    const shapeParams1 = [
+      {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98, c: true },
+      {a:      0  , b:      0, r: 1600, f:  262  , t:  188, c: true },
+      {a: - 1415  , b: - 1020, r:  837, f:  101.8, t:    5, c: true },
+      {a:      0.5, b: -  880, r:  586, f:  186.5, t:  232, c: false},
+    ];
+    const pathParams1 = [
+      {a:     10  , b: -   22, r: 1512, f:  189.8, t:  240  , c: false},
+      {a:    270  , b:     90, r: 1750, f:  234  , t:  194.8, c: true },
 
+      {a: - 2230  , b: - 1620, r: 1500, f:   57.4, t:   24  , c: true },
+      {a: - 2155  , b: - 1477, r: 1377, f:   20  , t:   51.6, c: false},
+
+      {a: - 1555  , b: - 1165, r:  865, f:   80.6, t:   17  , c: true },
+      {a: - 1480  , b: - 1045, r:  760, f:   10  , t:   90  , c: false},
+    ];
+    var shapes1 = [];
+    shapeParams1.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes1 = shapes1.concat(arc);
+    });
+    var pathes1 = [];
+    pathParams1.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      pathes1 = pathes1.concat(arc);
+    });
+    const geometry1 = this.shapeGeoGen(shapes1, pathes1);
     for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry1, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group1 = new THREE.Group();
-      const shapeParams1 = [
-        {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98  },
-        {a:      0  , b:      0, r: 1600, f:  262  , t:  188  },
-        {a: - 1415  , b: - 1020, r:  837, f:  101.8  , t:    5  },
-        {a:      0.5, b: -  880, r:  586, f:  186.5, t:  232  },
-      ];
-      const pathParams1 = [
-        {a:     10  , b: -   22, r: 1512, f:  189.8, t:  240  },
-        {a:    270  , b:     90, r: 1750, f:  234  , t:  194.8},
+    const shapeParams2 = [
+      {a: -  200, b: - 1410, r:  208, f:  104.6, t: 144  , c: false},
+      {a:      0, b: -  880, r:  550, f:  228  , t: 185  , c: true },
+      {a: - 1415, b: - 1020, r:  872, f:    6  , t:  27.5, c: false},
 
-        {a: - 2230  , b: - 1620, r: 1500, f:   57.4, t:   24  },
-        {a: - 2155  , b: - 1477, r: 1377, f:   20  , t:   51.6},
+      {a: -   15, b: -  790, r:  650, f:  165  , t: 116  , c: true },
+      {a:    278, b: -  690, r:  750, f:  140  , t: 197  , c: false},
+      {a:    450, b: -  785, r:  900, f:  188  , t: 137  , c: true },
+      {a: -  330, b: -  665, r:  510, f:   75.5, t: 145  , c: false},
+      {a: -  310, b: -  850, r:  650, f:  130  , t:  97  , c: true },
+      {a:     33, b: -  828, r:  750, f:  124  , t: 159  , c: false},
 
-        {a: - 1555  , b: - 1165, r:  865, f:   80.6, t:   17  },
-        {a: - 1480  , b: - 1045, r:  760, f:   10  , t:   90  },
-      ];
-      var shapePoints1 = [];
-      shapeParams1.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints1 = shapePoints1.concat(arc);
-      });
-      var pathPoints1 = [];
-      pathParams1.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        pathPoints1 = pathPoints1.concat(arc);
-      });
-      const shape1 = this.clipShapeGen(shapePoints1, pathPoints1, this.frontColor);
-      group1.add(shape1);
-      group1.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group1);
+      {a: - 1415, b: - 1020, r:  872, f:   31  , t:  50.7, c: false},
+      {a: -  300, b: -  840, r:  750, f:  138  , t:  70.5, c: true },
+      {a:    670, b: -  820, r: 1000, f:  136.5, t: 202  , c: false},
+    ];
+    var shapes2 = [];
+    shapeParams2.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes2 = shapes2.concat(arc);
+    });
+    const geometry2 = this.shapeGeoGen(shapes2);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry2, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group2 = new THREE.Group();
-      const shapeParams2 = [
-        {a: -  200, b: - 1410, r:  208, f:  104.6, t: 144  },
-        {a:      0, b: -  880, r:  550, f:  228  , t: 185  },
-        {a: - 1415, b: - 1020, r:  872, f:    6  , t:  27.5},
+    const shapeParams3 = [
+      {a: -  300, b: -  840, r:  785, f: 121.5, t: 138.9, c: false},
+      {a: - 1415, b: - 1020, r:  872, f:  53  , t: 101.6, c: false},
+      {a:      0, b:      0, r: 1600, f: 186  , t: 159.6, c: true },
+      {a: - 1800, b: -  550, r: 1150, f:  74.8, t:  18.9, c: true },
+    ];
+    const pathParams3 = [
+      {a: -   90, b:     75, r: 1400, f: 163.8, t: 186  , c: false},
+      {a:    917, b: -  175, r: 2400, f: 177.5, t: 167.0, c: true },
 
-        {a: -   15, b: -  790, r:  650, f:  165  , t: 116  },
-        {a:    278, b: -  690, r:  750, f:  140  , t: 197  },
-        {a:    450, b: -  785, r:  900, f:  188  , t: 137  },
-        {a: -  330, b: -  665, r:  510, f:   75.5, t: 145  },
-        {a: -  310, b: -  850, r:  650, f:  130  , t:  97  },
-        {a:     33, b: -  828, r:  750, f:  124  , t: 159  },
+      {a: - 4030, b: - 1450, r: 3200, f:  35.2, t:  24  , c: true },
+      {a: - 2565, b: -  505, r: 1500, f:  14  , t:  38  , c: false},
 
-        {a: - 1415, b: - 1020, r:  872, f:   31  , t:  50.7},
-        {a: -  300, b: -  840, r:  750, f:  138  , t:  70.5},
-        {a:    670, b: -  820, r: 1000, f:  136.5, t: 202  },
-      ];
-      var shapePoints2 = [];
-      shapeParams2.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints2 = shapePoints2.concat(arc);
-      });
-      const shape2 = this.shapeGen(shapePoints2, this.frontColor);
-      group2.add(shape2);
-      group2.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group2);
+      {a: - 1725, b: -  415, r:  900, f:  67.2, t:  20  , c: true },
+      {a: - 1610, b: -  270, r:  750, f:  11  , t:  77  , c: false},
+    ];
+    var shapes3 = [];
+    shapeParams3.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes3 = shapes3.concat(arc);
+    });
+    var pathes3 = [];
+    pathParams3.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      pathes3 = pathes3.concat(arc);
+    });
+    const geometry3 = this.shapeGeoGen(shapes3, pathes3);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry3, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group3 = new THREE.Group();
-      const shapeParams3 = [
-        {a: -  300, b: -  840, r:  785, f: 121.5, t: 138.9},
-        {a: - 1415, b: - 1020, r:  872, f:  53  , t: 101.6  },
-        {a:      0, b:      0, r: 1600, f: 186  , t: 159.6},
-        {a: - 1800, b: -  550, r: 1150, f:  74.8  , t:  18.9},
-      ];
-      const pathParams3 = [
-        {a: -   90, b:     75, r: 1400, f: 163.8, t: 186  },
-        {a:    917, b: -  175, r: 2400, f: 177.5, t: 167.0},
+    const shapeParams4 = [
+      {a: -  300, b: - 840, r:  785, f:   78.6, t:  119.5, c: false},
+      {a: - 1800, b: - 550, r: 1185, f:   19.4, t:   38.3, c: false},
+      {a: -   70, b: - 650, r: 1150, f:  133.8, t:   87.4, c: true },
+      {a: - 2470, b:   670, r: 2450, f: -  4  , t: - 17.7, c: true },
+    ];
+    const pathParams4 = [
+      {a: -  115, b: - 440, r:  850, f:   90  , t:  138  , c: false},
+      {a: -   10, b: - 815, r: 1200, f:  128  , t:  100.4, c: true },
 
-        {a: - 4030, b: - 1450, r: 3200, f:  35.2, t:  24  },
-        {a: - 2565, b: -  505, r: 1500, f:  14  , t:  38  },
+      {a:    515, b: - 580, r: 1200, f:  128  , t:  152  , c: false},
+      {a:    760, b: - 945, r: 1600, f:  145  , t:  125.3, c: true },
 
-        {a: - 1725, b: -  415, r:  900, f:  67.2, t:  20  },
-        {a: - 1610, b: -  270, r:  750, f:  11  , t:  77  },
-      ];
-      var shapePoints3 = [];
-      shapeParams3.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints3 = shapePoints3.concat(arc);
-      });
-      var pathPoints3 = [];
-      pathParams3.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        pathPoints3 = pathPoints3.concat(arc);
-      });
-      const shape3 = this.clipShapeGen(shapePoints3, pathPoints3, this.frontColor);
-      group3.add(shape3);
-      group3.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group3);
+      {a: - 1355, b:   500, r: 1200, f: -  6.5, t: - 26  , c: true },
+      {a: - 1020, b:   480, r:  900, f: - 34.5, t: -  4.0, c: false},
+    ];
+    var shapes4 = [];
+    shapeParams4.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes4 = shapes4.concat(arc);
+    });
+    var pathes4 = [];
+    pathParams4.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      pathes4 = pathes4.concat(arc);
+    });
+    const geometry4 = this.shapeGeoGen(shapes4, pathes4);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry4, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group4 = new THREE.Group();
-      const shapeParams4 = [
-        {a: -  300, b: - 840, r:  785, f:   78.6, t:  119.5},
-        {a: - 1800, b: - 550, r: 1185, f:   19.4, t:   38.3},
-        {a: -   70, b: - 650, r: 1150, f:  133.8, t:   87.4},
-        {a: - 2470, b:   670, r: 2450, f: -  4  , t: - 17.7},
-      ];
-      const pathParams4 = [
-        {a: -  115, b: - 440, r:  850, f:   90  , t:  138  },
-        {a: -   10, b: - 815, r: 1200, f:  128  , t:  100.4},
+    const shapeParams5 = [
+      {a: -   70, b: - 650, r: 1185, f: 119.6, t: 133  , c: false},
+      {a: - 1800, b: - 550, r: 1185, f:  39.8, t:  74  , c: false},
+      {a:      0, b:     0, r: 1600, f: 158.2, t: 135.4, c: true },
+      {a: - 1700, b:   240, r: 1050, f:   57.4, t:  7.4, c: true },
+    ];
+    const pathParams5 = [
+      {a: - 1525, b:   400, r:  700, f:  54.4, t:   3.8, c: true },
+      {a: - 1710, b:   235, r:  910, f:  13  , t:  44  , c: false},
 
-        {a:    515, b: - 580, r: 1200, f:  128  , t:  152  },
-        {a:    760, b: - 945, r: 1600, f:  145  , t:  125.3},
+      {a: - 1910, b:   570, r:  900, f:  20  , t: - 7.8, c: true },
+      {a: - 2610, b:   330, r: 1600, f:   4.6, t:  21.0, c: false},
 
-        {a: - 1355, b:   500, r: 1200, f: -  6.5, t: - 26  },
-        {a: - 1020, b:   480, r:  900, f: - 34.5, t: -  4.0},
-      ];
-      var shapePoints4 = [];
-      shapeParams4.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints4 = shapePoints4.concat(arc);
-      });
-      var pathPoints4 = [];
-      pathParams4.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        pathPoints4 = pathPoints4.concat(arc);
-      });
-      const shape4 = this.clipShapeGen(shapePoints4, pathPoints4, this.frontColor);
-      group4.add(shape4);
-      group4.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group4);
+      {a:    115, b: - 120, r: 1600, f: 141.1, t: 152  , c: false},
+      {a: -  435, b:   375, r:  900, f: 164  , t: 138.6, c: true },
+    ];
+    var shapes5 = [];
+    shapeParams5.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes5 = shapes5.concat(arc);
+    });
+    var pathes5 = [];
+    pathParams5.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      pathes5 = pathes5.concat(arc);
+    });
+    const geometry5 = this.shapeGeoGen(shapes5, pathes5);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry5, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group5 = new THREE.Group();
-      const shapeParams5 = [
-        {a: -   70, b: - 650, r: 1185, f: 119.6, t: 133  },
-        {a: - 1800, b: - 550, r: 1185, f:  39.8, t:  74  },
-        {a:      0, b:     0, r: 1600, f: 158.2, t: 135.4},
-        {a: - 1700, b:   240, r: 1050, f:   57.4, t:  7.4},
-      ];
-      const pathParams5 = [
-        {a: - 1525, b:   400, r:  700, f:  54.4, t:   3.8},
-        {a: - 1710, b:   235, r:  910, f:  13  , t:  44  },
+    const shapeParams6 = [
+      {a: - 1700, b:   240, r: 1085, f:    8.2, t:   29.5, c: false},
+      {a: -   60, b:    55, r: 1000, f:  134.0, t:   87.8, c: true },
+      {a: - 2470, b:  1150, r: 2450, f: -  2.4, t: - 14.7, c: true },
+      {a: -   70, b: - 650, r: 1185, f:   91.4, t:  117.9, c: false},
+    ];
+    const pathParams6 = [
+      {a: -   70, b:   115, r:  850, f:   91.4, t:  135  , c: false},
+      {a:     30, b: - 260, r: 1200, f:  126  , t:  102.4, c: true },
 
-        {a: - 1910, b:   570, r:  900, f:  20  , t: - 7.8},
-        {a: - 2610, b:   330, r: 1600, f:   4.6, t:  21.0},
+      {a:    595, b:    40, r: 1200, f:  133.2, t:  156.5, c: false},
+      {a:    835, b: - 350, r: 1600, f:  146.8, t:  127.4, c: true },
 
-        {a:    115, b: - 120, r: 1600, f: 141.1, t: 152  },
-        {a: -  435, b:   375, r:  900, f: 164  , t: 138.6},
-      ];
-      var shapePoints5 = [];
-      shapeParams5.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints5 = shapePoints5.concat(arc);
-      });
-      var pathPoints5 = [];
-      pathParams5.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        pathPoints5 = pathPoints5.concat(arc);
-      });
-      const shape5 = this.clipShapeGen(shapePoints5, pathPoints5, this.frontColor);
-      group5.add(shape5);
-      group5.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group5);
+      {a: - 1330, b:  1040, r: 1200, f: -  5.4, t: - 24  , c: true },
+      {a: -  995, b:  1030, r:  900, f: - 32  , t: -  4  , c: false},
+    ];
+    var shapes6 = [];
+    shapeParams6.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes6 = shapes6.concat(arc);
+    });
+    var pathes6 = [];
+    pathParams6.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      pathes6 = pathes6.concat(arc);
+    });
+    const geometry6 = this.shapeGeoGen(shapes6, pathes6);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry6, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group6 = new THREE.Group();
-      const shapeParams6 = [
-        {a: - 1700, b:   240, r: 1085, f:    8.2, t:   29.5},
-        {a: -   60, b:    55, r: 1000, f:  134.0, t:   87.8},
-        {a: - 2470, b:  1150, r: 2450, f: -  2.4, t: - 14.7},
-        {a: -   70, b: - 650, r: 1185, f:   91.4, t:  118.0},
-      ];
-      const pathParams6 = [
-        {a: -   70, b:   115, r:  850, f:   91.4, t:  135  },
-        {a:     30, b: - 260, r: 1200, f:  126  , t:  102.4},
+    const shapeParams7 = [
+      {a: -   60, b:   55, r: 1035, f:  119.3, t:  133.6, c: false},
+      {a: - 1700, b:  240, r: 1085, f:   32.2, t:   57.0, c: false},
+      {a:      0, b:    0, r: 1600, f:  134  , t:  112.4, c: true },
+      {a: - 1655, b: 1130, r: 1100, f:   18.4, t: -  9.0, c: true },
+    ];
+    const pathParams7 = [
+      {a: -  510, b:  885, r:  500, f:  105.5, t:  152  , c: false},
+      {a: -  395, b:  615, r:  750, f:  138.2, t:  114  , c: true },
 
-        {a:    595, b:    40, r: 1200, f:  133.2, t:  156.5},
-        {a:    835, b: - 350, r: 1600, f:  146.8, t:  127.4},
+      {a: -   75, b:  880, r:  750, f:  145.8, t:  175  , c: false},
+      {a:    335, b:  625, r: 1200, f:  164.8, t:  146.6, c: true },
 
-        {a: - 1330, b:  1040, r: 1200, f: -  5.4, t: - 24  },
-        {a: -  995, b:  1030, r:  900, f: - 32  , t: -  4  },
-      ];
-      var shapePoints6 = [];
-      shapeParams6.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints6 = shapePoints6.concat(arc);
-      });
-      var pathPoints6 = [];
-      pathParams6.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        pathPoints6 = pathPoints6.concat(arc);
-      });
-      const shape6 = this.clipShapeGen(shapePoints6, pathPoints6, this.frontColor);
-      group6.add(shape6);
-      group6.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group6);
+      {a: - 1845, b: 1055, r: 1200, f:   11.2, t: -  4.6, c: true },
+      {a: - 1215, b: 1165, r:  600, f: - 19.8, t:   20  , c: false},
+    ];
+    var shapes7 = [];
+    shapeParams7.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes7 = shapes7.concat(arc);
+    });
+    var pathes7 = [];
+    pathParams7.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      pathes7 = pathes7.concat(arc);
+    });
+    const geometry7 = this.shapeGeoGen(shapes7, pathes7);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry7, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
+    const shapeParams8 = [
+      {a: - 1655, b:  1130, r: 1135, f: -  7.8, t: -  1.8, c: false},
+      {a: -  490, b:  1020, r:   80, f:   112  , t:   6.4, c: true },
+      {a: -   60, b:    55, r: 1035, f:  110.0, t:  117.0, c: false},
+    ];
+    var shapes8 = [];
+    shapeParams8.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes8 = shapes8.concat(arc);
+    });
+    const geometry8 = this.shapeGeoGen(shapes8);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry8, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
+    }
 
-      const group7 = new THREE.Group();
-      const shapeParams7 = [
-        {a: -   60, b:   55, r: 1035, f:  119.3, t:  133.6},
-        {a: - 1700, b:  240, r: 1085, f:   32.2, t:   57.0},
-        {a:      0, b:    0, r: 1600, f:  134  , t:  112.4},
-        {a: - 1655, b: 1130, r: 1100, f:   18.4, t: -  9.0},
-      ];
-      const pathParams7 = [
-        {a: -  510, b:  885, r:  500, f:  105.5, t:  152  },
-        {a: -  395, b:  615, r:  750, f:  138.2, t:  114  },
+    const shapeParams9 = [
+      {a: - 1655, b:  1130, r: 1135, f:   0.1,  t:   15  , c: false},
+      {a: -  509, b:  1458, r:   56, f:  198  , t:   18  , c: true },
+      {a: -  390, b:  1484, r:   65, f:  185  , t: - 45  , c: true },
+      {a: -  215, b:  1360, r:  150, f:  148.5, t:  190  , c: false},
+      {a: -  330, b:  1340, r:   33, f:  190  , t:  360  , c: false},
+      {a: -  595, b:  1455, r:  320, f:  338.8, t:  370  , c: false},
 
-        {a: -   75, b:  880, r:  750, f:  145.8, t:  175  },
-        {a:    335, b:  625, r: 1200, f:  164.8, t:  146.6},
+      {a: -  205, b:  1508, r:   75, f:  179  , t:   42  , c: true },
+      {a: -   90, b:  1532, r:   65, f:  156  , t: - 54  , c: true },
+      {a: -  100, b:  1425, r:   75, f:  408  , t:  282  , c: true },
 
-        {a: - 1845, b: 1055, r: 1200, f:   11.2, t: -  4.6},
-        {a: - 1215, b: 1165, r:  600, f: - 19.8, t:   20  },
-      ];
-      var shapePoints7 = [];
-      shapeParams7.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints7 = shapePoints7.concat(arc);
-      });
-      var pathPoints7 = [];
-      pathParams7.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        pathPoints7 = pathPoints7.concat(arc);
-      });
-      const shape7 = this.clipShapeGen(shapePoints7, pathPoints7, this.frontColor);
-      group7.add(shape7);
-      group7.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group7);
+      {a: -   40, b:  1035, r:  320, f:   98  , t:  128.8, c: false},
+      {a: -  225, b:  1255, r:   33, f:  118  , t:  300  , c: false},
+      {a: -  250, b:  1370, r:  150, f:  286  , t:  324.2, c: false},
+      {a: -   80, b:  1255, r:   55, f:  514  , t:  275  , c: true },
+      {a: -   85, b:  1146, r:   55, f:  440  , t:  270  , c: true },
+      {a: -   60, b:    55, r: 1035, f:   91.2, t:  107.8, c: false},
 
-      const group8 = new THREE.Group();
-      const shapeParams8 = [
-        {a: - 1655, b:  1130, r: 1135, f: -  7.8, t: -  1.8},
-        {a: -  490, b:  1020, r:   80, f:   112  , t:   6.4},
-        {a: -   60, b:    55, r: 1035, f:  110.0, t:  117.0},
-      ];
-      var shapePoints8 = [];
-      shapeParams8.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints8 = shapePoints8.concat(arc);
-      });
-      const shape8 = this.shapeGen(shapePoints8, this.frontColor);
-      group8.add(shape8);
-      group8.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group8);
+      {a: -  490, b:  1020, r:  115, f:   10.0, t:   23  , c: false},
+      {a:    105, b:   310, r:  900, f:  123.0, t:  105.0, c: true },
+      {a: -  132, b:  1187, r:    8, f: - 80  , t:  100  , c: false},
+      {a: -   42, b:   603, r:  600, f:   99.0, t:  120.0, c: false},
 
-      const group9 = new THREE.Group();
-      const shapeParams9 = [
-        {a: - 1655, b:  1130, r: 1135, f:   0.1, t:   15  },
-        {a: -  509, b:  1458, r:   56, f:  198  , t:   18  },
-        {a: -  390, b:  1484, r:   65, f:  185  , t: - 45  },
-        {a: -  215, b:  1360, r:  150, f:  148.5, t:  190  },
-        {a: -  330, b:  1340, r:   33, f:  190  , t:  360  },
-        {a: -  595, b:  1455, r:  320, f:  338.8, t:  370  },
+      {a: -  490, b:  1020, r:  115, f:   36  , t:   44  , c: false},
+      {a:   1658, b: - 128, r: 2400, f:  148.0, t:  138.0, c: true },
+      {a: -  105, b:  1509, r:    5, f: - 45  , t:  135  , c: false},
+      {a:   1597, b: - 177, r: 2400, f:  135.2, t:  147.4, c: false},
 
-        {a: -  205, b:  1508, r:   75, f:  179  , t:   42  },
-        {a: -   90, b:  1532, r:   65, f:  156  , t: - 54  },
-        {a: -  100, b:  1425, r:   75, f:  408  , t:  282  },
+      {a: -  490, b:  1020, r:  115, f:   56  , t:   68  , c: false},
+      {a: - 1325, b:  1330, r:  900, f: - 13.0, t:    5.1, c: false},
+      {a: -  441, b:  1410, r:   11, f:    0  , t:  180  , c: false},
+      {a: - 1350, b:  1350, r:  900, f:    3.9, t: - 13.7, c: true },
 
-        {a: -   40, b:  1035, r:  320, f:   98  , t:  128.8},
-        {a: -  225, b:  1255, r:   33, f:  118  , t:  300  },
-        {a: -  250, b:  1370, r:  150, f:  286  , t:  324.2},
-        {a: -   80, b:  1255, r:   55, f:  514  , t:  275  },
-        {a: -   85, b:  1146, r:   55, f:  440  , t:  270  },
-        {a: -   60, b:    55, r: 1035, f:   91.2, t:  107.8},
+      {a: -  490, b:  1020, r:  115, f:   83.2, t:  105  , c: false},
 
-        {a: -  490, b:  1020, r:  115, f:   10.0, t:   23  },
-        {a:    105, b:   310, r:  900, f:  123.0, t:  105.0},
-        {a: -  132, b:  1187, r:    8, f: - 80  , t:  100  },
-        {a: -   42, b:   603, r:  600, f:   99.0, t:  120.0},
-
-        {a: -  490, b:  1020, r:  115, f:   36  , t:   44  },
-        {a:   1658, b: - 128, r: 2400, f:  148.0, t:  138.0},
-        {a: -  105, b:  1509, r:    5, f: - 45  , t:  135  },
-        {a:   1597, b: - 177, r: 2400, f:  135.2, t:  147.4},
-
-        {a: -  490, b:  1020, r:  115, f:   56  , t:   68  },
-        {a: - 1325, b:  1330, r:  900, f: - 13.0, t:    5.1},
-        {a: -  441, b:  1410, r:   11, f:    0  , t:  180  },
-        {a: - 1350, b:  1350, r:  900, f:    3.9, t: - 13.7},
-
-        {a: -  490, b:  1020, r:  115, f:   83.2, t:  105  },
-
-      ];
-      var shapePoints9 = [];
-      shapeParams9.forEach((param) => {
-        const arc = this.circlePointGen(param.a, param.b, param.r, param.f, param.t, this.divCount);
-        shapePoints9 = shapePoints9.concat(arc);
-      });
-      const shape9 = this.shapeGen(shapePoints9, this.frontColor);
-      group9.add(shape9);
-      group9.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(group9);
-
+    ];
+    var shapes9 = [];
+    shapeParams9.forEach((param) => {
+      const arc = this.curvePointGen(param.a, param.b, param.r, param.f, param.t, param.c);
+      shapes9 = shapes9.concat(arc);
+    });
+    const geometry9 = this.shapeGeoGen(shapes9);
+    for (var i = 0;i <= 1;i ++) {
+      const mesh = new THREE.Mesh(geometry9, this.shapeMat);
+      mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
+      this.shapes.add(mesh);
     }
 
     this.scene.add(this.shapes);
