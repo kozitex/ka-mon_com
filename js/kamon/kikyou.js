@@ -302,7 +302,7 @@ export default class Kikyou extends Kamon {
         mesh.rotation.y = THREE.MathUtils.degToRad(180 * j);
         mesh.visible = false;
         group.add(mesh);
-    
+
       }
 
       group.rotation.z = THREE.MathUtils.degToRad(- (360 / this.verNum) * i);

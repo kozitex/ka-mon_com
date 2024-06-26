@@ -1,5 +1,10 @@
 'use strict';
-import Canvas from './canvas.js';
+import KageIgeta from './kamon/kage-igeta.js';
+import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
+import Kikyou from './kamon/kikyou.js';
+import GenjiGuruma from './kamon/genji-guruma.js';
+import ChigaiTakanoha from './kamon/chigai-takanoha.js';
+import DakiMyouga from './kamon/daki-myouga.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
@@ -31,8 +36,6 @@ const init = () => {
   // ];
   var kamon;
   var kamons = [];
-
-  const canvas = new Canvas();
 
   const reset = () => {
     if (kamons.length > 1) {
@@ -82,8 +85,7 @@ const init = () => {
     myTheme = theme;
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
-    // kamon.changeTheme(theme);
-    canvas.changeTheme(theme);
+    kamon.changeTheme(theme);
     localStorage.setItem('theme', theme);
   }
 
@@ -187,8 +189,8 @@ const init = () => {
   // kamon.changeTheme(myTheme);
   // kamon.windowResize();
   // terminus = roll.scrollHeight - window.innerHeight;
-  // reset();
-  // play();
+  reset();
+  play();
 
   // 読み込み後に動きがなければガイドを表示
   const prompt = document.getElementById('prompt');
@@ -199,7 +201,7 @@ const init = () => {
   }, 10000);
 
   // スクロール量をキャンバスに渡す
-  // kamon.scrolled(window.scrollY);
+  kamon.scrolled(window.scrollY);
 
   // 画面スクロール時の処理
   window.addEventListener('scroll', async () => {
@@ -212,7 +214,7 @@ const init = () => {
     }, 10000);
   
     // スクロール量をキャンバスに渡す
-    canvas.scrolled(window.scrollY);
+    kamon.scrolled(window.scrollY);
 
     // ガイドを非表示
     if (window.scrollY > 0) prompt.classList.add('hide');
@@ -247,16 +249,16 @@ const init = () => {
   // 画面リサイズ時の処理
   window.addEventListener('resize', () => {
     if (resizeTimeout) clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(canvas.windowResize, 200);
+    resizeTimeout = setTimeout(kamon.windowResize, 200);
     terminus = roll.scrollHeight - window.innerHeight;
   });
 
   // テーマ名が保存されていたら適用
-  // if (myTheme) {
-  //   changeTheme(myTheme);
-  //   const target = document.getElementById(myTheme);
-  //   target.checked = true;
-  // }
+  if (myTheme) {
+    changeTheme(myTheme);
+    const target = document.getElementById(myTheme);
+    target.checked = true;
+  }
 
   // ラジオボタンクリックでテーマ変更
   const themeChangers = document.getElementsByName('themeChanger');
