@@ -10,7 +10,6 @@ const init = () => {
   let resizeTimeout = 0;
   let promptTimeout = 0;
   let nowPlaying = false;
-  let nowIndex = 0;
 
   document.body.classList.remove('loading');
 
@@ -22,37 +21,10 @@ const init = () => {
   var terminus;
   var myTheme = localStorage.getItem('theme');
 
-  // var kamons = [
-  //   new HidariFutatsuDomoe(),
-  //   new Kikyou(),
-  //   new GenjiGuruma(),
-  //   new ChigaiTakanoha(),
-  //   new DakiMyouga(),
-  // ];
-  var kamon;
-  var kamons = [];
-
   const canvas = new Canvas();
-
-  const reset = () => {
-    if (kamons.length > 1) {
-      kamons.forEach((kamon) => kamon.dispose())
-    }
-    kamons = [
-      new HidariFutatsuDomoe(),
-      new Kikyou(),
-      new GenjiGuruma(),
-      new ChigaiTakanoha(),
-      new DakiMyouga(),
-    ];
-    if (kamons.length > 1) kamons = shuffle(kamons);
-    kamon = kamons[nowIndex];
-    kamon.init();
+  setTimeout(() => {
     window.scrollTo(0, 0);
-    kamon.changeTheme(myTheme);
-    kamon.windowResize();
-    terminus = roll.scrollHeight - window.innerHeight;  
-  }
+  }, 30);
 
   // アニメーションスクロール関数の定義
   const autoScroll = (target, duration = 10000) => {
@@ -82,21 +54,8 @@ const init = () => {
     myTheme = theme;
     document.body.classList.remove('light', 'dark');
     document.body.classList.add(theme);
-    // kamon.changeTheme(theme);
     canvas.changeTheme(theme);
     localStorage.setItem('theme', theme);
-  }
-
-  // 配列の並びをシャッフル
-  const shuffle = (array) => {
-    const clone = [...array];
-    const result = clone.reduce((_, cur, idx) => {
-      let rand = Math.floor(Math.random() * (idx + 1));
-      clone[idx] = clone[rand];
-      clone[rand] = cur;
-      return clone;
-    })
-    return result;
   }
 
   // クリック音を再生
@@ -109,7 +68,7 @@ const init = () => {
   // アニメーションを再生
   const play = () => {
     if (window.scrollY < terminus) {
-      const scrollDur = kamon.scrollDur;
+      const scrollDur = canvas.scrollDur;
       nowPlaying = true;
       playBtn.classList.add('running');
       pauseBtn.classList.remove('disabled');
@@ -117,6 +76,7 @@ const init = () => {
       backBtn.classList.add('disabled');
       autoScroll(terminus, scrollDur);
     }
+    document.body.classList.remove('loading');
   }
 
   // アニメーションを一時停止
@@ -131,64 +91,27 @@ const init = () => {
   // アニメーションを先頭まで戻す
   const back = () => {
     if (window.scrollY == 0) {
-      draw('back');
+      canvas.draw('back');
+      window.scrollTo(0, terminus);
     } else {
       window.scrollTo(0, 0);
-      kamon.scrolled(window.scrollY);
+      canvas.scrolled(window.scrollY);
     }
   }
 
   // アニメーションを先頭まで戻す
   const forward = () => {
     if (window.scrollY == terminus) {
-      draw('forward');
+      canvas.draw('forward');
+      window.scrollTo(0, 0);
     } else {
       window.scrollTo(0, terminus);
-      kamon.scrolled(window.scrollY);
+      canvas.scrolled(window.scrollY);
     }
   }
 
-  // 次の家紋アニメーションを抽選する
-  const draw = (direction) => {
-
-    window.scrollTo(0, 0);
-    const kamonElm = document.getElementById('kamon');
-    kamonElm.innerHTML = '';
-
-    if (direction == 'forward' && nowIndex == kamons.length - 1) {
-      reset();
-      nowIndex = 0;
-    } else if (direction == 'back' && nowIndex == 0) {
-      reset();
-      nowIndex = kamons.length - 1;
-    } else {
-      direction == 'forward' ? nowIndex ++ : nowIndex --;
-    }
-
-    kamon = kamons[nowIndex];
-    kamon.init();
-    kamon.changeTheme(myTheme);
-    kamon.windowResize();
-    terminus = roll.scrollHeight - window.innerHeight;
-    document.body.classList.remove('loading');
-  }
-
-  // kamons = [
-  //   new HidariFutatsuDomoe(),
-  //   new Kikyou(),
-  //   new GenjiGuruma(),
-  //   new ChigaiTakanoha(),
-  //   new DakiMyouga(),
-  // ];
-  // if (kamons.length > 1) kamons = shuffle(kamons);
-  // kamon = kamons[nowIndex];
-  // kamon.init();
-  // window.scrollTo(0, 0);
-  // kamon.changeTheme(myTheme);
-  // kamon.windowResize();
-  // terminus = roll.scrollHeight - window.innerHeight;
-  // reset();
-  // play();
+  terminus = roll.scrollHeight - window.innerHeight;
+  play();
 
   // 読み込み後に動きがなければガイドを表示
   const prompt = document.getElementById('prompt');
@@ -199,10 +122,11 @@ const init = () => {
   }, 10000);
 
   // スクロール量をキャンバスに渡す
-  // kamon.scrolled(window.scrollY);
+  canvas.scrolled(window.scrollY);
 
   // 画面スクロール時の処理
   window.addEventListener('scroll', async () => {
+
     // ガイド表示タイマーをクリア・リセット
     if (promptTimeout) clearTimeout(promptTimeout);
     promptTimeout = setTimeout(() => {
@@ -236,12 +160,12 @@ const init = () => {
       if (nowPlaying) {
         document.body.classList.add('loading');
         setTimeout(() => {
-          draw('forward');
+          canvas.draw('forward');
+          window.scrollTo(0, 0);
           play();
         }, 1);
       }
     }
-
   });
 
   // 画面リサイズ時の処理
@@ -252,11 +176,11 @@ const init = () => {
   });
 
   // テーマ名が保存されていたら適用
-  // if (myTheme) {
-  //   changeTheme(myTheme);
-  //   const target = document.getElementById(myTheme);
-  //   target.checked = true;
-  // }
+  if (myTheme) {
+    changeTheme(myTheme);
+    const target = document.getElementById(myTheme);
+    target.checked = true;
+  }
 
   // ラジオボタンクリックでテーマ変更
   const themeChangers = document.getElementsByName('themeChanger');

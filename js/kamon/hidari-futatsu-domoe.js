@@ -15,24 +15,56 @@ export default class HidariFutatsuDomoe extends Kamon {
     this.enNameText = 'Hidari-Futatsu-Domoe';
     this.enDescText = 'There are various theories about the origin of the Tomoe crest, including one theory that it is a design of a bow tool called a tomo, and another theory that it is a design of a magatama. Because it looks like water swirling, it was incorporated into the pattern of roof tiles during the Heian period as a symbol to protect against fire. It is often used not only for family crests but also for shrine emblems.';
 
-    // ガイドラインのアニメーションパラメータ
-    this.guidelineInStart    = 0.05;
-    this.guidelineInEnd      = 0.3;
-    this.guidelineOutStart   = 0.3;
-    this.guidelineOutEnd     = 0.4;
-    this.guidelineGroupDelay = 0.1;
-    this.guidelineLineDelay  = 0.1;
+    // // ガイドラインのアニメーションパラメータ
+    // this.guidelineInStart    = 0.05;
+    // this.guidelineInEnd      = 0.3;
+    // this.guidelineOutStart   = 0.3;
+    // this.guidelineOutEnd     = 0.4;
+    // this.guidelineGroupDelay = 0.1;
+    // this.guidelineLineDelay  = 0.1;
+
+    // ガイドラインの表示アニメーションパラメータ
+    this.guidelineParams = {
+      inStart : 0.05,
+      inEnd   : 0.3,
+      outStart: 0.3,
+      outEnd  : 0.4,
+      gDelay  : 0.1,
+      lDelay  : 0.1,
+    }
+
+    // アウトラインの表示アニメーションパラメータ
+    this.outlineParams = {
+      inStart : 0.3,
+      inEnd   : 0.4,
+      outStart: 0.45,
+      outEnd  : 0.5,
+    }
+
+    // 図形の表示アニメーションパラメータ
+    this.shapeParams = {
+      inStart : 0.45,
+      inEnd   : 0.6,
+      outStart: 0.95,
+      outEnd  : 1.0,
+    }
+
+    // 図形の回転アニメーションパラメータ
+    this.shapeRotParams = {
+      start : 0.6,
+      end   : 0.8,
+    }
 
     // this.divCount = 1000;
 
     // ガイドラインの作成
-    this.generateGuidelines();
+    this.generateGuideline();
 
     // アウトラインの作成
-    // this.generateOutlines();
+    this.generateOutline();
 
     // 塗りつぶし図形の描画
-    // this.generateShapes();
+    this.generateShape();
   }
 
   // init = () => {
@@ -47,10 +79,11 @@ export default class HidariFutatsuDomoe extends Kamon {
   // }
 
   // ガイドラインを作成
-  generateGuidelines = () => {
+  generateGuideline = () => {
 
-    super.generateGuidelines();
+    // super.generateGuidelines();
 
+    // console.log('b')
     const group = new THREE.Group();
     const points0 = this.circlePointGen(0, 0, 1600, 90, 450, this.divCount);
     const circle0 = this.guidelineGen(points0);
@@ -75,9 +108,9 @@ export default class HidariFutatsuDomoe extends Kamon {
   }
 
   // アウトラインを作成
-  generateOutlines = () => {
+  generateOutline = () => {
 
-    super.generateOutlines();
+    // super.generateOutlines();
 
     const params = [
       {a:     0, b:     0, r: 1600, f: 107, t: 290  },
@@ -102,9 +135,9 @@ export default class HidariFutatsuDomoe extends Kamon {
   }
 
   // 塗りつぶし図形を生成
-  generateShapes = () => {
+  generateShape = () => {
 
-    super.generateShapes();
+    // super.generateShapes();
 
     const params = [
       {a:     0, b:   825, r:  750, f:  217, t:   420, g: - 6, c: false},
@@ -130,8 +163,9 @@ export default class HidariFutatsuDomoe extends Kamon {
   }
 
   // 図形を回転させるアニメーション制御
-  shapesRotationControl(start, end) {
-    const ratio = THREE.MathUtils.smoothstep(this.progRatio, start, end);
+  shapeRotationControl(progRatio) {
+    const p = this.shapeRotParams;
+    const ratio = THREE.MathUtils.smoothstep(progRatio, p.start, p.end);
     for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
       const shape = this.shapes.children[i];
       const posRatio = - 4 * ratio ** 2 + 4 * ratio;

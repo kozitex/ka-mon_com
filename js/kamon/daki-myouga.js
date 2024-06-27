@@ -9,32 +9,70 @@ export default class DakiMyouga extends Kamon {
 
     super();
 
-    this.divCount = 1000;
+    // this.divCount = 1000;
+
+    // infoのテキスト
+    this.jpNameText = '抱き茗荷';
+    this.jpDescText = '茗荷紋は、香味野菜として知られるミョウガをモチーフにした家紋で、日本十代家紋の一つに数えられます。茗荷紋は摩多羅神のシンボルと言われており、摩多羅神が日光東照宮に祀られたことがきっかけで広まったとされています。また、仏教用語である冥加（神仏からの目に見えない加護）と発音が同じであることも縁起が良いとされ、普及した要因の一つと言われています。';
+    this.enNameText = 'Daki-Myouga';
+    this.enDescText = 'Myougamon is a family crest with a motif of Japanese ginger, which is known as a flavorful vegetable, and is considered one of the ten Japanese family crests. The Myouga crest is said to be a symbol of the god Matara, and it is said that it became popular when Matara was enshrined at Nikko Toshogu Shrine. It is also said to have the same pronunciation as the Buddhist term Myouga (invisible protection from the gods and Buddha), which is said to be auspicious, and is said to be one of the reasons for its popularity.';
+
+    // ガイドラインの表示アニメーションパラメータ
+    this.guidelineParams = {
+      inStart : 0.05,
+      inEnd   : 0.3,
+      outStart: 0.35,
+      outEnd  : 0.45,
+      gDelay  : 0.02,
+      lDelay  : 0.02,
+    }
+
+    // アウトラインの表示アニメーションパラメータ
+    this.outlineParams = {
+      inStart : 0.3,
+      inEnd   : 0.4,
+      outStart: 0.45,
+      outEnd  : 0.5,
+    }
+
+    // 図形の表示アニメーションパラメータ
+    this.shapeParams = {
+      inStart : 0.45,
+      inEnd   : 0.6,
+      outStart: 0.95,
+      outEnd  : 1.0,
+    }
+
+    // 図形の回転アニメーションパラメータ
+    this.shapeRotParams = {
+      start : 0.6,
+      end   : 0.8,
+    }
 
     // ガイドラインの作成
-    this.generateGuidelines();
+    this.generateGuideline();
 
     // アウトラインの作成
-    this.generateOutlines();
+    this.generateOutline();
 
     // 塗りつぶし図形の描画
-    this.generateShapes();
+    this.generateShape();
 
   }
 
-  init = () => {
+  // init = () => {
 
-    super.init()
+  //   super.init()
 
-    // infoの準備
-    this.jpName.innerHTML = '抱き茗荷';
-    this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
-    this.enName.innerHTML = 'Daki-Myouga';
-    this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
-  }
+  //   // infoの準備
+  //   this.jpName.innerHTML = '抱き茗荷';
+  //   this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
+  //   this.enName.innerHTML = 'Daki-Myouga';
+  //   this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
+  // }
 
   // ガイドラインを作成
-  generateGuidelines = () => {
+  generateGuideline = () => {
 
     // 外円
     const outCircles = new THREE.Group();
@@ -228,11 +266,12 @@ export default class DakiMyouga extends Kamon {
       this.guidelines.add(group8);
     }
 
-    this.scene.add(this.guidelines);
+    this.group.add(this.guidelines);
+    // this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
-  generateOutlines = () => {
+  generateOutline = () => {
 
     const params1 = [
       {a:      0  , b:      0, r: 1600, f: 262   , t:  187  },
@@ -458,11 +497,12 @@ export default class DakiMyouga extends Kamon {
       }
     });
 
-    this.scene.add(this.outlines);
+    this.group.add(this.outlines);
+    // this.scene.add(this.outlines);
   }
 
   // 塗りつぶし図形を生成
-  generateShapes = () => {
+  generateShape = () => {
 
     const shapeParams1 = [
       {a: -  200  , b: - 1412, r:  173, f:  158  , t: - 98, c: true },
@@ -756,12 +796,14 @@ export default class DakiMyouga extends Kamon {
       this.shapes.add(mesh);
     }
 
-    this.scene.add(this.shapes);
+    this.group.add(this.shapes);
+    // this.scene.add(this.shapes);
   }
 
   // 図形のアニメーション制御
-  shapesRotationControl(start, end) {
-    var ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
+  shapeRotationControl(progRatio) {
+    const p = this.shapeRotParams;
+    var ratio = THREE.MathUtils.smootherstep(progRatio, p.start, p.end);
     for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
       const shape = this.shapes.children[i];
       const j = i - 1;
@@ -786,29 +828,29 @@ export default class DakiMyouga extends Kamon {
     this.shapes.rotation.z = - 1440 * ratio * (Math.PI / 180);
   }
 
-  render() {
+  // render() {
 
-    // ファウンダーの表示アニメーション制御
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
+  //   // ファウンダーの表示アニメーション制御
+  //   this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
-    // グリッドの表示アニメーション制御
-    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
+  //   // グリッドの表示アニメーション制御
+  //   this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
-    // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.3, 0.35, 0.45, this.divCount, 0.02, 0.02);
+  //   // ガイドラインの表示アニメーション制御
+  //   this.guidelinesDisplayControl(0.05, 0.3, 0.35, 0.45, this.divCount, 0.02, 0.02);
 
-    // アウトラインの表示アニメーション制御
-    this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
+  //   // アウトラインの表示アニメーション制御
+  //   this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
 
-    // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
+  //   // 図形の表示アニメーション制御
+  //   this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
 
-    // 図形を回転
-    this.shapesRotationControl(0.6, 0.8);
+  //   // 図形を回転
+  //   this.shapesRotationControl(0.6, 0.8);
 
-    // descの表示アニメーションを制御
-    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
+  //   // descの表示アニメーションを制御
+  //   this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
 
-    super.render();
-  }
+  //   super.render();
+  // }
 }

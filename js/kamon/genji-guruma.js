@@ -12,32 +12,70 @@ export default class GenjiGuruma extends Kamon {
     this.pathW = 35;
     this.verNum = 8;
 
-    this.divCount = 1000;
+    // this.divCount = 1000;
+
+    // infoのテキスト
+    this.jpNameText = '源氏車';
+    this.jpDescText = '車紋（くるまもん）の一種で、平安時代の貴族の乗り物であった牛車の車輪の形をモチーフにした家紋です。牛車は別名で源氏車とも呼ばれていました。また、車紋は佐藤姓の家紋に用いられたことでも知られています。佐藤氏の祖先が伊勢神宮の神事に携わっていた際、使用していた牛車が豪奢で有名だったことが由来で家紋に用いることになったと言われています。';
+    this.enNameText = 'Genji-Guruma';
+    this.enDescText = 'It is a type of Kurumamon (car crest), and is a family crest with a motif of the wheels of an ox cart, which was a vehicle used by aristocrats during the Heian period. The ox-cart was also called the Genji-guruma. The car crest is also known to have been used as the family crest of the Sato family name. It is said that the Sato clan&#39;s ancestors used it as their family crest because the bullock carts they used were famous for their luxury when they were involved in the rituals at Ise Grand Shrine.';
+
+    // ガイドラインの表示アニメーションパラメータ
+    this.guidelineParams = {
+      inStart : 0.05,
+      inEnd   : 0.3,
+      outStart: 0.3,
+      outEnd  : 0.4,
+      gDelay  : 0.05,
+      lDelay  : 0.02,
+    }
+
+    // アウトラインの表示アニメーションパラメータ
+    this.outlineParams = {
+      inStart : 0.3,
+      inEnd   : 0.4,
+      outStart: 0.45,
+      outEnd  : 0.5,
+    }
+
+    // 図形の表示アニメーションパラメータ
+    this.shapeParams = {
+      inStart : 0.45,
+      inEnd   : 0.6,
+      outStart: 0.95,
+      outEnd  : 1.0,
+    }
+
+    // 図形の回転アニメーションパラメータ
+    this.shapeRotParams = {
+      start : 0.6,
+      end   : 0.8,
+    }
 
     // ガイドラインの作成
-    this.generateGuidelines();
+    this.generateGuideline();
 
     // アウトラインの作成
-    this.generateOutlines();
+    this.generateOutline();
 
     // 塗りつぶし図形の描画
-    this.generateShapes();
+    this.generateShape();
 
   }
 
-  init = () => {
+  // init = () => {
 
-    super.init()
+  //   super.init()
 
-    // infoの準備
-    this.jpName.innerHTML = '源氏車';
-    this.jpDesc.innerHTML = '車紋（くるまもん）の一種で、平安時代の貴族の乗り物であった牛車の車輪の形をモチーフにした家紋です。牛車は別名で源氏車とも呼ばれていました。また、車紋は佐藤姓の家紋に用いられたことでも知られています。佐藤氏の祖先が伊勢神宮の神事に携わっていた際、使用していた牛車が豪奢で有名だったことが由来で家紋に用いることになったと言われています。';
-    this.enName.innerHTML = 'Genji-Guruma';
-    this.enDesc.innerHTML = 'It is a type of Kurumamon (car crest), and is a family crest with a motif of the wheels of an ox cart, which was a vehicle used by aristocrats during the Heian period. The ox-cart was also called the Genji-guruma. The car crest is also known to have been used as the family crest of the Sato family name. It is said that the Sato clan&#39;s ancestors used it as their family crest because the bullock carts they used were famous for their luxury when they were involved in the rituals at Ise Grand Shrine.';
-  }
+  //   // infoの準備
+  //   // this.jpName.innerHTML = '源氏車';
+  //   // this.jpDesc.innerHTML = '車紋（くるまもん）の一種で、平安時代の貴族の乗り物であった牛車の車輪の形をモチーフにした家紋です。牛車は別名で源氏車とも呼ばれていました。また、車紋は佐藤姓の家紋に用いられたことでも知られています。佐藤氏の祖先が伊勢神宮の神事に携わっていた際、使用していた牛車が豪奢で有名だったことが由来で家紋に用いることになったと言われています。';
+  //   // this.enName.innerHTML = 'Genji-Guruma';
+  //   // this.enDesc.innerHTML = 'It is a type of Kurumamon (car crest), and is a family crest with a motif of the wheels of an ox cart, which was a vehicle used by aristocrats during the Heian period. The ox-cart was also called the Genji-guruma. The car crest is also known to have been used as the family crest of the Sato family name. It is said that the Sato clan&#39;s ancestors used it as their family crest because the bullock carts they used were famous for their luxury when they were involved in the rituals at Ise Grand Shrine.';
+  // }
 
   // ガイドラインを作成
-  generateGuidelines = () => {
+  generateGuideline = () => {
 
     // 円
     const circles = new THREE.Group();
@@ -87,11 +125,12 @@ export default class GenjiGuruma extends Kamon {
       }
       this.guidelines.add(outSeam);
     }
-    this.scene.add(this.guidelines);
+    this.group.add(this.guidelines);
+    // this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
-  generateOutlines = () => {
+  generateOutline = () => {
 
     // 中央の円
     const centerCircleGeo = this.outlineCircleGeoGen(0, 0, 225, 90, 450, this.divCount);
@@ -239,11 +278,12 @@ export default class GenjiGuruma extends Kamon {
       this.outlineEdges.add(ilEdgeF, ilEdgeT, irEdgeF, irEdgeT, olEdgeF, olEdgeT, orEdgeF, orEdgeT);
 
     }
-    this.scene.add(this.outlines, this.outlineEdges);
+    this.group.add(this.outlines, this.outlineEdges);
+    // this.scene.add(this.outlines, this.outlineEdges);
   }
 
   // 塗りつぶし図形を生成
-  generateShapes = () => {
+  generateShape = () => {
 
     // 中央の円
     const points0 = this.curvePointGen(0, 0, 225, 0, 360, false);
@@ -333,12 +373,14 @@ export default class GenjiGuruma extends Kamon {
       this.shapes.add(outSeamMesh);
     }
 
-    this.scene.add(this.shapes);
+    this.group.add(this.shapes);
+    // this.scene.add(this.shapes);
   }
 
   // 図形のアニメーション制御
-  shapesRotationControl(start, end) {
-    var ratio = THREE.MathUtils.smootherstep(this.progRatio, start, end);
+  shapeRotationControl(progRatio) {
+    const p = this.shapeRotParams;
+    var ratio = THREE.MathUtils.smootherstep(progRatio, p.start, p.end);
     if (ratio <= 0.0) return;
     for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
       const shape = this.shapes.children[i];
@@ -362,29 +404,29 @@ export default class GenjiGuruma extends Kamon {
     }
   }
 
-  render() {
+  // render() {
 
-    // ファウンダーの表示アニメーション制御
-    this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
+  //   // ファウンダーの表示アニメーション制御
+  //   this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
 
-    // グリッドの表示アニメーション制御
-    this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
+  //   // グリッドの表示アニメーション制御
+  //   this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
 
-    // ガイドラインの表示アニメーション制御
-    this.guidelinesDisplayControl(0.05, 0.3, 0.3, 0.4, this.divCount, 0.05, 0.02);
+  //   // ガイドラインの表示アニメーション制御
+  //   this.guidelinesDisplayControl(0.05, 0.3, 0.3, 0.4, this.divCount, 0.05, 0.02);
 
-    // アウトラインの表示アニメーション制御
-    this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
+  //   // アウトラインの表示アニメーション制御
+  //   this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
 
-    // 図形の表示アニメーション制御
-    this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
+  //   // 図形の表示アニメーション制御
+  //   this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
 
-    // 図形を回転
-    this.shapesRotationControl(0.6, 0.8);
+  //   // 図形を回転
+  //   this.shapesRotationControl(0.6, 0.8);
 
-    // descの表示アニメーションを制御
-    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
+  //   // descの表示アニメーションを制御
+  //   this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
 
-    super.render();
-  }
+  //   super.render();
+  // }
 }
