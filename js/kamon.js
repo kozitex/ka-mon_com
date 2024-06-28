@@ -93,59 +93,11 @@ export default class Kamon extends Founder {
     this.shapeMat.color = new THREE.Color(frontColor);
   }
 
-  // オブジェクトやシーンをすべてクリア
-  dispose = () => {
-    const objects = [
-      this.founders, this.grids, this.guidelines, this.outlines, this.outlineEdges, this.shapes,
-    ];
-    objects.forEach((object) => {
-      if (object.isGroup) {
-        object.children.forEach((child) => {
-          if (child.isGroup) {
-            child.children.forEach((line) => {
-              line.material.dispose();
-              line.geometry.dispose();
-              this.scene.remove(line);
-            })
-          } else {
-            child.material.dispose();
-            child.geometry.dispose();
-            this.scene.remove(child);
-          }
-        })
-        this.scene.remove(object);
-      } else {
-        object.material.dispose();
-        object.geometry.dispose();
-        this.scene.remove(object);
-      }
-    })
-
-    this.renderer.dispose();
-
-  }
-
   // ガイドラインのメッシュを生成
   guidelineGen = (points) => {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     geometry.setDrawRange(0, 0);
     return new THREE.Line(geometry, this.guideMat);
-  }
-
-  // ガイドラインの円弧のジオメトリを生成
-  guidelineCircleGeoGen = (points) => {
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    geometry.setDrawRange(0, 0);
-    return geometry;
-  }
-
-  // ガイドラインの円弧のメッシュを生成
-  guidelineCircleMeshGen = (geometry, r, br, rotZ) => {
-    const mesh = new THREE.Line(geometry, this.guideMat);
-    const scale = r / br;
-    mesh.scale.set(scale, scale);
-    mesh.rotation.set(0, 0, rotZ);
-    return mesh;
   }
 
   // アウトラインの円弧のジオメトリを生成

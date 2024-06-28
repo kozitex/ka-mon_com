@@ -14,8 +14,6 @@ export default class Kikyou extends Kamon {
     this.vertices = [];
     this.sides = [];
 
-    // this.divCount = 1000;
-
     // infoのテキスト
     this.jpNameText = '桔梗';
     this.jpDescText = '桔梗の花を図案化した家紋です。桔梗の漢字のつくりから「更に吉（さらによし）」という語呂が縁起が良いとされ、多くの家の家紋として使用されていました。この内、陰桔梗は戦国武将、明智光秀の家紋としても知られていますが、本能寺の変をきっかけに裏切り者の家紋として使用を憚られた時期があったと言われています。';
@@ -64,17 +62,6 @@ export default class Kikyou extends Kamon {
     this.generateShape();
 
   }
-
-  // init = () => {
-
-  //   super.init()
-
-  //   // infoの準備
-  //   this.jpName.innerHTML = '桔梗';
-  //   this.jpDesc.innerHTML = '桔梗の花を図案化した家紋です。桔梗の漢字のつくりから「更に吉（さらによし）」という語呂が縁起が良いとされ、多くの家の家紋として使用されていました。この内、陰桔梗は戦国武将、明智光秀の家紋としても知られていますが、本能寺の変をきっかけに裏切り者の家紋として使用を憚られた時期があったと言われています。';
-  //   this.enName.innerHTML = 'Kikyou<br>(Bellflower)';
-  //   this.enDesc.innerHTML = 'This is a family crest with a design of a bellflower. Due to the kanji character for bellflower, the word "Moreyoshi" is said to bring good luck, and it was used as the family emblem of many families. Of these, Kagekikyo is also known as the family emblem of Sengoku warlord Akechi Mitsuhide, but it is said that there was a time when its use was discouraged as a traitor&#39;s family emblem in the wake of the Honnoji Incident.';
-  // }
 
   // ガイドラインを作成
   generateGuideline = () => {
@@ -138,7 +125,6 @@ export default class Kikyou extends Kamon {
     }
 
     this.group.add(this.guidelines);
-    // this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
@@ -262,7 +248,6 @@ export default class Kikyou extends Kamon {
     }
 
     this.group.add(this.outlines, this.outlineEdges);
-    // this.scene.add(this.outlines, this.outlineEdges);
   }
 
   // 塗りつぶし図形を生成
@@ -350,7 +335,6 @@ export default class Kikyou extends Kamon {
     }
 
     this.group.add(this.shapes);
-    // this.scene.add(this.shapes);
   }
 
   // 図形のアニメーション制御
@@ -381,29 +365,4 @@ export default class Kikyou extends Kamon {
     }
   }
 
-  // render() {
-
-  //   // ファウンダーの表示アニメーション制御
-  //   this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
-
-  //   // グリッドの表示アニメーション制御
-  //   this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.3, 0.45);
-
-  //   // ガイドラインの表示アニメーション制御
-  //   this.guidelinesDisplayControl(0.05, 0.3, 0.35, 0.45, this.divCount, 0.03, 0.06);
-
-  //   // アウトラインの表示アニメーション制御
-  //   this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
-
-  //   // 図形の表示アニメーション制御
-  //   this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
-
-  //   // 図形を回転
-  //   this.shapesRotationControl(0.6, 0.8);
-
-  //   // descの表示アニメーションを制御
-  //   this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
-
-  //   super.render();
-  // }
 }

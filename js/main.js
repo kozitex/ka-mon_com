@@ -7,24 +7,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 const init = () => {
 
-  let resizeTimeout = 0;
-  let promptTimeout = 0;
-  let nowPlaying = false;
-
-  document.body.classList.remove('loading');
-
-  const roll = document.getElementById('roll');
-  const playBtn = document.getElementById('playBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const backBtn = document.getElementById('backBtn');
-  const forwardBtn = document.getElementById('forwardBtn');
-  var terminus;
-  var myTheme = localStorage.getItem('theme');
-
+  // キャンバスを展開
   const canvas = new Canvas();
-  setTimeout(() => {
-    window.scrollTo(0, 0);
-  }, 30);
 
   // アニメーションスクロール関数の定義
   const autoScroll = (target, duration = 10000) => {
@@ -110,19 +94,47 @@ const init = () => {
     }
   }
 
+
+
+
+
+  let resizeTimeout = 0;  // ウィンドウサイズ変更用タイマー
+  let promptTimeout = 0;  // ガイドプロンプト表示用タイマー
+  let nowPlaying = false; // オートプレイフラグ
+
+  // ローディングを非表示
+  document.body.classList.remove('loading');
+
+  var terminus; // スクロールの最大値
+  var myTheme = localStorage.getItem('theme'); // ローカルストレージからテーマ名を取得
+
+  // HTMLの各要素を取得
+  const roll = document.getElementById('roll');
+  const playBtn = document.getElementById('playBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const backBtn = document.getElementById('backBtn');
+  const forwardBtn = document.getElementById('forwardBtn');
+  const themeChangers = document.getElementsByName('themeChanger');
+  const prompt = document.getElementById('prompt');
+
+  // テーマ名が保存されていたら適用
+  if (myTheme) {
+    changeTheme(myTheme);
+    const target = document.getElementById(myTheme);
+    target.checked = true;
+  }
+
+  // スクロール位置をリセット
   terminus = roll.scrollHeight - window.innerHeight;
+  window.scrollTo(0, 0);
+  canvas.scrolled(window.scrollY);
+
+  // アニメーションを再生
   play();
 
-  // 読み込み後に動きがなければガイドを表示
-  const prompt = document.getElementById('prompt');
-  promptTimeout = setTimeout(() => {
-    if (window.scrollY <= 0) {
-      prompt.classList.remove('hide');
-    }
-  }, 10000);
 
-  // スクロール量をキャンバスに渡す
-  canvas.scrolled(window.scrollY);
+
+
 
   // 画面スクロール時の処理
   window.addEventListener('scroll', async () => {
@@ -175,15 +187,14 @@ const init = () => {
     terminus = roll.scrollHeight - window.innerHeight;
   });
 
-  // テーマ名が保存されていたら適用
-  if (myTheme) {
-    changeTheme(myTheme);
-    const target = document.getElementById(myTheme);
-    target.checked = true;
-  }
+  // 読み込み後に動きがなければガイドを表示
+  promptTimeout = setTimeout(() => {
+    if (window.scrollY <= 0) {
+      prompt.classList.remove('hide');
+    }
+  }, 10000);
 
   // ラジオボタンクリックでテーマ変更
-  const themeChangers = document.getElementsByName('themeChanger');
   themeChangers.forEach((themeChanger) => {
     themeChanger.addEventListener('change', () => {
       soundPlay();
@@ -191,21 +202,25 @@ const init = () => {
     });
   })
 
+  // プレイボタンをクリック
   playBtn.addEventListener('click', () => {
     soundPlay();
     play();
   });
 
+  // ポーズボタンをクリック
   pauseBtn.addEventListener('click', () => {
     soundPlay();
     pause();
   });
 
+  // 戻るボタンをクリック
   backBtn.addEventListener('click', () => {
     soundPlay();
     back();
   });
 
+  // 進むボタンをクリック
   forwardBtn.addEventListener('click', () => {
     soundPlay();
     forward();

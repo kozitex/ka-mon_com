@@ -9,10 +9,8 @@ export default class ChigaiTakanoha extends Kamon {
 
     super();
 
-    // this.divCount = 1000;
-
+    // ブラックボード用のグループとマテリアル
     this.blackBoard = new THREE.Group();
-
     this.blackBoardMat = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
       transparent: true,
@@ -67,25 +65,10 @@ export default class ChigaiTakanoha extends Kamon {
 
   }
 
-  // init = () => {
-
-  //   super.init()
-
-  //   // infoの準備
-  //   this.jpName.innerHTML = '丸に違い鷹の羽';
-  //   this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
-  //   this.enName.innerHTML = 'Maruni-Chigai-Takanoha';
-  //   this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
-  // }
-
   // テーマカラー変更
-  // changeTheme = (theme) => {
   changeTheme(frontColor, backColor, guideColor) {
     super.changeTheme(frontColor, backColor, guideColor);
-
-    // this.blackBoard.children.forEach((shape) => {
     this.blackBoardMat.color = new THREE.Color(backColor);
-    // })
   }
 
   // ガイドラインを作成
@@ -163,7 +146,6 @@ export default class ChigaiTakanoha extends Kamon {
     }
 
     this.group.add(this.guidelines);
-    // this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
@@ -632,10 +614,8 @@ export default class ChigaiTakanoha extends Kamon {
       }
       index ++;
     });
-    // }
 
     this.group.add(this.outlines, this.outlineEdges);
-    // this.scene.add(this.outlines, this.outlineEdges);
   }
 
   // 塗りつぶし図形を生成
@@ -687,8 +667,6 @@ export default class ChigaiTakanoha extends Kamon {
     this.blackBoard.add(bbMesh);
     this.blackBoard.position.z = - 1;
     this.group.add(this.blackBoard);
-    // this.scene.add(this.blackBoard);
-
 
     // 羽
 
@@ -822,7 +800,6 @@ export default class ChigaiTakanoha extends Kamon {
     }
 
     this.group.add(this.shapes);
-    // this.scene.add(this.shapes);
   }
 
   // 図形のアニメーション制御
@@ -853,29 +830,4 @@ export default class ChigaiTakanoha extends Kamon {
     this.shapes.rotation.z = - 1440 * ratio * (Math.PI / 180);
   }
 
-  // render() {
-
-  //   // ファウンダーの表示アニメーション制御
-  //   this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
-
-  //   // グリッドの表示アニメーション制御
-  //   this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.3, 0.45);
-
-  //   // ガイドラインの表示アニメーション制御
-  //   this.guidelinesDisplayControl(0.05, 0.35, 0.35, 0.45, this.divCount, 0.07, 0.02);
-
-  //   // アウトラインの表示アニメーション制御
-  //   this.outlinesDisplayControl(0.3, 0.5, 0.5, 0.55, this.divCount);
-
-  //   // 図形の表示アニメーション制御
-  //   this.shapesDisplayControl(0.5, 0.6, 0.95, 1.0);
-
-  //   // 図形を回転
-  //   this.shapesRotationControl(0.6, 0.8);
-
-  //   // descの表示アニメーションを制御
-  //   this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
-
-  //   super.render();
-  // }
 }

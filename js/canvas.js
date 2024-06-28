@@ -19,23 +19,23 @@ export default class Canvas {
     this.backColor     = 0x111111;
     this.guideColor    = 0x999999;
 
-    // ウィンドウサイズ
+    // ウィンドウサイズを取得
     this.w = window.innerWidth;
     this.h = window.innerHeight
 
-    // フレームのサイズ
+    // グリッド・フレームの最大サイズ
     this.edge = 3200;
 
-    // スクローラーの高さ
+    // スクローラーの高さを指定
     this.rollHeight = 4000;
     this.roll = document.getElementById('roll');
     this.roll.style = 'height: ' + this.rollHeight + 'vh;'
     this.rollLength = this.roll.scrollHeight - this.h;
 
-    // スクロールの所要時間
+    // 家紋１つ当たりのスクロールの所要時間
     this.scrollDur = 15000;
 
-    // スクロールの進捗率
+    // スクロールの進捗割合
     this.progRatio = 0;
 
     // レンダラー
@@ -46,7 +46,7 @@ export default class Canvas {
     this.renderer.setSize(this.w, this.h);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // // DOMにレンダラーのcanvasを追加
+    // HTMLにレンダラーのcanvasを追加
     this.kamonElm = document.getElementById('kamon');
     this.kamonElm.appendChild(this.renderer.domElement);
 
@@ -74,12 +74,12 @@ export default class Canvas {
       transparent: true,
     });
 
-    // フレーム・グリッドの描画
+    // フレーム・グリッドを生成
     this.grid = new Grid();
     const grids = this.grid.generate();
     this.scene.add(grids);
 
-    // ミストの生成
+    // ミストを生成
     this.mist = new Mist();
     const mists = this.mist.generate();
     this.scene.add(mists);
@@ -101,14 +101,15 @@ export default class Canvas {
     ];
     if (this.kamons.length > 1) this.kamons = this.shuffle(this.kamons);
 
-    // 家紋を初期化
-    this.init();
+    // キャンバスに家紋をセット
+    this.reset();
 
     // 描画ループ開始
     this.render();
   }
 
-  init() {
+  // キャンバスに家紋のオブジェクトや情報をセット
+  reset() {
     this.kamon = this.kamons[this.nowIndex];
     this.group = this.kamon.generate();
     this.scene.add(this.group);
@@ -192,7 +193,7 @@ export default class Canvas {
 
     this.dispose();
 
-    this.init();
+    this.reset();
   }
 
   // オブジェクトやシーンをすべてクリア
@@ -264,12 +265,10 @@ export default class Canvas {
     // ミストの表示アニメーション制御
     this.mist.displayControl(this.progRatio, 0.0, 0.05, 0.0, 0.1, 0.95, 1.0);
 
+    // 家紋の各アニメーション制御
     this.kamon.guidelineDisplayControl(this.progRatio);
-
     this.kamon.outlineDisplayControl(this.progRatio);
-
     this.kamon.shapeDisplayControl(this.progRatio);
-
     this.kamon.shapeRotationControl(this.progRatio);
 
     // descのアニメーションを制御

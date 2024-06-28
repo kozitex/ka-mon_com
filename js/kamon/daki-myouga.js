@@ -9,8 +9,6 @@ export default class DakiMyouga extends Kamon {
 
     super();
 
-    // this.divCount = 1000;
-
     // infoのテキスト
     this.jpNameText = '抱き茗荷';
     this.jpDescText = '茗荷紋は、香味野菜として知られるミョウガをモチーフにした家紋で、日本十代家紋の一つに数えられます。茗荷紋は摩多羅神のシンボルと言われており、摩多羅神が日光東照宮に祀られたことがきっかけで広まったとされています。また、仏教用語である冥加（神仏からの目に見えない加護）と発音が同じであることも縁起が良いとされ、普及した要因の一つと言われています。';
@@ -60,17 +58,6 @@ export default class DakiMyouga extends Kamon {
 
   }
 
-  // init = () => {
-
-  //   super.init()
-
-  //   // infoの準備
-  //   this.jpName.innerHTML = '抱き茗荷';
-  //   this.jpDesc.innerHTML = '鷹の羽紋は、鷹の羽根を図案化した家紋です。鷹は獲物を狩る際の勇猛さや高い知性がイメージされることや、鷹の羽根が矢羽根の材料に用いられたことから武士に好まれ、武家の家紋として多く採用されてきました。普及する中で派生した図案も60種類以上と多く、広く使用されている五大紋の一つに数えられています。';
-  //   this.enName.innerHTML = 'Daki-Myouga';
-  //   this.enDesc.innerHTML = 'The hawk feather crest is a family crest that is a stylized version of a hawk&#39;s feathers. Hawks were popular among samurai warriors because they were associated with bravery and high intelligence when hunting prey, and hawk feathers were used to make arrow feathers, and were often used as family emblems of samurai families. Over 60 different designs have been derived from it as it has become popular, and it is counted as one of the five widely used crests.';
-  // }
-
   // ガイドラインを作成
   generateGuideline = () => {
 
@@ -84,10 +71,9 @@ export default class DakiMyouga extends Kamon {
     });
     this.guidelines.add(outCircles);
 
-    // 
+    // 反転
     for (var i = 0;i <= 1;i ++) {
 
-      // 
       const group1 = new THREE.Group();
       const params1 = [
         {a: -  200, b: - 1410, r:  173, f:   90, t: 450},
@@ -267,7 +253,6 @@ export default class DakiMyouga extends Kamon {
     }
 
     this.group.add(this.guidelines);
-    // this.scene.add(this.guidelines);
   }
 
   // アウトラインを作成
@@ -498,7 +483,6 @@ export default class DakiMyouga extends Kamon {
     });
 
     this.group.add(this.outlines);
-    // this.scene.add(this.outlines);
   }
 
   // 塗りつぶし図形を生成
@@ -797,7 +781,6 @@ export default class DakiMyouga extends Kamon {
     }
 
     this.group.add(this.shapes);
-    // this.scene.add(this.shapes);
   }
 
   // 図形のアニメーション制御
@@ -821,36 +804,9 @@ export default class DakiMyouga extends Kamon {
         ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
         ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
       }
-      // this.blackBoard.scale.set(ratioSx, ratioSy)
       shape.scale.set(ratioSx, ratioSy)
     }
-    // if (this.blackBoard) this.blackBoard.rotation.z = - 1440 * ratio * (Math.PI / 180);
     this.shapes.rotation.z = - 1440 * ratio * (Math.PI / 180);
   }
 
-  // render() {
-
-  //   // ファウンダーの表示アニメーション制御
-  //   this.foundersDisplayControl(0.0, 0.05, 0.0, 0.6, 0.95, 1.0);
-
-  //   // グリッドの表示アニメーション制御
-  //   this.grid.displayControl(this.gridExist, this.progRatio, 0.0, 0.05, 0.35, 0.45);
-
-  //   // ガイドラインの表示アニメーション制御
-  //   this.guidelinesDisplayControl(0.05, 0.3, 0.35, 0.45, this.divCount, 0.02, 0.02);
-
-  //   // アウトラインの表示アニメーション制御
-  //   this.outlinesDisplayControl(0.3, 0.4, 0.45, 0.5, this.divCount);
-
-  //   // 図形の表示アニメーション制御
-  //   this.shapesDisplayControl(0.45, 0.6, 0.95, 1.0);
-
-  //   // 図形を回転
-  //   this.shapesRotationControl(0.6, 0.8);
-
-  //   // descの表示アニメーションを制御
-  //   this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
-
-  //   super.render();
-  // }
 }
