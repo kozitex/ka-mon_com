@@ -132,10 +132,10 @@ export default class Canvas {
   windowResize = () => {
     this.w = window.innerWidth;
     this.h = window.innerHeight
-    this.camera.aspect = this.w / this.h;
-    this.camera.updateProjectionMatrix();
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.w, this.h);
+    this.camera.aspect = this.w / this.h;
+    this.camera.updateProjectionMatrix();
     this.rollLength = this.roll.scrollHeight - this.h;
     this.render();
   }

@@ -114,6 +114,7 @@ const init = () => {
   const pauseBtn = document.getElementById('pauseBtn');
   const backBtn = document.getElementById('backBtn');
   const forwardBtn = document.getElementById('forwardBtn');
+  const toggleHide = document.getElementById('toggleHide');
   const themeChangers = document.getElementsByName('themeChanger');
   const prompt = document.getElementById('prompt');
 
@@ -193,6 +194,20 @@ const init = () => {
       prompt.classList.remove('hide');
     }
   }, 10000);
+
+  // チェックボックスクリックで表示・非表示を切り替え
+  // controlHider.forEach((themeChanger) => {
+  toggleHide.addEventListener('change', () => {
+    soundPlay();
+    const control = document.getElementById('control');
+    if (toggleHide.checked) {
+      control.classList.add('hidden');
+    } else {
+      control.classList.remove('hidden');
+    }
+    // changeTheme(themeChanger.value);
+  });
+  // })
 
   // ラジオボタンクリックでテーマ変更
   themeChangers.forEach((themeChanger) => {

@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FQNWPNFHRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-FQNWPNFHRL');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- FAVICONを設定 -->
@@ -50,6 +59,19 @@
     </div>
   </div>
   <div id="control">
+    <div id="controlHider">
+      <div class="switch">
+        <input type="checkbox" id="toggleHide" name="toggleHide">
+        <label for="toggleHide" title="control display">
+          <i class="fa-solid fa-angles-right"></i>
+          <i class="fa-solid fa-angles-left"></i>
+          <!-- <i class="fa-solid fa-eye-slash"></i> -->
+          <!-- <i class="fa-solid fa-eye"></i> -->
+        </label>
+        <!-- <input type="radio" id="light" name="controlHide" value="light">
+        <label for="light" title="light"><i class="fa-regular fa-sun-bright"></i></label> -->
+      </div>
+    </div>
     <div id="themeChanger">
       <div class="switch">
         <input type="radio" id="dark" name="themeChanger" value="dark" checked>
