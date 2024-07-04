@@ -33,6 +33,16 @@ const init = () => {
     requestAnimationFrame(performAnimation);
   };
 
+  // コントロールの表示・非表示を切り替え
+  const toggleControlHide = () => {
+    const control = document.getElementById('control');
+    if (toggleHide.checked) {
+      control.classList.add('hidden');
+    } else {
+      control.classList.remove('hidden');
+    }
+  }
+
   // テーマカラーを適用
   const changeTheme = (theme) => {
     myTheme = theme;
@@ -106,6 +116,7 @@ const init = () => {
   document.body.classList.remove('loading');
 
   var terminus; // スクロールの最大値
+  var isControlHide = localStorage.getItem('isControlHide'); // ローカルストレージからコントロールの表示・非表示フラグを取得
   var myTheme = localStorage.getItem('theme'); // ローカルストレージからテーマ名を取得
 
   // HTMLの各要素を取得
@@ -118,11 +129,21 @@ const init = () => {
   const themeChangers = document.getElementsByName('themeChanger');
   const prompt = document.getElementById('prompt');
 
+  // コントロールの表示・非表示が保存されていたら適用
+  if (isControlHide) {
+    toggleHide.checked = isControlHide == 1 ? true : false;
+  } else {
+    toggleHide.checked = false;
+  }
+  toggleControlHide();
+
   // テーマ名が保存されていたら適用
   if (myTheme) {
     changeTheme(myTheme);
     const target = document.getElementById(myTheme);
     target.checked = true;
+  } else {
+    changeTheme('dark');
   }
 
   // スクロール位置をリセット
@@ -186,6 +207,11 @@ const init = () => {
     if (resizeTimeout) clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(canvas.windowResize, 200);
     terminus = roll.scrollHeight - window.innerHeight;
+    // console.log(window.innerWidth, isControlHide)
+    if (window.innerWidth < 1024 && isControlHide == null) {
+      toggleHide.checked = true;
+      toggleControlHide();
+    }
   });
 
   // 読み込み後に動きがなければガイドを表示
@@ -196,18 +222,11 @@ const init = () => {
   }, 10000);
 
   // チェックボックスクリックで表示・非表示を切り替え
-  // controlHider.forEach((themeChanger) => {
   toggleHide.addEventListener('change', () => {
     soundPlay();
-    const control = document.getElementById('control');
-    if (toggleHide.checked) {
-      control.classList.add('hidden');
-    } else {
-      control.classList.remove('hidden');
-    }
-    // changeTheme(themeChanger.value);
+    toggleControlHide();
+    localStorage.setItem('isControlHide', toggleHide.checked ? 1 : 0);
   });
-  // })
 
   // ラジオボタンクリックでテーマ変更
   themeChangers.forEach((themeChanger) => {

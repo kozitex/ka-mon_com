@@ -225,7 +225,7 @@ body.light #info .desc {
 
 #control {
   position: fixed;
-  top: 8.0rem;
+  top: 3.2rem;
   right: 3.2rem;
   display: flex;
   flex-direction: column;
@@ -239,9 +239,7 @@ body.light #info .desc {
 
 
 #controlHider {
-  position: absolute;
-  top: -6.4rem;
-  right: 0.0rem;
+  align-self: flex-end;
 }
 
 #controlHider input[type="checkbox"] {
@@ -250,11 +248,11 @@ body.light #info .desc {
 
 #controlHider input[type="checkbox"] + label {
   display: inline-block;
-  width: 4.4rem;
-  height: 4.4rem;
-  font-size: 2.4rem;
+  width: 6.4rem;
+  height: 4.8rem;
+  font-size: 3.2rem;
   color: #808080;
-  border: 1px solid #808080;
+  border: 1px solid #8080801a;
   border-radius: 0.8rem;
   display: flex;
   justify-content: center;
@@ -264,21 +262,12 @@ body.light #info .desc {
 }
 
 #controlHider input[type="checkbox"] + label:hover {
-  background-color: #808080;
-}
-
-body.dark #controlHider input[type="checkbox"] + label:hover > i {
-  color: #111111;
-}
-
-body.light #controlHider input[type="checkbox"] + label:hover > i {
-  color: #ffffff;
+  border: 1px solid #808080;
 }
 
 #controlHider input[type="checkbox"] + label > i {
   position: absolute;
   transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-  /* color: #808080; */
 }
 
 #controlHider input[type="checkbox"]:checked + label > i.fa-angles-right,
@@ -330,19 +319,6 @@ body.light #controlHider input[type="checkbox"] + label:hover > i {
   color: #808080;
 }
 
-#themeChanger .wrapper {
-  border: 1px solid transparent;
-  transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-body.dark #themeChanger .wrapper:hover {
-  border: 1px solid #ccc;
-}
-
-body.light #themeChanger .wrapper:hover {
-  border: 1px solid #333;
-}
-
 #themeChanger input[type="radio"] {
   display: none;
 }
@@ -372,7 +348,7 @@ body.light #themeChanger input[type="radio"]:checked + label {
 
 #themeChanger input[type="radio"]:not(:checked) + label {
   color: #808080;
-  border: 1px solid transparent;
+  border: 1px solid #8080801a;
 }
 
 #themeChanger input[type="radio"]:not(:checked) + label:hover {
@@ -410,7 +386,7 @@ body.light #themeChanger input[type="radio"]:checked + label {
   height: 4.8rem;
   font-size: 3.2rem;
   color: #808080;
-  border: 1px solid transparent;
+  border: 1px solid #8080801a;
   border-radius: 0.8rem;
   display: flex;
   justify-content: center;
