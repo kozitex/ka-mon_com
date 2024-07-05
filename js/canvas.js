@@ -9,6 +9,7 @@ import Kikyou from './kamon/kikyou.js';
 import GenjiGuruma from './kamon/genji-guruma.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
+import MaruNiUmebachi from './kamon/maru-ni-umebachi.js';
 
 export default class Canvas {
 
@@ -27,10 +28,14 @@ export default class Canvas {
     this.edge = 3200;
 
     // スクローラーの高さを指定
-    this.rollHeight = 4000;
+    const rollHeight = 4000;
     this.roll = document.getElementById('roll');
-    this.roll.style = 'height: ' + this.rollHeight + 'vh;'
+    this.roll.style = 'height: ' + rollHeight + 'vh;'
     this.rollLength = this.roll.scrollHeight - this.h;
+    // this.rollHeight = 4000;
+    // this.roll = document.getElementById('roll');
+    // this.roll.style = 'height: ' + this.rollHeight + 'vh;'
+    // this.rollLength = this.roll.scrollHeight - this.h;
 
     // 家紋１つ当たりのスクロールの所要時間
     this.scrollDur = 15000;
@@ -47,13 +52,16 @@ export default class Canvas {
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
     // HTMLにレンダラーのcanvasを追加
-    this.kamonElm = document.getElementById('kamon');
-    this.kamonElm.appendChild(this.renderer.domElement);
+    const kamonElm = document.getElementById('kamon');
+    kamonElm.appendChild(this.renderer.domElement);
+    // this.kamonElm = document.getElementById('kamon');
+    // this.kamonElm.appendChild(this.renderer.domElement);
 
     // カメラ
-    this.camZ = 4000;
+    // this.camZ = 4000;
+    const camZ = 4000;
     this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 1, 10000);
-    this.camera.position.set(0, 0, this.camZ);
+    this.camera.position.set(0, 0, camZ);
 
     // シーン
     this.scene = new THREE.Scene();
@@ -90,22 +98,46 @@ export default class Canvas {
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
 
-    // 家紋
+    // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
-    this.kamons = [
-      new HidariFutatsuDomoe(),
-      new Kikyou(),
-      new GenjiGuruma(),
-      new ChigaiTakanoha(),
-      new DakiMyouga(),
+    const kamonList = [
+      // new HidariFutatsuDomoe(),
+      // new Kikyou(),
+      // new GenjiGuruma(),
+      // new ChigaiTakanoha(),
+      // new DakiMyouga(),
+      new MaruNiUmebachi
     ];
-    if (this.kamons.length > 1) this.kamons = this.shuffle(this.kamons);
+    this.kamons = this.lottery(kamonList, 1);
+    this.kamons.forEach((kamon) => kamon.init());
 
     // キャンバスに家紋をセット
     this.reset();
 
     // 描画ループ開始
     this.render();
+  }
+
+  // 配列から抽選
+  lottery = (arr, num) => {
+    const result = [], check = [];
+    const min = 0, max = arr.length - 1;
+
+    const intRandom = (min, max) => {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    for(var i = min; i <= num - 1; i++){
+      while(true){
+        const chosen = intRandom(min, max);
+        if(!check.includes(chosen)) {
+          check.push(chosen);
+          result.push(arr[chosen]);
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   // キャンバスに家紋のオブジェクトや情報をセット
@@ -167,18 +199,6 @@ export default class Canvas {
 
     // 家紋のテーマカラーを変更
     this.kamon.changeTheme(this.frontColor, this.backColor, this.guideColor);
-  }
-
-  // 配列の並びをシャッフル
-  shuffle = (array) => {
-    const clone = [...array];
-    const result = clone.reduce((_, cur, idx) => {
-      let rand = Math.floor(Math.random() * (idx + 1));
-      clone[idx] = clone[rand];
-      clone[rand] = cur;
-      return clone;
-    })
-    return result;
   }
 
   // 次の家紋に切り替える

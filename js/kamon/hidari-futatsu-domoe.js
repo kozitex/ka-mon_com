@@ -47,6 +47,19 @@ export default class HidariFutatsuDomoe extends Kamon {
       end   : 0.8,
     }
 
+    // // ガイドラインの作成
+    // this.generateGuideline();
+
+    // // アウトラインの作成
+    // this.generateOutline();
+
+    // // 塗りつぶし図形の描画
+    // this.generateShape();
+  }
+
+  // オブジェクトを生成
+  init = () => {
+
     // ガイドラインの作成
     this.generateGuideline();
 
@@ -55,6 +68,8 @@ export default class HidariFutatsuDomoe extends Kamon {
 
     // 塗りつぶし図形の描画
     this.generateShape();
+
+    // super.generate();
   }
 
   // ガイドラインを作成
