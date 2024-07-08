@@ -92,12 +92,16 @@ export default class MaruNiUmebachi extends Kamon {
     
     // 五角形
     this.pentagon = new THREE.Group();
+    this.vertices = [];
+    this.coefs = [];
     for (var i = 0;i <= this.verNum - 1;i ++) {
-      const r1 = 270 - ((360 / this.verNum) * i);
-      const r2 = 270 - ((360 / this.verNum) * (i + 1));
+      const r1 = 270 + ((360 / this.verNum) * i);
+      const r2 = 270 + ((360 / this.verNum) * (i + 1));
       const v1 = this.circle(0, 0, 405, r1);
       const v2 = this.circle(0, 0, 405, r2);
+      this.vertices.push(v1);
       const coef = this.from2Points(v1.x, v1.y, v2.x, v2.y);
+      this.coefs.push(coef);
       const points = this.linePointGen(coef.a, 1, coef.b, v1.x, v2.x, this.divCount);
       const line = this.guidelineGen(points);
       this.pentagon.add(line);
@@ -106,7 +110,7 @@ export default class MaruNiUmebachi extends Kamon {
 
     // 内周円
     this.innerCircles = new THREE.Group();
-    const innerRs = [230, 200];
+    const innerRs = [405, 230, 200];
     innerRs.forEach((r) => {
       const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
       const circle = this.guidelineGen(points);
@@ -117,8 +121,10 @@ export default class MaruNiUmebachi extends Kamon {
     // １０本の放射線
     this.radiations = new THREE.Group();
     for (var v = 0;v <= this.verNum - 1;v ++) {
-      const linePoints1 = this.linePointGen(0, 1,   20, - 405, 405, this.divCount);
-      const linePoints2 = this.linePointGen(0, 1, - 20, - 405, 405, this.divCount);
+      // const linePoints1 = this.linePointGen(0, 1,   20, - 425, 425, this.divCount);
+      // const linePoints2 = this.linePointGen(0, 1, - 20, - 425, 425, this.divCount);
+      const linePoints1 = this.linePointGen(1, 0,   20, 425, - 425, this.divCount);
+      const linePoints2 = this.linePointGen(1, 0, - 20, 425, - 425, this.divCount);
       const line1 = this.guidelineGen(linePoints1);
       const line2 = this.guidelineGen(linePoints2);
       this.radiations.add(line1, line2);
@@ -158,11 +164,109 @@ export default class MaruNiUmebachi extends Kamon {
     const innerCircleMesh = new THREE.Mesh(innerCircleGeo, this.outlineMat);
     this.outlines.add(innerCircleMesh);
 
-    const innerArcPoint0 = this.curvePointGen(0, 0, 236, 0, 360, false);
-    const innerArcPoint1 = this.curvePointGen(0, 0, 224, 0, 360, false);
-    const innerArcGeo = this.shapeGeoGen(innerArcPoint0, innerArcPoint1);
-    const innerArcMesh = new THREE.Mesh(innerArcGeo, this.outlineMat);
-    this.outlines.add(innerArcMesh);
+
+
+    const theta0 = THREE.MathUtils.radToDeg(Math.asin(20 / 230));
+
+    const innerArcPoint0 = this.curvePointGen(0, 0, 224, - 72 - theta0, - 108 + theta0, true);
+    const innerArcPoint1 = this.curvePointGen(0, 0, 236, - 108 + theta0, - 72 - theta0, false);
+    const innerArcPoint2 = innerArcPoint0.concat(innerArcPoint1);
+    const innerArcGeo1 = this.shapeGeoGen(innerArcPoint2);
+    // const innerArcMesh1 = new THREE.Mesh(innerArcGeo1, this.outlineMat);
+    // const innerArcMesh2 = new THREE.Mesh(innerArcGeo1, this.outlineMat);
+    // innerArcMesh2.rotation.z = THREE.MathUtils.degToRad(- 36);
+    // this.outlines.add(innerArcMesh1);
+
+    // const a = - Math.tan(THREE.MathUtils.degToRad(18 - theta0));
+    const x = 230 * Math.sin(THREE.MathUtils.degToRad(18 - theta0));
+    const y = - 230 * Math.cos(THREE.MathUtils.degToRad(18 - theta0));
+
+    const coef = this.from2Points(- 20, 0, x, y);
+    const start0 = new THREE.Vector3(x, y, 0);
+    const end0 = this.getIntersect(coef.a, coef.b, this.coefs[0].a, this.coefs[0].b);
+
+    const p0 = Math.abs(6 * Math.cos(THREE.MathUtils.degToRad(18 - theta0)));
+    const q0 = Math.abs(6 * Math.sin(THREE.MathUtils.degToRad(18 - theta0)));
+
+    const startD1 = new THREE.Vector3(start0.x + p0, start0.y + q0, 0);
+    const endD1 = new THREE.Vector3(end0.x + p0, end0.y + q0, 0);
+    const startD2 = new THREE.Vector3(start0.x - p0, start0.y - q0, 0);
+    const endD2 = new THREE.Vector3(end0.x - p0, end0.y - q0, 0);
+
+    const geometry0 = this.shapeGeoGen([startD1, endD1, endD2, startD2]);
+    // const mesh1 = new THREE.Mesh(geometry0, this.outlineMat);
+    // const mesh2 = new THREE.Mesh(geometry0, this.outlineMat);
+    // mesh2.rotation.y = THREE.MathUtils.degToRad(180);
+    // this.outlines.add(mesh1, mesh2);
+
+    const end1 = this.vertices[0];
+
+    const theta1 = THREE.MathUtils.degToRad(90) - Math.atan(this.coefs[0].a);
+    const p1 = Math.abs(6 * Math.cos(theta1));
+    const q1 = Math.abs(6 * Math.sin(theta1));
+
+    const startD3 = new THREE.Vector3(end0.x + p1, end0.y - q1, 0);
+    const endD3 = new THREE.Vector3(end1.x + p1, end1.y - q1, 0);
+    const startD4 = new THREE.Vector3(end0.x - p1, end0.y + q1, 0);
+    const endD4 = new THREE.Vector3(end1.x - p1, end1.y + q1, 0);
+
+    const geometry1 = this.shapeGeoGen([startD3, endD3, endD4, startD4]);
+    // const mesh3 = new THREE.Mesh(geometry1, this.outlineMat);
+    // const mesh4 = new THREE.Mesh(geometry1, this.outlineMat);
+    // mesh4.rotation.y = THREE.MathUtils.degToRad(180);
+    // this.outlines.add(mesh3, mesh4);
+
+    const coef2 = this.from2Points(- 20, 0, start0.x, - start0.y);
+    const end2 = this.getIntersect(coef2.a, coef2.b, this.coefs[2].a, this.coefs[2].b);
+
+    const startD5 = new THREE.Vector3(start0.x + p0, - start0.y - q0, 0);
+    const endD5 = new THREE.Vector3(end2.x + p0, end2.y - q0, 0);
+    const startD6 = new THREE.Vector3(start0.x - p0, - start0.y + q0, 0);
+    const endD6 = new THREE.Vector3(end2.x - p0, end2.y + q0, 0);
+
+    const geometry2 = this.shapeGeoGen([startD5, endD5, endD6, startD6]);
+
+
+    const startD7 = new THREE.Vector3(end2.x, end2.y + 6, 0);
+    const endD7 = new THREE.Vector3(- end2.x, end2.y + 6, 0);
+    const startD8 = new THREE.Vector3(end2.x, end2.y - 6, 0);
+    const endD8 = new THREE.Vector3(- end2.x, end2.y - 6, 0);
+
+    const geometry3 = this.shapeGeoGen([startD7, endD7, endD8, startD8]);
+
+
+    for (var i = 0;i <= 4;i ++) {
+      const innerArcMesh1 = new THREE.Mesh(innerArcGeo1, this.outlineMat);
+      const innerArcMesh2 = new THREE.Mesh(innerArcGeo1, this.outlineMat);
+      const mesh1 = new THREE.Mesh(geometry0, this.outlineMat);
+      const mesh2 = new THREE.Mesh(geometry0, this.outlineMat);
+      const mesh3 = new THREE.Mesh(geometry1, this.outlineMat);
+      const mesh4 = new THREE.Mesh(geometry1, this.outlineMat);
+      const mesh5 = new THREE.Mesh(geometry2, this.outlineMat);
+      const mesh6 = new THREE.Mesh(geometry2, this.outlineMat);
+      const mesh7 = new THREE.Mesh(geometry3, this.outlineMat);
+      innerArcMesh1.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      innerArcMesh2.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh1.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh2.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh3.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh4.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh5.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh6.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      mesh7.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
+      innerArcMesh2.rotation.x = THREE.MathUtils.degToRad(180);
+      mesh2.rotation.y = THREE.MathUtils.degToRad(180);
+      mesh4.rotation.y = THREE.MathUtils.degToRad(180);
+      mesh6.rotation.y = THREE.MathUtils.degToRad(180);
+      this.outlines.add(innerArcMesh1, innerArcMesh2, mesh1, mesh2, mesh3, mesh4, mesh5, mesh6, mesh7);
+    }
+
+    // const innerArcPoint3 = this.curvePointGen(0, 0, 224, - 108 - theta, - 144 + theta, true);
+    // const innerArcPoint4 = this.curvePointGen(0, 0, 236, - 144 + theta, - 108 - theta, false);
+    // const innerArcPoint5 = innerArcPoint3.concat(innerArcPoint4);
+    // const innerArcGeo2 = this.shapeGeoGen(innerArcPoint5);
+    // const innerArcMesh2 = new THREE.Mesh(innerArcGeo2, this.outlineMat);
+    // this.outlines.add(innerArcMesh2);
 
 
     // const circleGeo0 = this.outlineCircleGeoGen(0, 0, 191, 90, 450, this.divCount);
@@ -383,9 +487,11 @@ export default class MaruNiUmebachi extends Kamon {
     const pentagonInRatio = THREE.MathUtils.smoothstep(inRatio, 0.25, 0.75);
     const fiveCirclesDrawRatio = THREE.MathUtils.smoothstep(inRatio, 0.6, 0.8);
     const fiveCirclesRotateRatio = THREE.MathUtils.smoothstep(inRatio, 0.8, 1.0);
-    const radiationsDrawRatio = THREE.MathUtils.smoothstep(inRatio, 0.65, 0.85);
+    const radiationsDrawRatio1 = THREE.MathUtils.smoothstep(inRatio, 0.65, 0.8);
+    const radiationsDrawRatio2 = THREE.MathUtils.smoothstep(inRatio, 0.7, 0.85);
     const radiationsRotateRatio = THREE.MathUtils.smoothstep(inRatio, 0.85, 1.0);
 
+    // 外周円
     for (var i = 0;i <= this.outerCircles.children.length - 1;i ++) {
       const maxDelay = 0.06 * this.outerCircles.children.length;
       const delay = 0.06 * i;
@@ -400,10 +506,11 @@ export default class MaruNiUmebachi extends Kamon {
       }
     }
 
+    // ５つの周回円
     for (var i = 0;i <= this.fiveCircles.children.length - 1;i ++) {
       const mesh = this.fiveCircles.children[i];
       mesh.geometry.setDrawRange(0, this.divCount * fiveCirclesDrawRatio);
-      mesh.rotation.z = THREE.MathUtils.degToRad(- 72) * i * fiveCirclesRotateRatio;
+      mesh.rotation.z = THREE.MathUtils.degToRad(72) * i * fiveCirclesRotateRatio;
       mesh.material.opacity = 1.0 - outRatio;
       if (outRatio >= 1.0) {
         mesh.visible = false;
@@ -412,6 +519,7 @@ export default class MaruNiUmebachi extends Kamon {
       }
     }
 
+    // 五角形
     for (var i = 0;i <= this.pentagon.children.length - 1;i ++) {
       const maxDelay = 0.06 * this.pentagon.children.length;
       const delay = 0.06 * i;
@@ -426,6 +534,7 @@ export default class MaruNiUmebachi extends Kamon {
       }
     }
 
+    // 内周円
     for (var i = 0;i <= this.innerCircles.children.length - 1;i ++) {
       const maxDelay = 0.06 * this.innerCircles.children.length;
       const delay = 0.06 * i;
@@ -440,10 +549,12 @@ export default class MaruNiUmebachi extends Kamon {
       }
     }
 
+    // １０本の放射線
     for (var i = 0;i <= this.radiations.children.length - 1;i ++) {
       const mesh = this.radiations.children[i];
-      mesh.geometry.setDrawRange(0, this.divCount * radiationsDrawRatio);
-      mesh.rotation.z = THREE.MathUtils.degToRad(- 36) * Math.trunc(i / 2) * radiationsRotateRatio;
+      const radiationsDrawRatioD = i % 2 == 0 ? radiationsDrawRatio1 : radiationsDrawRatio2;
+      mesh.geometry.setDrawRange(0, this.divCount * radiationsDrawRatioD);
+      mesh.rotation.z = (THREE.MathUtils.degToRad(18) + THREE.MathUtils.degToRad(36) * Math.trunc(i / 2 + 1)) * radiationsRotateRatio;
       mesh.material.opacity = 1.0 - outRatio;
       if (outRatio >= 1.0) {
         mesh.visible = false;
@@ -451,6 +562,17 @@ export default class MaruNiUmebachi extends Kamon {
         mesh.visible = true;
       }
     }
+    // for (var i = 0;i <= this.radiations.children.length - 1;i ++) {
+    //   const mesh = this.radiations.children[i];
+    //   mesh.geometry.setDrawRange(0, this.divCount * radiationsDrawRatio);
+    //   mesh.rotation.z = THREE.MathUtils.degToRad(18) + THREE.MathUtils.degToRad(36) * Math.trunc(i / 2 + 1) * radiationsRotateRatio;
+    //   mesh.material.opacity = 1.0 - outRatio;
+    //   if (outRatio >= 1.0) {
+    //     mesh.visible = false;
+    //   } else {
+    //     mesh.visible = true;
+    //   }
+    // }
   }
 
   // アウトラインの表示制御
@@ -459,11 +581,22 @@ export default class MaruNiUmebachi extends Kamon {
     const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
     const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
     this.outlines.children.forEach((mesh) => {
-      mesh.material.opacity = inRatio - outRatio;
-      if (outRatio >= 1.0) {
-        mesh.visible = false;
+      if (mesh.isGroup) {
+        mesh.children.forEach((mesh) => {
+          mesh.material.opacity = inRatio - outRatio;
+          if (outRatio >= 1.0) {
+            mesh.visible = false;
+          } else {
+            mesh.visible = true;
+          }    
+        })
       } else {
-        mesh.visible = true;
+        mesh.material.opacity = inRatio - outRatio;
+        if (outRatio >= 1.0) {
+          mesh.visible = false;
+        } else {
+          mesh.visible = true;
+        }  
       }
 
       // if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {

@@ -59,6 +59,7 @@ export default class Kamon extends Founder {
     });
 
     this.outlineMat = new THREE.LineBasicMaterial({
+      side: THREE.DoubleSide,
       transparent: true
     });
 
