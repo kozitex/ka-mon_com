@@ -128,6 +128,7 @@ const init = () => {
   const toggleHide = document.getElementById('toggleHide');
   const themeChangers = document.getElementsByName('themeChanger');
   const prompt = document.getElementById('prompt');
+  const copyright = document.getElementById('copyright');
 
   // コントロールの表示・非表示が保存されていたら適用
   if (isControlHide) {
@@ -145,6 +146,11 @@ const init = () => {
   } else {
     changeTheme('dark');
   }
+
+  // コピーライトのテキストを表示
+  var today = new Date();
+  var year = today.getFullYear();
+  copyright.innerHTML = `©︎ ${year} grassrunners.net`;
 
   // スクロール位置をリセット
   terminus = roll.scrollHeight - window.innerHeight;

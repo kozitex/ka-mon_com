@@ -496,6 +496,24 @@ body.light #ward .button .icon.running {
   color: #808080;
 }
 
+
+
+
+
+#copyright {
+  position: fixed;
+  left: 2.4rem;
+  bottom: 0.8rem;
+  font-family: "Roboto";
+  font-size: 1.5rem;
+  color: #808080;
+  opacity: 0.5;
+}
+
+
+
+
+
 /* タブレット */
 @media only screen and (max-width: 1024px) {
 
@@ -503,6 +521,11 @@ body.light #ward .button .icon.running {
     font-size: 0.9765625vw;
   }
 }
+
+
+
+
+
 
 /* スマホ */
 @media only screen and (max-width: 600px) {
