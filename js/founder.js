@@ -17,13 +17,13 @@ export default class Founder {
     }
   }
 
-  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, 半径, 角度）
+  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, r: 半径, s:角度）
   circle(a, b, r, s) {
     const sr = s * Math.PI / 180;
     return new THREE.Vector3(a + r * Math.cos(sr), b + r * Math.sin(sr), 0);
   }
 
-  // 直線と円の交点を求める
+  // 直線と円の交点を求める（r: 半径, h: 中心X座標, h: 中心Y座標, m: 直線式の傾き, n: 直線式の切片）
   interLineCircle = (r, h, k, m, n) => {
     var a = 1 + Math.pow(m, 2);
     var b = -2 * h + 2 * m * (n - k);

@@ -179,6 +179,7 @@ body.light #info .name {
 }
 
 #info .jp .name {
+  white-space: nowrap;
   letter-spacing: 0.4rem;
   opacity: 0.0;
   transform: translateX(-100%);

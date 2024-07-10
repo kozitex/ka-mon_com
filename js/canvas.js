@@ -10,6 +10,7 @@ import GenjiGuruma from './kamon/genji-guruma.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
 import MaruNiUmebachi from './kamon/maru-ni-umebachi.js';
+import MaruNiFutatsuKarigane from './kamon/maru-ni-futatsu-karigane.js';
 
 export default class Canvas {
 
@@ -101,14 +102,16 @@ export default class Canvas {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      new HidariFutatsuDomoe(),
-      new Kikyou(),
-      new GenjiGuruma(),
-      new ChigaiTakanoha(),
-      new DakiMyouga(),
-      new MaruNiUmebachi
+      // new HidariFutatsuDomoe(),
+      // new Kikyou(),
+      // new GenjiGuruma(),
+      // new ChigaiTakanoha(),
+      // new DakiMyouga(),
+      // new MaruNiUmebachi,
+      new MaruNiFutatsuKarigane
     ];
-    this.kamons = this.lottery(kamonList, 5);
+    const kamonNum = kamonList.length > 5 ? 5 : kamonList.length;
+    this.kamons = this.lottery(kamonList, kamonNum);
     this.kamons.forEach((kamon) => kamon.init());
 
     // キャンバスに家紋をセット

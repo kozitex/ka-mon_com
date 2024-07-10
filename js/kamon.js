@@ -232,7 +232,7 @@ export default class Kamon extends Founder {
   shapeGeoGen = (shapes, pathes) => {
     const shape = new THREE.Shape(shapes);
     if (pathes) {
-      const path  = new THREE.Path(pathes);
+      const path = new THREE.Path(pathes);
       shape.holes.push(path);
     }
     const geometry = new THREE.ShapeGeometry(shape);
