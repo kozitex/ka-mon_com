@@ -10,7 +10,7 @@ export default class MaruNiFutatsuKarigane extends Kamon {
     super();
 
     // this.pathW = 27;
-    this.verNum = 5;
+    // this.verNum = 5;
     // this.vertices = [];
     // this.sides = [];
 
@@ -33,22 +33,22 @@ export default class MaruNiFutatsuKarigane extends Kamon {
     // アウトラインの表示アニメーションパラメータ
     this.outlineParams = {
       inStart : 0.5,
-      inEnd   : 0.6,
+      inEnd   : 0.625,
       outStart: 0.65,
       outEnd  : 0.7,
     }
 
     // 図形の表示アニメーションパラメータ
     this.shapeParams = {
-      inStart : 0.65,
-      inEnd   : 0.75,
+      inStart : 0.625,
+      inEnd   : 0.7,
       outStart: 0.95,
       outEnd  : 1.0,
     }
 
     // 図形の回転アニメーションパラメータ
     this.shapeRotParams = {
-      start : 0.75,
+      start : 0.7,
       end   : 0.85,
     }
 
@@ -58,7 +58,7 @@ export default class MaruNiFutatsuKarigane extends Kamon {
   init = () => {
 
     // ガイドラインの作成
-    // this.generateGuideline();
+    this.generateGuideline();
 
     // アウトラインの作成
     // this.generateOutline();
@@ -71,6 +71,8 @@ export default class MaruNiFutatsuKarigane extends Kamon {
   // ガイドラインを作成
   generateGuideline = () => {
 
+    const surplus = 2.5;
+
     // 外周円
     this.outerCircles = new THREE.Group();
     const outerRs = [1600, 1310];
@@ -81,53 +83,213 @@ export default class MaruNiFutatsuKarigane extends Kamon {
     });
     this.guidelines.add(this.outerCircles);
 
-    // ５つの周回円
-    this.fiveCircles = new THREE.Group();
-    for (var v = 0;v <= this.verNum - 1;v ++) {
-      const circlePoints = this.circlePointGen(0, 815, 445, 90, 450, this.divCount);
-      const circle = this.guidelineGen(circlePoints);
-      this.fiveCircles.add(circle);
-    }
-    this.guidelines.add(this.fiveCircles);
+    // 鳥
+    this.bird = new THREE.Group();
 
-    // 五角形
-    this.pentagon = new THREE.Group();
-    this.vertices = [];
-    this.coefs = [];
-    for (var i = 0;i <= this.verNum - 1;i ++) {
-      const r1 = 270 + ((360 / this.verNum) * i);
-      const r2 = 270 + ((360 / this.verNum) * (i + 1));
-      const v1 = this.circle(0, 0, 405, r1);
-      const v2 = this.circle(0, 0, 405, r2);
-      this.vertices.push(v1);
-      const coef = this.from2Points(v1.x, v1.y, v2.x, v2.y);
-      this.coefs.push(coef);
-      const points = this.linePointGen(coef.a, 1, coef.b, v1.x, v2.x, this.divCount);
-      const line = this.guidelineGen(points);
-      this.pentagon.add(line);
-    }
-    this.guidelines.add(this.pentagon);
+    // 翼
+    this.wing = new THREE.Group();
+    const wingParam1 = {a:  474, b:   140, r:  765};
+    const wingParam2 = {a: 1012, b: - 458, r: 1120};
 
-    // 内周円
-    this.innerCircles = new THREE.Group();
-    const innerRs = [405, 230, 200];
-    innerRs.forEach((r) => {
-      const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
-      const circle = this.guidelineGen(points);
-      this.innerCircles.add(circle);
-    });
-    this.guidelines.add(this.innerCircles);
+    const wingApex1 = new THREE.Vector3(1035, 660, 0);
+    const wingApex2 = new THREE.Vector3(   0, 740, 0);
+    const wingApex3 = new THREE.Vector3(   0,  20, 0);
 
-    // １０本の放射線
-    this.radiations = new THREE.Group();
-    for (var v = 0;v <= this.verNum - 1;v ++) {
-      const linePoints1 = this.linePointGen(1, 0,   20, 425, - 425, this.divCount);
-      const linePoints2 = this.linePointGen(1, 0, - 20, 425, - 425, this.divCount);
-      const line1 = this.guidelineGen(linePoints1);
-      const line2 = this.guidelineGen(linePoints2);
-      this.radiations.add(line1, line2);
-    }
-    this.guidelines.add(this.radiations);
+    const wingAngle1 = 179.98 - THREE.MathUtils.radToDeg(Math.atan((wingApex2.y - wingParam1.b) / wingParam1.a)) + surplus;
+    const wingAngle2 = THREE.MathUtils.radToDeg(Math.atan((wingApex1.y - wingParam1.b) / (wingApex1.x - wingParam1.a))) - surplus;
+    const wingAngle3 = 179.92 - THREE.MathUtils.radToDeg(Math.atan((wingApex3.y - wingParam2.b) / wingParam2.a)) + surplus;
+    const wingAngle4 = THREE.MathUtils.radToDeg(Math.atan((wingApex1.y - wingParam2.b) / (wingApex1.x - wingParam2.a))) - surplus;
+
+    const wingPoints1 = this.circlePointGen(  wingParam1.a, wingParam1.b, wingParam1.r, wingAngle1, wingAngle2, this.divCount);
+    const wingPoints2 = this.circlePointGen(  wingParam2.a, wingParam2.b, wingParam2.r, wingAngle3, wingAngle4, this.divCount);
+    const wingPoints3 = this.circlePointGen(- wingParam1.a, wingParam1.b, wingParam1.r, 180 - wingAngle1, 180 - wingAngle2, this.divCount);
+    const wingPoints4 = this.circlePointGen(- wingParam2.a, wingParam2.b, wingParam2.r, 180 - wingAngle3, 180 - wingAngle4, this.divCount);
+
+    const wingArc1 = this.guidelineGen(wingPoints1);
+    const wingArc2 = this.guidelineGen(wingPoints2);
+    const wingArc3 = this.guidelineGen(wingPoints3);
+    const wingArc4 = this.guidelineGen(wingPoints4);
+
+    this.wing.add(wingArc1, wingArc2, wingArc3, wingArc4);
+    // this.bird.add(wingArc1, wingArc2, wingArc3, wingArc4);
+
+    // 頭（輪郭）
+    this.head = new THREE.Group();
+    const headParam = {a:     0, b:  794, r: 426};
+
+    const headApex1 = new THREE.Vector3(   402,  940, 0);
+    const headApex2 = new THREE.Vector3( - 270, 1120, 0);
+    const headApex3 = new THREE.Vector3( - 192, 1008, 0);
+    const headApex4 = new THREE.Vector3( - 288,  922, 0);
+    const headApex5 = new THREE.Vector3(     0,  796, 0);
+
+    const headAngle1 = THREE.MathUtils.radToDeg(Math.atan((headApex1.y - headParam.b) / headApex1.x)) - surplus;
+    const headAngle2 = 180 - THREE.MathUtils.radToDeg(Math.atan((headApex2.y - headParam.b) / - headApex2.x)) + surplus;
+    const headAngle3 = 180 - THREE.MathUtils.radToDeg(Math.atan((headApex5.y - wingParam1.b) / wingParam1.a)) + surplus;
+    const headAngle4 = 180 - THREE.MathUtils.radToDeg(Math.atan((headApex1.y - wingParam1.b) / (wingParam1.a - headApex1.x))) - surplus;
+    const headAngle5 = THREE.MathUtils.radToDeg(Math.atan((headApex5.y - wingParam1.b) / wingParam1.a)) - surplus;
+    const headAngle6 = THREE.MathUtils.radToDeg(Math.atan((headApex4.y - wingParam1.b) / (headApex4.x + wingParam1.a))) + surplus;
+
+    const headStraight1 = this.from2Points(headApex2.x, headApex2.y, headApex3.x, headApex3.y);
+    const headStraight2 = this.from2Points(headApex4.x, headApex4.y, headApex3.x, headApex3.y);
+
+    const headPoints1 = this.circlePointGen(  headParam.a, headParam.b, headParam.r, headAngle1, headAngle2, this.divCount);
+    const headPoints2 = this.circlePointGen(  wingParam1.a, wingParam1.b, wingParam1.r + 40, headAngle3, headAngle4, this.divCount);
+    const headPoints3 = this.circlePointGen(- wingParam1.a, wingParam1.b, wingParam1.r + 40, headAngle5, headAngle6, this.divCount);
+    const headPoints4 = this.linePointGen(headStraight1.a, 1, headStraight1.b, headApex2.x - 20, headApex3.x + 20, this.divCount);
+    const headPoints5 = this.linePointGen(headStraight2.a, 1, headStraight2.b, headApex4.x - 20, headApex3.x + 20, this.divCount);
+
+    const headArc1  = this.guidelineGen(headPoints1);
+    const headArc2  = this.guidelineGen(headPoints2);
+    const headArc3  = this.guidelineGen(headPoints3);
+    const headLine1 = this.guidelineGen(headPoints4);
+    const headLine2 = this.guidelineGen(headPoints5);
+
+    this.head.add(headArc1, headArc2, headArc3, headLine1, headLine2);
+    // this.bird.add(headArc1, headArc2, headArc3, headLine1, headLine2);
+
+    // 目
+    this.eye = new THREE.Group();
+    const eyeParam1 = {a: - 100, b: 1084, r:  84};
+    const eyeParam2 = {a: - 100, b: 1084, r:  58};
+    const eyeParam3 = {a: - 100, b: 1084, r:  28};
+
+    const eyePoints1 = this.circlePointGen(eyeParam1.a, eyeParam1.b, eyeParam1.r, 90, 450, this.divCount);
+    const eyePoints2 = this.circlePointGen(eyeParam2.a, eyeParam2.b, eyeParam2.r, 90, 450, this.divCount);
+    const eyePoints3 = this.circlePointGen(eyeParam3.a, eyeParam3.b, eyeParam3.r, 90, 450, this.divCount);
+
+    const eyeCircle1  = this.guidelineGen(eyePoints1);
+    const eyeCircle2  = this.guidelineGen(eyePoints2);
+    const eyeCircle3  = this.guidelineGen(eyePoints3);
+
+    this.eye.add(eyeCircle1, eyeCircle2, eyeCircle3);
+    // this.bird.add(eyeCircle1, eyeCircle2, eyeCircle3);
+
+    // 皺
+    this.crease = new THREE.Group();
+    const creaseParam1 = {a: - 60, b: 1060, r: 120};
+    const creaseParam2 = {a: - 60, b: 1060, r: 148};
+    const creaseParam3 = {a:   14, b: 1173, r:  14};
+    const creaseParam4 = {a: - 56, b:  926, r:  14};
+
+    const creaseApex1 = new THREE.Vector3(    6, 1160, 0);
+    const creaseApex2 = new THREE.Vector3( - 56,  940, 0);
+    const creaseApex3 = new THREE.Vector3( - 56,  912, 0);
+    const creaseApex4 = new THREE.Vector3(   24, 1184, 0);
+
+    const creaseAngle1 = THREE.MathUtils.radToDeg(Math.atan((creaseApex1.y - creaseParam1.b) / (creaseApex1.x - creaseParam1.a))) + surplus;
+    const creaseAngle2 = - 180 + THREE.MathUtils.radToDeg(Math.atan((creaseParam1.b - creaseApex2.y) / (creaseApex2.x - creaseParam1.a))) - surplus;
+    const creaseAngle3 = - 180 + THREE.MathUtils.radToDeg(Math.atan((creaseParam2.b - creaseApex3.y) / (creaseApex3.x - creaseParam2.a))) - surplus;
+    const creaseAngle4 = THREE.MathUtils.radToDeg(Math.atan((creaseApex4.y - creaseParam2.b) / (creaseApex4.x - creaseParam2.a))) + surplus;
+
+    const creasePoints1 = this.circlePointGen(creaseParam1.a, creaseParam1.b, creaseParam1.r, creaseAngle1, creaseAngle2, this.divCount);
+    const creasePoints2 = this.circlePointGen(creaseParam2.a, creaseParam2.b, creaseParam2.r, creaseAngle3, creaseAngle4, this.divCount);
+    const creasePoints3 = this.circlePointGen(creaseParam3.a, creaseParam3.b, creaseParam3.r, 90, 450, this.divCount);
+    const creasePoints4 = this.circlePointGen(creaseParam4.a, creaseParam4.b, creaseParam4.r, 90, 450, this.divCount);
+
+    const creaseCircle1  = this.guidelineGen(creasePoints1);
+    const creaseCircle2  = this.guidelineGen(creasePoints2);
+    const creaseCircle3  = this.guidelineGen(creasePoints3);
+    const creaseCircle4  = this.guidelineGen(creasePoints4);
+
+    this.crease.add(creaseCircle1, creaseCircle2, creaseCircle3, creaseCircle4);
+    // this.bird.add(creaseCircle1, creaseCircle2, creaseCircle3, creaseCircle4);
+
+    // 嘴
+    this.beak = new THREE.Group();
+
+    const beakApex1 = new THREE.Vector3(- 292, 1110, 0);
+    const beakApex2 = new THREE.Vector3(- 410, 1044, 0);
+    const beakApex3 = new THREE.Vector3(- 224, 1020, 0);
+
+    const beakApex4 = new THREE.Vector3(- 312,  934, 0);
+    const beakApex5 = new THREE.Vector3(- 412, 1020, 0);
+    const beakApex6 = new THREE.Vector3(- 234,  998, 0);
+
+    const beakStraight1 = this.from2Points(beakApex1.x, beakApex1.y, beakApex2.x, beakApex2.y);
+    const beakStraight2 = this.from2Points(beakApex2.x, beakApex2.y, beakApex3.x, beakApex3.y);
+    const beakStraight3 = this.from2Points(beakApex3.x, beakApex3.y, beakApex1.x, beakApex1.y);
+
+    const beakStraight4 = this.from2Points(beakApex4.x, beakApex4.y, beakApex5.x, beakApex5.y);
+    const beakStraight5 = this.from2Points(beakApex5.x, beakApex5.y, beakApex6.x, beakApex6.y);
+    const beakStraight6 = this.from2Points(beakApex6.x, beakApex6.y, beakApex4.x, beakApex4.y);
+
+    const beakPoints1 = this.linePointGen(beakStraight1.a, 1, beakStraight1.b, beakApex1.x + 20, beakApex2.x - 20, this.divCount);
+    const beakPoints2 = this.linePointGen(beakStraight2.a, 1, beakStraight2.b, beakApex2.x - 20, beakApex3.x + 20, this.divCount);
+    const beakPoints3 = this.linePointGen(beakStraight3.a, 1, beakStraight3.b, beakApex3.x + 20, beakApex1.x - 20, this.divCount);
+
+    const beakPoints4 = this.linePointGen(beakStraight4.a, 1, beakStraight4.b, beakApex4.x + 20, beakApex5.x - 20, this.divCount);
+    const beakPoints5 = this.linePointGen(beakStraight5.a, 1, beakStraight5.b, beakApex5.x - 20, beakApex6.x + 20, this.divCount);
+    const beakPoints6 = this.linePointGen(beakStraight6.a, 1, beakStraight6.b, beakApex6.x + 20, beakApex4.x - 20, this.divCount);
+
+    const beakLine1  = this.guidelineGen(beakPoints1);
+    const beakLine2  = this.guidelineGen(beakPoints2);
+    const beakLine3  = this.guidelineGen(beakPoints3);
+
+    const beakLine4  = this.guidelineGen(beakPoints4);
+    const beakLine5  = this.guidelineGen(beakPoints5);
+    const beakLine6  = this.guidelineGen(beakPoints6);
+
+    this.beak.add(beakLine1, beakLine2, beakLine3, beakLine4, beakLine5, beakLine6);
+
+    this.bird1 = new THREE.Group();
+    this.bird1.add(this.wing, this.head, this.eye, this.crease, this.beak);
+    this.bird2 = this.bird1.clone();
+
+    this.bird.add(this.bird1, this.bird2)
+
+    this.guidelines.add(this.bird);
+    // this.guidelines.add(this.wing, this.head, this.eye, this.crease, this.beak);
+
+
+
+    // // ５つの周回円
+    // this.fiveCircles = new THREE.Group();
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const circlePoints = this.circlePointGen(0, 815, 445, 90, 450, this.divCount);
+    //   const circle = this.guidelineGen(circlePoints);
+    //   this.fiveCircles.add(circle);
+    // }
+    // this.guidelines.add(this.fiveCircles);
+
+    // // 五角形
+    // this.pentagon = new THREE.Group();
+    // this.vertices = [];
+    // this.coefs = [];
+    // for (var i = 0;i <= this.verNum - 1;i ++) {
+    //   const r1 = 270 + ((360 / this.verNum) * i);
+    //   const r2 = 270 + ((360 / this.verNum) * (i + 1));
+    //   const v1 = this.circle(0, 0, 405, r1);
+    //   const v2 = this.circle(0, 0, 405, r2);
+    //   this.vertices.push(v1);
+    //   const coef = this.from2Points(v1.x, v1.y, v2.x, v2.y);
+    //   this.coefs.push(coef);
+    //   const points = this.linePointGen(coef.a, 1, coef.b, v1.x, v2.x, this.divCount);
+    //   const line = this.guidelineGen(points);
+    //   this.pentagon.add(line);
+    // }
+    // this.guidelines.add(this.pentagon);
+
+    // // 内周円
+    // this.innerCircles = new THREE.Group();
+    // const innerRs = [405, 230, 200];
+    // innerRs.forEach((r) => {
+    //   const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
+    //   const circle = this.guidelineGen(points);
+    //   this.innerCircles.add(circle);
+    // });
+    // this.guidelines.add(this.innerCircles);
+
+    // // １０本の放射線
+    // this.radiations = new THREE.Group();
+    // for (var v = 0;v <= this.verNum - 1;v ++) {
+    //   const linePoints1 = this.linePointGen(1, 0,   20, 425, - 425, this.divCount);
+    //   const linePoints2 = this.linePointGen(1, 0, - 20, 425, - 425, this.divCount);
+    //   const line1 = this.guidelineGen(linePoints1);
+    //   const line2 = this.guidelineGen(linePoints2);
+    //   this.radiations.add(line1, line2);
+    // }
+    // this.guidelines.add(this.radiations);
 
     this.group.add(this.guidelines);
   }
@@ -315,38 +477,43 @@ export default class MaruNiFutatsuKarigane extends Kamon {
     const r2 = 179.98 - THREE.MathUtils.radToDeg(Math.atan((inter2.y - circle1.b) / circle1.a));
     const r3 = THREE.MathUtils.radToDeg(Math.atan((inter1.y - circle2.b) / (inter1.x - circle2.a)));
     const r4 = 179.92 - THREE.MathUtils.radToDeg(Math.atan((inter3.y - circle2.b) / circle2.a));
-    const oneWingShape1 = this.curvePointGen(circle1.a, circle1.b, circle1.r, r2, r1, true);
-    const oneWingShape2 = this.curvePointGen(circle2.a, circle2.b, circle2.r, r3, r4, false);
-    const oneWingShapes = oneWingShape1.concat(oneWingShape2);
-    const oneWingGeo = this.shapeGeoGen(oneWingShapes);
-    for (var i = 0;i <= 1;i ++) {
-      const oneWingMesh  = new THREE.Mesh(oneWingGeo, this.shapeMat);
-      oneWingMesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
-      this.shapes.add(oneWingMesh);
-    }
+    const wingShape1 = this.curvePointGen(  circle1.a, circle1.b, circle1.r,       r2,       r1 + 0.2, true);
+    const wingShape2 = this.curvePointGen(  circle2.a, circle2.b, circle2.r,       r3,       r4, false);
+    const wingShape3 = this.curvePointGen(- circle2.a, circle2.b, circle2.r, 180 - r4, 180 - r3, false);
+    const wingShape4 = this.curvePointGen(- circle1.a, circle1.b, circle1.r, 180 - r1, 180 - r2, true);
+    const wingShapes = wingShape1.concat(wingShape2, wingShape3, wingShape4);
+    const wingGeo = this.shapeGeoGen(wingShapes);
 
     // 頭
-    const circle3  = {a: 0, b: 794, r: 426};
+    const circle3  = {a:     0, b:  794, r: 426};
     const circle4  = {a: - 100, b: 1084, r:  84};
     const circle5  = {a: - 100, b: 1084, r:  58};
     const circle6  = {a: - 100, b: 1084, r:  28};
 
-    const circle7  = {a: -  60, b: 1060, r: 120};
-    const circle8  = {a: -  60, b: 1060, r: 148};
-    const circle9  = {a:   14, b: 1173, r: 14};
-    const circle10 = {a: - 56, b:  926, r: 14};
+    const circle7  = {a: - 60, b: 1060, r: 120};
+    const circle8  = {a: - 60, b: 1060, r: 148};
+    const circle9  = {a:   14, b: 1173, r:  14};
+    const circle10 = {a: - 56, b:  926, r:  14};
 
-    const inter4 = new THREE.Vector3(  402,  940, 0);
-    const inter5 = new THREE.Vector3(    0,  796, 0);
+    const inter4  = new THREE.Vector3(  402,  940, 0);
+    const inter5  = new THREE.Vector3(    0,  796, 0);
 
-    const inter6 = new THREE.Vector3(    6, 1160, 0);
-    const inter7 = new THREE.Vector3( - 56,  940, 0);
-    const inter8 = new THREE.Vector3( - 56,  912, 0);
-    const inter9 = new THREE.Vector3(   24, 1184, 0);
+    const inter6  = new THREE.Vector3(    6, 1160, 0);
+    const inter7  = new THREE.Vector3( - 56,  940, 0);
+    const inter8  = new THREE.Vector3( - 56,  912, 0);
+    const inter9  = new THREE.Vector3(   24, 1184, 0);
 
     const inter10 = new THREE.Vector3( - 270, 1120, 0);
     const inter11 = new THREE.Vector3( - 192, 1008, 0);
     const inter12 = new THREE.Vector3( - 288,  922, 0);
+
+    const apex1 = new THREE.Vector3(- 292, 1110, 0);
+    const apex2 = new THREE.Vector3(- 410, 1044, 0);
+    const apex3 = new THREE.Vector3(- 224, 1020, 0);
+
+    const apex4 = new THREE.Vector3(- 312,  934, 0);
+    const apex5 = new THREE.Vector3(- 412, 1020, 0);
+    const apex6 = new THREE.Vector3(- 234,  998, 0);
 
     const r5  = THREE.MathUtils.radToDeg(Math.atan((inter4.y - circle3.b) / inter4.x));
     const r6  = THREE.MathUtils.radToDeg(Math.atan((inter4.y - circle1.b) / (circle1.a - inter4.x)));
@@ -383,67 +550,34 @@ export default class MaruNiFutatsuKarigane extends Kamon {
 
     const headGeo = new THREE.ShapeGeometry(headShape);
     const eyeGeo = this.shapeGeoGen(eyeShape2, eyeShape3);
+    const upperBeakGeo = this.shapeGeoGen([apex1, apex2, apex3]);
+    const lowerBeakGeo = this.shapeGeoGen([apex4, apex5, apex6]);
 
-    const headMesh  = new THREE.Mesh(headGeo, this.shapeMat);
-    const eyeMesh  = new THREE.Mesh(eyeGeo, this.shapeMat);
-    this.shapes.add(headMesh, eyeMesh);
-
-
-
-
+    for (var i = 0;i <= 1;i ++) {
+      const bird = new THREE.Group();
+      const headMesh  = new THREE.Mesh(headGeo, this.shapeMat);
+      const eyeMesh  = new THREE.Mesh(eyeGeo, this.shapeMat);
+      const upperBeakMesh  = new THREE.Mesh(upperBeakGeo, this.shapeMat);
+      const lowerBeakMesh  = new THREE.Mesh(lowerBeakGeo, this.shapeMat);
+      const wingMesh  = new THREE.Mesh(wingGeo, this.shapeMat);
+      bird.add(headMesh, eyeMesh, upperBeakMesh, lowerBeakMesh, wingMesh);
+      bird.position.y = - 1250 * i;
+      this.shapes.add(bird);
+    }
 
     this.group.add(this.shapes);
 
-    // // 外周円
-    // const outerCircleShape = this.curvePointGen(0, 0, 1600, 0, 360, false);
-    // const outerCirclePath  = this.curvePointGen(0, 0, 1310, 0, 360, false);
-    // const outerCircleGeo   = this.shapeGeoGen(outerCircleShape, outerCirclePath);
-    // const outerCircleMesh  = new THREE.Mesh(outerCircleGeo, this.shapeMat);
-    // this.shapes.add(outerCircleMesh);
-
-    // // 中心円
-    // const innerCircleshape = this.curvePointGen(0, 0, 200, 0, 360, false);
-    // const innerCircleGeo = this.shapeGeoGen(innerCircleshape);
-    // const innerCircleMesh = new THREE.Mesh(innerCircleGeo, this.shapeMat);
-    // this.shapes.add(innerCircleMesh);
-
-    // // ５つの周回円
-    // const fiveCircleShape = this.curvePointGen(0, 815, 451, 0, 360, false);
-    // const fiveCircleGeo = this.shapeGeoGen(fiveCircleShape);
-    // for (var i = 0;i <= 4;i ++) {
-    //   const fiveCircleMesh = new THREE.Mesh(fiveCircleGeo, this.shapeMat);
-    //   fiveCircleMesh.rotation.z = THREE.MathUtils.degToRad(- 72) * i;
-    //   this.shapes.add(fiveCircleMesh);
-    // }
-
-    // // 五角形
-    // const theta0 = THREE.MathUtils.radToDeg(Math.asin(20 / 230));
-    // const arcPoint1 = this.curvePointGen(0, 0, 230,  - 72 - theta0, - 108 + theta0, true);
-    // const points1 = [this.apex5, this.apex3, this.apex2].concat(arcPoint1);
-    // const arcPoint2 = this.curvePointGen(0, 0, 230,    72 + theta0,   108 - theta0, false);
-    // const points2 = [this.apex9, this.apex7].concat(arcPoint2);
-
-    // const lineGeo1 = this.shapeGeoGen(points1);
-    // const lineGeo2 = this.shapeGeoGen(points2);
-    // for (var i = 0;i <= 4;i ++) {
-    //   const line1  = new THREE.Mesh(lineGeo1, this.shapeMat);
-    //   const line2  = new THREE.Mesh(lineGeo2, this.shapeMat);
-    //   line1.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
-    //   line2.rotation.z = THREE.MathUtils.degToRad(- 72 * i);
-    //   this.shapes.add(line1, line2);
-    // }
-
-    // this.group.add(this.shapes);
   }
 
   // ガイドラインの表示制御
   guidelineDisplayControl = (progRatio) => {
-    // const p = this.guidelineParams;
-    // const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-    // const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
+    const p = this.guidelineParams;
+    const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
 
-    // const outerCirclesInRatio = THREE.MathUtils.smoothstep(inRatio, 0.0, 0.35);
-    // const innerCirclesInRatio = THREE.MathUtils.smoothstep(inRatio, 0.1, 0.4);
+    const outerCirclesInRatio = THREE.MathUtils.smoothstep(inRatio, 0.0, 0.3);
+    const birdInRatio = THREE.MathUtils.smoothstep(inRatio, 0.3, 0.65);
+    const birdMoveRatio = THREE.MathUtils.smoothstep(inRatio, 0.65, 1.0);
     // const pentagonInRatio = THREE.MathUtils.smoothstep(inRatio, 0.25, 0.75);
     // const fiveCirclesDrawRatio = THREE.MathUtils.smoothstep(inRatio, 0.6, 0.8);
     // const fiveCirclesRotateRatio = THREE.MathUtils.smoothstep(inRatio, 0.8, 1.0);
@@ -451,13 +585,53 @@ export default class MaruNiFutatsuKarigane extends Kamon {
     // const radiationsDrawRatio2 = THREE.MathUtils.smoothstep(inRatio, 0.7, 0.85);
     // const radiationsRotateRatio = THREE.MathUtils.smoothstep(inRatio, 0.85, 1.0);
 
-    // // 外周円
-    // for (var i = 0;i <= this.outerCircles.children.length - 1;i ++) {
-    //   const maxDelay = 0.06 * this.outerCircles.children.length;
+    // 外周円
+    for (var i = 0;i <= this.outerCircles.children.length - 1;i ++) {
+      const maxDelay = 0.06 * this.outerCircles.children.length;
+      const delay = 0.06 * i;
+      const outerCirclesInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, outerCirclesInRatio);
+      const mesh = this.outerCircles.children[i];
+      mesh.geometry.setDrawRange(0, this.divCount * outerCirclesInRatioD);
+      mesh.material.opacity = 1.0 - outRatio;
+      if (outRatio >= 1.0) {
+        mesh.visible = false;
+      } else {
+        mesh.visible = true;
+      }
+    }
+
+    // 鳥
+    for (var i = 0;i <= this.bird.children.length - 1;i ++) {
+      const group1 = this.bird.children[i];
+      group1.position.y = - 1250 * i * birdMoveRatio;
+
+      for (var j = 0; j <= group1.children.length - 1;j ++) {
+        const group2 = group1.children[j];
+
+        for (var k = 0;k <= group2.children.length - 1;k ++) {
+          const maxDelay = 0.06 * group2.children.length;
+          const delay = 0.06 * k;
+          const birdInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdInRatio);
+          const mesh = group2.children[k];
+          mesh.geometry.setDrawRange(0, this.divCount * birdInRatioD);
+          mesh.material.opacity = 1.0 - outRatio;
+          if (outRatio >= 1.0) {
+            mesh.visible = false;
+          } else {
+            mesh.visible = true;
+          }
+        }
+
+      }
+      
+    }
+
+    // for (var i = 0;i <= this.wing.children.length - 1;i ++) {
+    //   const maxDelay = 0.06 * this.wing.children.length;
     //   const delay = 0.06 * i;
-    //   const outerCirclesInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, outerCirclesInRatio);
-    //   const mesh = this.outerCircles.children[i];
-    //   mesh.geometry.setDrawRange(0, this.divCount * outerCirclesInRatioD);
+    //   const birdInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdInRatio);
+    //   const mesh = this.wing.children[i];
+    //   mesh.geometry.setDrawRange(0, this.divCount * birdInRatioD);
     //   mesh.material.opacity = 1.0 - outRatio;
     //   if (outRatio >= 1.0) {
     //     mesh.visible = false;
@@ -465,6 +639,64 @@ export default class MaruNiFutatsuKarigane extends Kamon {
     //     mesh.visible = true;
     //   }
     // }
+
+    // for (var i = 0;i <= this.head.children.length - 1;i ++) {
+    //   const maxDelay = 0.06 * this.head.children.length;
+    //   const delay = 0.06 * i;
+    //   const birdInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdInRatio);
+    //   const mesh = this.head.children[i];
+    //   mesh.geometry.setDrawRange(0, this.divCount * birdInRatioD);
+    //   mesh.material.opacity = 1.0 - outRatio;
+    //   if (outRatio >= 1.0) {
+    //     mesh.visible = false;
+    //   } else {
+    //     mesh.visible = true;
+    //   }
+    // }
+
+    // for (var i = 0;i <= this.eye.children.length - 1;i ++) {
+    //   const maxDelay = 0.06 * this.eye.children.length;
+    //   const delay = 0.06 * i;
+    //   const birdInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdInRatio);
+    //   const mesh = this.eye.children[i];
+    //   mesh.geometry.setDrawRange(0, this.divCount * birdInRatioD);
+    //   mesh.material.opacity = 1.0 - outRatio;
+    //   if (outRatio >= 1.0) {
+    //     mesh.visible = false;
+    //   } else {
+    //     mesh.visible = true;
+    //   }
+    // }
+
+    // for (var i = 0;i <= this.crease.children.length - 1;i ++) {
+    //   const maxDelay = 0.06 * this.crease.children.length;
+    //   const delay = 0.06 * i;
+    //   const birdInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdInRatio);
+    //   const mesh = this.crease.children[i];
+    //   mesh.geometry.setDrawRange(0, this.divCount * birdInRatioD);
+    //   mesh.material.opacity = 1.0 - outRatio;
+    //   if (outRatio >= 1.0) {
+    //     mesh.visible = false;
+    //   } else {
+    //     mesh.visible = true;
+    //   }
+    // }
+
+    // for (var i = 0;i <= this.beak.children.length - 1;i ++) {
+    //   const maxDelay = 0.06 * this.beak.children.length;
+    //   const delay = 0.06 * i;
+    //   const birdInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdInRatio);
+    //   const mesh = this.beak.children[i];
+    //   mesh.geometry.setDrawRange(0, this.divCount * birdInRatioD);
+    //   mesh.material.opacity = 1.0 - outRatio;
+    //   if (outRatio >= 1.0) {
+    //     mesh.visible = false;
+    //   } else {
+    //     mesh.visible = true;
+    //   }
+    // }
+
+
 
     // // ５つの周回円
     // for (var i = 0;i <= this.fiveCircles.children.length - 1;i ++) {
@@ -553,26 +785,43 @@ export default class MaruNiFutatsuKarigane extends Kamon {
   shapeRotationControl(progRatio) {
     const p = this.shapeRotParams;
     var ratio = THREE.MathUtils.smootherstep(progRatio, p.start, p.end);
-    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-      const shape = this.shapes.children[i];
-      const j = i - 1;
-      const num = Math.trunc(j / 2);
+    // for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
+    //   const shape = this.shapes.children[i];
+    //   const j = i - 1;
+    //   const num = Math.trunc(j / 2);
+    //   const adjust1 = 80;
+    //   const adjust2 = 20;
+    //   var ratioSx, ratioSy;
+    //   if (ratio < 0.1 + num / adjust1) {
+    //     ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+    //     ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+    //   } else if (ratio < 0.4 + num / adjust2) {
+    //     ratioSx = 0.3;
+    //     ratioSy = 0.3;
+    //   } else {
+    //     ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
+    //     ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
+    //   }
+    //   shape.scale.set(ratioSx, ratioSy, 1)
+    // }
+
+      const num = 1;
       const adjust1 = 80;
       const adjust2 = 20;
-      var ratioSx, ratioSy;
-      if (ratio < 0.1 + num / adjust1) {
-        ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-        ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-      } else if (ratio < 0.4 + num / adjust2) {
-        ratioSx = 0.3;
-        ratioSy = 0.3;
-      } else {
-        ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-        ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-      }
-      shape.scale.set(ratioSx, ratioSy)
-      this.shapes.rotation.z = 720 * ratio * (Math.PI / 180);
+    var ratioSx, ratioSy;
+    if (ratio < 0.1 + num / adjust1) {
+      ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+      ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
+    } else if (ratio < 0.4 + num / adjust2) {
+      ratioSx = 0.3;
+      ratioSy = 0.3;
+    } else {
+      ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
+      ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
     }
+
+    this.shapes.scale.set(ratioSx, ratioSy, 1);
+    this.shapes.rotation.z = 720 * ratio * (Math.PI / 180);
   }
 
 }
