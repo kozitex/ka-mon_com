@@ -33,10 +33,6 @@ export default class Canvas {
     this.roll = document.getElementById('roll');
     this.roll.style = 'height: ' + rollHeight + 'vh;'
     this.rollLength = this.roll.scrollHeight - this.h;
-    // this.rollHeight = 4000;
-    // this.roll = document.getElementById('roll');
-    // this.roll.style = 'height: ' + this.rollHeight + 'vh;'
-    // this.rollLength = this.roll.scrollHeight - this.h;
 
     // 家紋１つ当たりのスクロールの所要時間
     this.scrollDur = 15000;
@@ -55,11 +51,8 @@ export default class Canvas {
     // HTMLにレンダラーのcanvasを追加
     const kamonElm = document.getElementById('kamon');
     kamonElm.appendChild(this.renderer.domElement);
-    // this.kamonElm = document.getElementById('kamon');
-    // this.kamonElm.appendChild(this.renderer.domElement);
 
     // カメラ
-    // this.camZ = 4000;
     const camZ = 4000;
     this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 1, 10000);
     this.camera.position.set(0, 0, camZ);
@@ -102,15 +95,16 @@ export default class Canvas {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      // new HidariFutatsuDomoe(),
-      // new Kikyou(),
-      // new GenjiGuruma(),
-      // new ChigaiTakanoha(),
-      // new DakiMyouga(),
-      // new MaruNiUmebachi,
+      new HidariFutatsuDomoe(),
+      new Kikyou(),
+      new GenjiGuruma(),
+      new ChigaiTakanoha(),
+      new DakiMyouga(),
+      new MaruNiUmebachi,
       new MaruNiFutatsuKarigane
     ];
-    const kamonNum = kamonList.length > 5 ? 5 : kamonList.length;
+    const maxNum = 7;
+    const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
     this.kamons = this.lottery(kamonList, kamonNum);
     this.kamons.forEach((kamon) => kamon.init());
 
@@ -230,11 +224,23 @@ export default class Canvas {
 
     this.group.children.forEach((child) => {
       if (child.isGroup) {
-        child.children.forEach((grandChild) => {
-          if (grandChild.isGroup) {
-            grandChild.children.forEach((mesh) => disposeMesh(mesh));
+        child.children.forEach((child) => {
+          if (child.isGroup) {
+            child.children.forEach((child) => {
+              if (child.isGroup) {
+                child.children.forEach((child) => {
+                  if (child.isGroup) {
+                    child.children.forEach((child) => disposeMesh(child));
+                  } else {
+                    disposeMesh(child);
+                  }
+                })
+              } else {
+                disposeMesh(child);
+              }
+            })
           } else {
-            disposeMesh(grandChild);
+            disposeMesh(child);
           }
         })
       } else {
