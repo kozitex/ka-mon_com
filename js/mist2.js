@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Founder from './founder.js';
 
-export default class Mist extends Founder {
+export default class Mist2 extends Founder {
 
   constructor () {
 
@@ -17,6 +17,20 @@ export default class Mist extends Founder {
       transparent: true
     });
 
+    // ロゴ用マテリアル
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('../img/logo.png');
+    // texture.colorSpace = THREE.SRGBColorSpace;
+    this.logoMat = new THREE.MeshBasicMaterial({
+      map: texture,
+      // color: new THREE.Color(0x00000000),
+      // color: new THREE.Color(0xff3333),
+      // color: 0xff3333,
+      opacity: 0.3,
+      transparent: true,
+      // side: THREE.DoubleSide,
+    });
+
     // ミストの描画
     const points = this.circlePointGen(0, 0, 1600, 90, 450, 1000);
     for (var i = 0;i <= 9;i ++) {
@@ -27,9 +41,24 @@ export default class Mist extends Founder {
       this.group.add(line);
     }
 
+    // ロゴの描画
+    // const logoApices = [
+    //   new THREE.Vector3(- 256,   256, 0),
+    //   new THREE.Vector3(  256,   256, 0),
+    //   new THREE.Vector3(  256, - 256, 0),
+    //   new THREE.Vector3(- 256, - 256, 0),
+    // ];
+    // const logoShape = new THREE.Shape(logoApices);
+    // const logoGeo = new THREE.ShapeGeometry(logoShape);
+    const logoGeo = new THREE.BoxGeometry(640, 640, 1);
+    const logoMesh  = new THREE.Mesh(logoGeo, this.logoMat);
+    const logo = new THREE.Group();
+    logo.add(logoMesh);
+    // this.group.add(logo);
+
   }
 
-  // グリッドを生成
+  // メッシュを生成
   generate = () => {
     return this.group;
   }
@@ -37,7 +66,7 @@ export default class Mist extends Founder {
   // 色を変更
   changeTheme = (color) => {
     this.group.children.forEach((line) => {
-      line.material.color = new THREE.Color(color);
+      if (!line.isGroup) line.material.color = new THREE.Color(color);
     })
   }
 
@@ -49,12 +78,13 @@ export default class Mist extends Founder {
     const dAmpOrigin = 0.87;
     const dInt = 0.2;
     const scrFill = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 0.0, 1.0 - dAmpOrigin);
-    // const sizeAmt = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 1800, 1600);
     const sizeAmt = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 400, 360);
     const dAmp = dAmpOrigin + scrFill;
     const time = performance.now() * 0.00025;
     for (var i = 0;i <= this.group.children.length - 1;i ++) {
       const mist = this.group.children[i];
+      // console.log(mist)
+      if (mist.isGroup) break;
       mist.geometry.setDrawRange(0, 1000);
       const positions = mist.geometry.attributes.position.array;
       for(let j = 0; j <= 1000; j++){

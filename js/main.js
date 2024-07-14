@@ -153,19 +153,31 @@ const init = () => {
   copyright.innerHTML = `©︎ ${year} grassrunners.net`;
 
   // スクロール位置をリセット
-  terminus = roll.scrollHeight - window.innerHeight;
-  window.scrollTo(0, 0);
-  canvas.scrolled(window.scrollY);
+  // terminus = roll.scrollHeight - window.innerHeight;
+  // window.scrollTo(0, 0);
+  // canvas.scrolled(0);
+  // console.log(window.scrollY)
+  // canvas.scrolled(window.scrollY);
 
   // アニメーションを再生
-  play();
+  // play();
 
 
-
-
+  // 読み込み完了後の処理
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      // スクロール位置をリセット
+      terminus = roll.scrollHeight - window.innerHeight;
+      const y = window.scrollY
+      if (y > 0) {
+        setTimeout(() => window.scrollTo(0, 0), 1)
+        canvas.scrolled(0);
+      }
+    }, 0)
+  });
 
   // 画面スクロール時の処理
-  window.addEventListener('scroll', async () => {
+  window.addEventListener('scroll', () => {
 
     // ガイド表示タイマーをクリア・リセット
     if (promptTimeout) clearTimeout(promptTimeout);
@@ -176,6 +188,7 @@ const init = () => {
     }, 10000);
   
     // スクロール量をキャンバスに渡す
+    // console.log(window.scrollY)
     canvas.scrolled(window.scrollY);
 
     // ガイドを非表示
@@ -266,3 +279,4 @@ const init = () => {
     forward();
   });
 }
+

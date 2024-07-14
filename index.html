@@ -45,15 +45,17 @@
   <div id="roll"></div>
   <div id="kamon"></div>
   <div id="prompt" class="hide">
-    <div class="text">Please scroll down</div>
+    <div class="text">Scroll down or Press Play</div>
     <i class="fa-light fa-angles-down"></i>
   </div>
   <div id="info">
     <div class="jp">
+      <div id="jpMiniName" class="miniName"></div>
       <div id="jpName" class="name"></div>
       <div id="jpDesc" class="desc"></div>
     </div>
     <div class="en">
+      <div id="enMiniName" class="miniName"></div>
       <div id="enName" class="name"></div>
       <div id="enDesc" class="desc"></div>
     </div>
@@ -90,14 +92,14 @@
     </div>
     <div id="ward">
       <div class="button">
-        <div id="backBtn" class="icon disabled">
+        <div id="backBtn" class="icon">
           <i class="fa-solid fa-backward-step"></i>
         </div>
-        <div id="forwardBtn" class="icon disabled">
+        <div id="forwardBtn" class="icon">
           <i class="fa-solid fa-forward-step"></i>
         </div>
       </div>
-      <div class="caption">Forward / Backward</div>
+      <div class="caption">Prev / Next</div>
     </div>
     <div id="progress">
       <div class="label">Progress</div>
@@ -115,5 +117,8 @@
   <audio id="sound" preload="auto">
     <source src="./audio/sound2.mp3" type="audio/mp3">
   </audio>
+  <div id="logo">
+    <img src="./img/logo.png" title="logo" alt="logo">
+  </div>
 </body>
 </html>

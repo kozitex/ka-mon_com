@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import Grid from './grid.js';
 import Mist from './mist.js';
+// import Mist2 from './mist2.js';
 import KageIgeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 import Kikyou from './kamon/kikyou.js';
@@ -82,6 +83,7 @@ export default class Canvas {
     this.scene.add(grids);
 
     // ミストを生成
+    // this.mist = new Mist();
     this.mist = new Mist();
     const mists = this.mist.generate();
     this.scene.add(mists);
@@ -91,6 +93,10 @@ export default class Canvas {
     this.jpDesc = document.getElementById('jpDesc');
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
+    this.jpMiniName = document.getElementById('jpMiniName');
+    this.enMiniName = document.getElementById('enMiniName');
+
+    this.logo = document.getElementById('logo');
 
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
@@ -150,6 +156,8 @@ export default class Canvas {
     this.jpDesc.innerHTML = this.kamon.jpDescText;
     this.enName.innerHTML = this.kamon.enNameText;
     this.enDesc.innerHTML = this.kamon.enDescText;
+    this.jpMiniName.innerHTML = this.kamon.jpNameText;
+    this.enMiniName.innerHTML = this.kamon.enNameText;
   }
 
   // 画面のスクロール量を取得
@@ -283,6 +291,37 @@ export default class Canvas {
     this.enDesc.style = "opacity: " + opaRaio + ";transform: translateY( " + traRatio +"%);"
   }
 
+  // miniNameの表示制御
+  miniNameDisplayControl = (outStart, outEnd) => {
+    // const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    var opaRaio;
+    if (outRatio == 0.0) {
+      opaRaio = 1.0;
+      // traRatio = (1.0 - inRatio) * 100;
+    } else if (outRatio > 0.0) {
+      opaRaio = 1.0 - outRatio;
+      // traRatio = 0;
+    } else if (outRatio >= 1.0) {
+      opaRaio = 0.0;
+      // traRatio = 0;
+    } else {
+      opaRaio = 0.0;
+      // traRatio = 100;
+    }
+    this.jpMiniName.style = "opacity: " + opaRaio + ";"
+    this.enMiniName.style = "opacity: " + opaRaio + ";"
+  }
+
+  // logoの表示制御
+  logoDisplayControl = (inStart, inEnd, outStart, outEnd) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    const opaRaio = (1.0 - outRatio + inRatio) * 0.3;
+    const scaRatio = 1.0 + (inRatio - outRatio) * 0.2;
+    this.logo.style = `opacity: ${opaRaio};scale: ${scaRatio};`
+  }
+
   render() {
 
     // プログレスバーのアニメーション制御
@@ -300,8 +339,10 @@ export default class Canvas {
     this.kamon.shapeDisplayControl(this.progRatio);
     this.kamon.shapeRotationControl(this.progRatio);
 
-    // descのアニメーションを制御
+    // ロゴなどのアニメーションを制御
+    this.miniNameDisplayControl(0.1, 0.15);
     this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
+    this.logoDisplayControl(0.98, 1.0, 0.0, 0.04);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
