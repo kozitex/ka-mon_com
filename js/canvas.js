@@ -11,6 +11,7 @@ import GenjiGuruma from './kamon/genji-guruma.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
 import MaruNiUmebachi from './kamon/maru-ni-umebachi.js';
+import MaruNiUmebachi2 from './kamon/maru-ni-umebachi2.js';
 import MaruNiFutatsuKarigane from './kamon/maru-ni-futatsu-karigane.js';
 
 export default class Canvas {
@@ -30,13 +31,13 @@ export default class Canvas {
     this.edge = 3200;
 
     // スクローラーの高さを指定
-    const rollHeight = 4000;
+    const rollHeight = 2000;
     this.roll = document.getElementById('roll');
     this.roll.style = 'height: ' + rollHeight + 'vh;'
     this.rollLength = this.roll.scrollHeight - this.h;
 
     // 家紋１つ当たりのスクロールの所要時間
-    this.scrollDur = 15000;
+    this.scrollDur = 7500;
 
     // スクロールの進捗割合
     this.progRatio = 0;
@@ -101,13 +102,13 @@ export default class Canvas {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      new HidariFutatsuDomoe(),
-      new Kikyou(),
-      new GenjiGuruma(),
-      new ChigaiTakanoha(),
-      new DakiMyouga(),
-      new MaruNiUmebachi,
-      new MaruNiFutatsuKarigane
+      // new HidariFutatsuDomoe(),
+      // new Kikyou(),
+      // new GenjiGuruma(),
+      // new ChigaiTakanoha(),
+      // new DakiMyouga(),
+      new MaruNiUmebachi2,
+      // new MaruNiFutatsuKarigane
     ];
     const maxNum = 7;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
