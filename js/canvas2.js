@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import Grid from './grid.js';
 import Mist from './mist.js';
+// import Mist2 from './mist2.js';
 import KageIgeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 import Kikyou from './kamon/kikyou.js';
@@ -10,9 +11,10 @@ import GenjiGuruma from './kamon/genji-guruma.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
 import MaruNiUmebachi from './kamon/maru-ni-umebachi.js';
+import MaruNiUmebachi2 from './kamon/maru-ni-umebachi2.js';
 import MaruNiFutatsuKarigane from './kamon/maru-ni-futatsu-karigane.js';
 
-export default class Canvas {
+export default class Canvas2 {
 
   constructor() {
 
@@ -20,6 +22,7 @@ export default class Canvas {
     this.frontColor    = 0xffffff;
     this.backColor     = 0x111111;
     this.guideColor    = 0x999999;
+    this.subColor      = 0x555555;
 
     // ウィンドウサイズを取得
     this.w = window.innerWidth;
@@ -29,13 +32,14 @@ export default class Canvas {
     this.edge = 3200;
 
     // スクローラーの高さを指定
-    const rollHeight = 4000;
-    this.roll = document.getElementById('roll');
-    this.roll.style = 'height: ' + rollHeight + 'vh;'
-    this.rollLength = this.roll.scrollHeight - this.h;
+    // const rollHeight = 2000;
+    this.rollHeight = 2000;
+    // this.roll = document.getElementById('roll');
+    // this.roll.style = 'height: ' + rollHeight + 'vh;'
+    // this.rollLength = this.roll.scrollHeight - this.h;
 
     // 家紋１つ当たりのスクロールの所要時間
-    this.scrollDur = 15000;
+    this.scrollDur = 7500;
 
     // スクロールの進捗割合
     this.progRatio = 0;
@@ -82,6 +86,7 @@ export default class Canvas {
     this.scene.add(grids);
 
     // ミストを生成
+    // this.mist = new Mist();
     this.mist = new Mist();
     const mists = this.mist.generate();
     this.scene.add(mists);
@@ -91,17 +96,21 @@ export default class Canvas {
     this.jpDesc = document.getElementById('jpDesc');
     this.enName = document.getElementById('enName');
     this.enDesc = document.getElementById('enDesc');
+    this.jpMiniName = document.getElementById('jpMiniName');
+    this.enMiniName = document.getElementById('enMiniName');
+
+    this.logo = document.getElementById('logo');
 
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      new HidariFutatsuDomoe(),
-      new Kikyou(),
-      new GenjiGuruma(),
-      new ChigaiTakanoha(),
-      new DakiMyouga(),
-      new MaruNiUmebachi,
-      new MaruNiFutatsuKarigane
+      // new HidariFutatsuDomoe(),
+      // new Kikyou(),
+      // new GenjiGuruma(),
+      // new ChigaiTakanoha(),
+      // new DakiMyouga(),
+      new MaruNiUmebachi2,
+      // new MaruNiFutatsuKarigane
     ];
     const maxNum = 7;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
@@ -146,10 +155,19 @@ export default class Canvas {
     var myTheme = localStorage.getItem('theme');
     this.changeTheme(myTheme);
 
+    // スクロールの高さを取得
+    // this.rollHeight = this.kamon.rollHeight;
+    this.rollResize();
+
+    // スクロール時間を取得
+    this.scrollDur = this.kamon.scrollDur;
+
     this.jpName.innerHTML = this.kamon.jpNameText;
     this.jpDesc.innerHTML = this.kamon.jpDescText;
     this.enName.innerHTML = this.kamon.enNameText;
     this.enDesc.innerHTML = this.kamon.enDescText;
+    this.jpMiniName.innerHTML = this.kamon.jpNameText;
+    this.enMiniName.innerHTML = this.kamon.enNameText;
   }
 
   // 画面のスクロール量を取得
@@ -165,8 +183,17 @@ export default class Canvas {
     this.renderer.setSize(this.w, this.h);
     this.camera.aspect = this.w / this.h;
     this.camera.updateProjectionMatrix();
-    this.rollLength = this.roll.scrollHeight - this.h;
+    this.rollResize();
+    // this.rollLength = this.roll.scrollHeight - this.h;
     this.render();
+  }
+
+  // スクロールの高さ変更
+  rollResize = () => {
+    this.rollHeight = this.kamon.rollHeight;
+    this.roll = document.getElementById('roll');
+    this.roll.style = 'height: ' + this.rollHeight + 'vh;'
+    this.rollLength = this.roll.scrollHeight - this.h;
   }
 
   // テーマカラー変更
@@ -175,12 +202,14 @@ export default class Canvas {
       this.frontColor    = 0xffffff;
       this.backColor     = 0x111111;
       this.guideColor    = 0x999999;
+      this.subColor      = 0x555555;
       this.gridColor     = 0x333333;
       this.gridThinColor = 0x1a1a1a;
     } else {
       this.frontColor    = 0x111111;
       this.backColor     = 0xffffff;
       this.guideColor    = 0x333333;
+      this.subColor      = 0xaaaaaa;
       this.gridColor     = 0xcccccc;
       this.gridThinColor = 0xe6e6e6;
     }
@@ -195,7 +224,7 @@ export default class Canvas {
     this.mist.changeTheme(this.guideColor);
 
     // 家紋のテーマカラーを変更
-    this.kamon.changeTheme(this.frontColor, this.backColor, this.guideColor);
+    this.kamon.changeTheme(this.frontColor, this.backColor, this.guideColor, this.subColor);
   }
 
   // 次の家紋に切り替える
@@ -283,6 +312,37 @@ export default class Canvas {
     this.enDesc.style = "opacity: " + opaRaio + ";transform: translateY( " + traRatio +"%);"
   }
 
+  // miniNameの表示制御
+  miniNameDisplayControl = (outStart, outEnd) => {
+    // const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    var opaRaio;
+    if (outRatio == 0.0) {
+      opaRaio = 1.0;
+      // traRatio = (1.0 - inRatio) * 100;
+    } else if (outRatio > 0.0) {
+      opaRaio = 1.0 - outRatio;
+      // traRatio = 0;
+    } else if (outRatio >= 1.0) {
+      opaRaio = 0.0;
+      // traRatio = 0;
+    } else {
+      opaRaio = 0.0;
+      // traRatio = 100;
+    }
+    this.jpMiniName.style = "opacity: " + opaRaio + ";"
+    this.enMiniName.style = "opacity: " + opaRaio + ";"
+  }
+
+  // logoの表示制御
+  logoDisplayControl = (inStart, inEnd, outStart, outEnd) => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+    const opaRaio = (1.0 - outRatio + inRatio) * 0.3;
+    const scaRatio = 1.0 + (inRatio - outRatio) * 0.2;
+    this.logo.style = `opacity: ${opaRaio};scale: ${scaRatio};`
+  }
+
   render() {
 
     // プログレスバーのアニメーション制御
@@ -292,16 +352,19 @@ export default class Canvas {
     this.grid.displayControl(this.progRatio, 0.0, 0.05, 0.3, 0.45);
 
     // ミストの表示アニメーション制御
-    this.mist.displayControl(this.progRatio, 0.0, 0.05, 0.0, 0.1, 0.95, 1.0);
+    this.mist.displayControl(this.progRatio, 0.0, 0.05, 0.0, 0.2, 0.8, 0.85);
 
     // 家紋の各アニメーション制御
     this.kamon.guidelineDisplayControl(this.progRatio);
     this.kamon.outlineDisplayControl(this.progRatio);
     this.kamon.shapeDisplayControl(this.progRatio);
     this.kamon.shapeRotationControl(this.progRatio);
+    // this.kamon.scaleDisplayControl(this.progRatio);
 
-    // descのアニメーションを制御
-    this.descDisplayControl(0.7, 0.8, 0.95, 1.0);
+    // ロゴなどのアニメーションを制御
+    this.miniNameDisplayControl(0.1, 0.15);
+    this.descDisplayControl(0.5, 0.55, 0.75, 0.8);
+    this.logoDisplayControl(0.8, 0.85, 0.0, 0.05);
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);

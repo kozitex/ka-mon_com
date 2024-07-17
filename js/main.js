@@ -1,5 +1,6 @@
 'use strict';
 import Canvas from './canvas.js';
+import Canvas2 from './canvas2.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
@@ -8,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
 const init = () => {
 
   // キャンバスを展開
-  const canvas = new Canvas();
+  const canvas = new Canvas2();
 
   // アニメーションスクロール関数の定義
   const autoScroll = (target, duration = 10000) => {
@@ -210,14 +211,18 @@ const init = () => {
       pauseBtn.classList.add('disabled');
       forwardBtn.classList.remove('disabled');
       backBtn.classList.remove('disabled');
-      if (nowPlaying) {
+
+      // if (nowPlaying) {
         document.body.classList.add('loading');
         setTimeout(() => {
           canvas.draw('forward');
           window.scrollTo(0, 0);
-          play();
+          if (nowPlaying) {
+            play();
+          }
+          document.body.classList.remove('loading');
         }, 1);
-      }
+      // }
     }
   });
 
