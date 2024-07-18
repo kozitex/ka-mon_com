@@ -197,6 +197,16 @@ const init = () => {
 
     // 画面の端に着いたらオートプレイボタンを初期化
     if (window.scrollY == 0) {
+      // document.body.classList.add('loading');
+      // setTimeout(() => {
+      //   canvas.draw('back');
+      //   // window.scrollTo(0, terminus);
+      //   // if (nowPlaying) {
+      //     // play();
+      //   // }
+      //   document.body.classList.remove('loading');
+      // }, 1);
+
       if (!nowPlaying) {
         playBtn.classList.remove('disabled', 'running');
       }
@@ -213,15 +223,15 @@ const init = () => {
       backBtn.classList.remove('disabled');
 
       // if (nowPlaying) {
-        document.body.classList.add('loading');
-        setTimeout(() => {
-          canvas.draw('forward');
-          window.scrollTo(0, 0);
-          if (nowPlaying) {
-            play();
-          }
-          document.body.classList.remove('loading');
-        }, 1);
+      document.body.classList.add('loading');
+      setTimeout(() => {
+        canvas.draw('forward');
+        window.scrollTo(0, 0);
+        if (nowPlaying) {
+          play();
+        }
+        document.body.classList.remove('loading');
+      }, 1);
       // }
     }
   });

@@ -547,12 +547,24 @@ body.light #ward .button .icon.running {
   bottom: 0;
   margin: auto;
   opacity: 0.3;
+  mask-image: url(../img/logo.svg);
+	mask-size: contain;
+	mask-repeat: no-repeat;
+	mask-position: center;
 }
 
-#logo img {
+body.dark #logo {
+  background-color: #999999;
+}
+
+body.light #logo {
+  background-color: #666666;
+}
+
+/* #logo img {
   width: 100%;
   height: 100%;
-}
+} */
 
 
 

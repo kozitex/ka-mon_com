@@ -63,33 +63,19 @@ export default class Grid extends Founder {
   }
 
   // 表示制御
-  displayControl = (progRatio, inStart, inEnd, outStart, outEnd) => {
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, inStart, inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, outStart, outEnd);
+  displayControl = (progRatio) => {
+    const fadeInRatio  = THREE.MathUtils.smoothstep(progRatio, 0.0, 0.05);
+    const fadeOutRatio = THREE.MathUtils.smoothstep(progRatio, 0.3, 0.45);
     this.group.children.forEach((line) => {
-      // if (exist) {
-      if (inRatio > 0.0 && outRatio == 0.0) {
+      if (fadeInRatio > 0.0 && fadeOutRatio == 0.0) {
         line.visible = true;
-        line.material.opacity = inRatio;
-      } else if (outRatio > 0.0 && outRatio < 1.0) {
-        line.material.opacity = 1.0 - outRatio;
-      } else if (outRatio >= 1.0) {
+        line.material.opacity = fadeInRatio;
+      } else if (fadeOutRatio > 0.0 && fadeOutRatio < 1.0) {
+        line.material.opacity = 1.0 - fadeOutRatio;
+      } else if (fadeOutRatio >= 1.0) {
         line.visible = false;
       }
-      // } else {
-      //   line.visible = false;
-      // }
     });
   }
-
-  // // フェードアウト
-  // fadeOut = (tick, start, end) => {
-  //   const ratio = THREE.MathUtils.smoothstep(tick, start, end);
-  //   this.group.children.forEach((line) => {
-  //     line.visible = true;
-  //     if (ratio >= 1) line.visible = false;
-  //     line.material.opacity = 1.0 - ratio;
-  //   });
-  // }
 
 }

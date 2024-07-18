@@ -19,10 +19,10 @@ export default class Canvas2 {
   constructor() {
 
     // 基本カラー
-    this.frontColor    = 0xffffff;
-    this.backColor     = 0x111111;
-    this.guideColor    = 0x999999;
-    this.subColor      = 0x555555;
+    this.frontColor = 0xffffff;
+    this.backColor  = 0x111111;
+    this.guideColor = 0x999999;
+    this.subColor   = 0x555555;
 
     // ウィンドウサイズを取得
     this.w = window.innerWidth;
@@ -289,55 +289,56 @@ export default class Canvas2 {
   }
 
   // descの表示制御
-  descDisplayControl = (inStart, inEnd, outStart, outEnd) => {
-    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+  descDisplayControl = (param) => {
+    const fadeInRatio  = THREE.MathUtils.smoothstep(this.progRatio, param.fadeIn[0] , param.fadeIn[1] );
+    const fadeOutRatio = THREE.MathUtils.smoothstep(this.progRatio, param.fadeOut[0], param.fadeOut[1]);
+    // const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, 0.5, 0.55);
+    // const outRatio = THREE.MathUtils.smoothstep(this.progRatio, 0.75, 0.8);
     var opaRaio, traRatio;
-    if (inRatio > 0.0 && outRatio == 0.0) {
-      opaRaio = inRatio;
-      traRatio = (1.0 - inRatio) * 100;
-    } else if (outRatio > 0.0) {
-      opaRaio = 1.0 - outRatio;
+    if (fadeInRatio > 0.0 && fadeOutRatio == 0.0) {
+      opaRaio = fadeInRatio;
+      traRatio = (1.0 - fadeInRatio) * 100;
+    } else if (fadeOutRatio > 0.0) {
+      opaRaio = 1.0 - fadeOutRatio;
       traRatio = 0;
-    } else if (outRatio >= 1.0) {
+    } else if (fadeOutRatio >= 1.0) {
       opaRaio = 0.0;
       traRatio = 0;
     } else {
       opaRaio = 0.0;
       traRatio = 100;
     }
-    this.jpName.style = "opacity: " + opaRaio + ";transform: translateX(-" + traRatio +"%);"
-    this.jpDesc.style = "opacity: " + opaRaio + ";transform: translateY( " + traRatio +"%);"
-    this.enName.style = "opacity: " + opaRaio + ";transform: translateX( " + traRatio +"%);"
-    this.enDesc.style = "opacity: " + opaRaio + ";transform: translateY( " + traRatio +"%);"
+    const content1 = `opacity: ${opaRaio};transform: translateX(-${traRatio}%);`;
+    const content2 = `opacity: ${opaRaio};transform: translateY(${traRatio}%);`;
+    const content3 = `opacity: ${opaRaio};transform: translateX(${traRatio}%);`;
+    this.jpName.style = content1;
+    this.jpDesc.style = content2;
+    this.enName.style = content3;
+    this.enDesc.style = content2;
   }
 
   // miniNameの表示制御
-  miniNameDisplayControl = (outStart, outEnd) => {
-    // const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+  miniNameDisplayControl = () => {
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, 0.1, 0.15);
     var opaRaio;
     if (outRatio == 0.0) {
       opaRaio = 1.0;
-      // traRatio = (1.0 - inRatio) * 100;
     } else if (outRatio > 0.0) {
       opaRaio = 1.0 - outRatio;
-      // traRatio = 0;
     } else if (outRatio >= 1.0) {
       opaRaio = 0.0;
-      // traRatio = 0;
     } else {
       opaRaio = 0.0;
-      // traRatio = 100;
     }
-    this.jpMiniName.style = "opacity: " + opaRaio + ";"
-    this.enMiniName.style = "opacity: " + opaRaio + ";"
+    const content = `opacity: ${opaRaio};`;
+    this.jpMiniName.style = content;
+    this.enMiniName.style = content;
   }
 
   // logoの表示制御
-  logoDisplayControl = (inStart, inEnd, outStart, outEnd) => {
-    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, inStart, inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, outStart, outEnd);
+  logoDisplayControl = () => {
+    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, 0.8, 0.85);
+    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.05);
     const opaRaio = (1.0 - outRatio + inRatio) * 0.3;
     const scaRatio = 1.0 + (inRatio - outRatio) * 0.2;
     this.logo.style = `opacity: ${opaRaio};scale: ${scaRatio};`
@@ -349,10 +350,10 @@ export default class Canvas2 {
     this.progressBarControl();
 
     // グリッドの表示アニメーション制御
-    this.grid.displayControl(this.progRatio, 0.0, 0.05, 0.3, 0.45);
+    this.grid.displayControl(this.progRatio);
 
     // ミストの表示アニメーション制御
-    this.mist.displayControl(this.progRatio, 0.0, 0.05, 0.0, 0.2, 0.8, 0.85);
+    this.mist.displayControl(this.progRatio);
 
     // 家紋の各アニメーション制御
     this.kamon.guidelineDisplayControl(this.progRatio);
@@ -362,9 +363,9 @@ export default class Canvas2 {
     // this.kamon.scaleDisplayControl(this.progRatio);
 
     // ロゴなどのアニメーションを制御
-    this.miniNameDisplayControl(0.1, 0.15);
-    this.descDisplayControl(0.5, 0.55, 0.75, 0.8);
-    this.logoDisplayControl(0.8, 0.85, 0.0, 0.05);
+    this.miniNameDisplayControl();
+    this.descDisplayControl(this.kamon.descParams);
+    this.logoDisplayControl();
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);

@@ -42,15 +42,15 @@ export default class Mist extends Founder {
   }
 
   // 表示アニメーション制御
-  displayControl = (progRatio, inStart, inEnd, outStart, outEnd , reInStart, reInEnd) => {
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, inStart, inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, outStart, outEnd);
-    const reInRatio  = THREE.MathUtils.smoothstep(progRatio, reInStart, reInEnd);
+  displayControl = (progRatio) => {
+    const tightenRatio = THREE.MathUtils.smoothstep(progRatio, 0.0,  0.05);
+    const fadeOutRatio = THREE.MathUtils.smoothstep(progRatio, 0.0,  0.2);
+    const loosenRatio  = THREE.MathUtils.smoothstep(progRatio, 0.8,  0.9);
+    const fadeInRatio  = THREE.MathUtils.smoothstep(progRatio, 0.75, 0.85);
     const dAmpOrigin = 0.87;
     const dInt = 0.2;
-    const scrFill = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 0.0, 1.0 - dAmpOrigin);
-    // const sizeAmt = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 1800, 1600);
-    const sizeAmt = THREE.MathUtils.mapLinear(inRatio - reInRatio, 0.0, 1.0, 400, 360);
+    const scrFill = THREE.MathUtils.mapLinear(tightenRatio - loosenRatio, 0.0, 1.0, 0.0, 1.0 - dAmpOrigin);
+    const sizeAmt = THREE.MathUtils.mapLinear(tightenRatio - loosenRatio, 0.0, 1.0, 400, 360);
     const dAmp = dAmpOrigin + scrFill;
     const time = performance.now() * 0.00025;
     for (var i = 0;i <= this.group.children.length - 1;i ++) {
@@ -66,9 +66,9 @@ export default class Mist extends Founder {
         const dVal = THREE.MathUtils.mapLinear(dist, 0.0, 1.0, dAmp, 1.0);
         positions[j * 3] = Math.cos(angle) * sizeAmt * dVal;
         positions[j * 3 + 1] = Math.sin(angle) * sizeAmt * dVal;
-        mist.material.opacity = Math.abs(dist * 1.0) - outRatio + reInRatio;
+        mist.material.opacity = Math.abs(dist * 1.0) - fadeOutRatio + fadeInRatio;
       }
-      if (outRatio >= 1.0 && reInRatio <= 0.0) {
+      if (fadeOutRatio >= 1.0 && fadeInRatio <= 0.0) {
         mist.visible = false;
       } else {
         mist.visible = true;

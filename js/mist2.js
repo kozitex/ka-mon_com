@@ -20,15 +20,10 @@ export default class Mist2 extends Founder {
     // ロゴ用マテリアル
     const loader = new THREE.TextureLoader();
     const texture = loader.load('../img/logo.png');
-    // texture.colorSpace = THREE.SRGBColorSpace;
     this.logoMat = new THREE.MeshBasicMaterial({
       map: texture,
-      // color: new THREE.Color(0x00000000),
-      // color: new THREE.Color(0xff3333),
-      // color: 0xff3333,
       opacity: 0.3,
       transparent: true,
-      // side: THREE.DoubleSide,
     });
 
     // ミストの描画
@@ -42,19 +37,10 @@ export default class Mist2 extends Founder {
     }
 
     // ロゴの描画
-    // const logoApices = [
-    //   new THREE.Vector3(- 256,   256, 0),
-    //   new THREE.Vector3(  256,   256, 0),
-    //   new THREE.Vector3(  256, - 256, 0),
-    //   new THREE.Vector3(- 256, - 256, 0),
-    // ];
-    // const logoShape = new THREE.Shape(logoApices);
-    // const logoGeo = new THREE.ShapeGeometry(logoShape);
     const logoGeo = new THREE.BoxGeometry(640, 640, 1);
     const logoMesh  = new THREE.Mesh(logoGeo, this.logoMat);
     const logo = new THREE.Group();
     logo.add(logoMesh);
-    // this.group.add(logo);
 
   }
 

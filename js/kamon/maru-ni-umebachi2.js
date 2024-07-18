@@ -2,13 +2,14 @@
 
 import * as THREE from 'three';
 import Kamon2 from '../kamon2.js';
-import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js'
 
 export default class MaruNiUmebachi2 extends Kamon2 {
 
   constructor() {
 
     super();
+
+    this.scrollDur = 7000;
 
     // infoのテキスト
     this.jpNameText = '丸に梅鉢';
@@ -18,26 +19,42 @@ export default class MaruNiUmebachi2 extends Kamon2 {
 
     // ガイドラインの表示アニメーションパラメータ
     this.guidelineParams = {
-      inStart : 0.1,
-      inEnd   : 0.5,
-      outStart: 0.5,
-      outEnd  : 0.55,
-      // gDelay  : 0.03,
-      // lDelay  : 0.06,
+      drawIn   : [0.10, 0.45],
+      drawOut  : [0.55, 0.80],
+      fadeIn1  : [0.00, 0.00],
+      fadeOut1 : [0.35, 0.40],
+      fadeIn2  : [0.55, 0.60],
+      fadeOut2 : [0.80, 0.85],
+      scaleIn  : [0.00, 0.00],
+      scaleOut : [0.70, 0.90],
     }
 
     // アウトラインの表示アニメーションパラメータ
     this.outlineParams = {
-      inStart : 0.45,
-      inEnd   : 0.5,
-      outStart: 0.5,
-      outEnd  : 0.55,
+      fadeIn1  : [0.30, 0.35],
+      fadeOut1 : [0.35 ,0.40],
+      fadeIn2  : [0.60, 0.65],
+      fadeOut2 : [0.65, 0.70],
+      scaleIn  : [0.00, 0.00],
+      scaleOut : [0.70, 0.90],
     }
 
     // 図形の表示アニメーションパラメータ
     this.shapeParams = {
-      inStart : 0.5,
-      inEnd   : 0.55,
+      fadeIn   : [0.35, 0.40],
+      fadeOut  : [0.60, 0.65],
+    }
+
+    // 説明欄の表示アニメーションパラメータ
+    this.descParams = {
+      fadeIn   : [0.35, 0.40],
+      fadeOut  : [0.60, 0.65],
+    }
+
+    // 拡大・縮小アニメーションパラメータ
+    this.scaleParams = {
+      inStart : 0.1,
+      inEnd   : 0.4,
       outStart: 0.75,
       outEnd  : 0.8,
     }
@@ -51,10 +68,10 @@ export default class MaruNiUmebachi2 extends Kamon2 {
     // 円
     this.circle1 = {a:    0, b:    0, r: 1600};
     this.circle2 = {a:    0, b:    0, r: 1310};
-    this.circle3 = {a:    0, b:    0, r:  815};
-    this.circle4 = {a:    0, b:    0, r:  420};
+    this.circle3 = {a:    0, b:    0, r:  827};
+    this.circle4 = {a:    0, b:    0, r:  435};
     this.circle5 = {a:    0, b:    0, r:  200};
-    this.circle6 = {a:    0, b: this.circle3.r, r:  465};
+    this.circle6 = {a:    0, b: this.circle3.r, r:  470};
 
     // 五角形の頂点
     this.pentaApices = [];
@@ -101,92 +118,90 @@ export default class MaruNiUmebachi2 extends Kamon2 {
   generateGuideline = () => {
 
     // 中心円１
-    // this.circles1 = new THREE.Group();
+    this.circles1 = new THREE.Group();
     const circles1 = [this.circle1, this.circle2];
     circles1.forEach((circle) => {
       const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
       const circleMesh = this.guidelineGen(points);
-      // this.circles1.add(circleMesh);
-      this.guidelines.add(circleMesh);
+      this.circles1.add(circleMesh);
     });
-    // this.guidelines.add(this.circles1);
+    this.guidelines.add(this.circles1);
 
     // 中心円２
+    this.circles2 = new THREE.Group();
     const circles2 = [this.circle3];
     circles2.forEach((circle) => {
       const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
       const circleMesh = this.sublineGen(points);
-      this.guidelines.add(circleMesh);
+      this.circles2.add(circleMesh);
     });
+    this.guidelines.add(this.circles2);
 
     // 放射線１
-    // this.radiations1 = new THREE.Group();
+    this.radiation1 = new THREE.Group();
     const dist = this.circle3.r;
     const linePoints1 = this.linePointGen(1, 0, 0, dist, - dist, this.divCount);
     for (var v = 0;v <= 4;v ++) {
       const line = this.sublineGen(linePoints1);
       line.rotation.z = THREE.MathUtils.degToRad(72 * v);
-      this.guidelines.add(line);
-      // this.radiations1.add(line);
+      this.radiation1.add(line);
     }
-    // this.guidelines.add(this.radiations1);
+    this.guidelines.add(this.radiation1);
 
     // 周回円
-    // this.fiveCircles = new THREE.Group();
+    this.fiveCircles = new THREE.Group();
     const c = this.circle6;
     for (var v = 0;v <= 4;v ++) {
       const circlePoints = this.circlePointGen(c.a, c.b, c.r, 90, 450, this.divCount);
       const circle = this.guidelineGen(circlePoints);
       circle.rotation.z = THREE.MathUtils.degToRad(72 * v);
-      this.guidelines.add(circle);
-      // this.fiveCircles.add(circle);
+      this.fiveCircles.add(circle);
     }
-    // this.guidelines.add(this.fiveCircles);
+    this.guidelines.add(this.fiveCircles);
 
     // 中心円３
-    // this.circles2 = new THREE.Group();
+    this.circles3 = new THREE.Group();
     const circles3 = [this.circle4];
     circles3.forEach((circle) => {
       const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
       const circleMesh = this.sublineGen(points);
-      this.guidelines.add(circleMesh);
-      // this.circles2.add(circleMesh);
+      this.circles3.add(circleMesh);
     });
-    // this.guidelines.add(this.circles2);
+    this.guidelines.add(this.circles3);
 
     // 中心円４
+    this.circles4 = new THREE.Group();
     const circles4 = [this.circle5];
     circles4.forEach((circle) => {
       const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
       const circleMesh = this.guidelineGen(points);
-      this.guidelines.add(circleMesh);
+      this.circles4.add(circleMesh);
     });
+    this.guidelines.add(this.circles4);
 
     // 五角形
-    // this.pentagon = new THREE.Group();
+    this.pentagon = new THREE.Group();
     for (var i = 0;i <= 4;i ++) {
       const apex1 = this.pentaApices[i];
       const apex2 = this.pentaApices[i == 4 ? 0 : i + 1];
       const form = this.pentaForms[i];
       const points = this.linePointGen(form.a, 1, form.b, apex1.x, apex2.x, this.divCount);
       const line = this.guidelineGen(points);
-      this.guidelines.add(line);
-      // this.pentagon.add(line);
+      this.pentagon.add(line);
     }
-    // this.guidelines.add(this.pentagon);
+    this.guidelines.add(this.pentagon);
 
     // 放射線２
-    // this.radiations2 = new THREE.Group();
+    this.radiation2 = new THREE.Group();
     const inter1 = this.pentaInters[0];
     const inter2 = this.pentaInters[1];
     const linePoints2 = this.linePointGen(0, 1, 0, inter1.x, inter2.x, this.divCount);
     for (var v = 0;v <= 4;v ++) {
       const line = this.guidelineGen(linePoints2);
       line.rotation.z = THREE.MathUtils.degToRad(72 * v);
-      this.guidelines.add(line);
-      // this.radiations2.add(line);
+      this.radiation2.add(line);
     }
-    // this.guidelines.add(this.radiations2);
+    this.guidelines.add(this.radiation2);
 
     this.group.add(this.guidelines);
   }
@@ -196,7 +211,6 @@ export default class MaruNiUmebachi2 extends Kamon2 {
 
     // アウトラインの幅
     const w = 4;
-    // const w = 6;
 
     // 中心円
     const circles3 = [this.circle1, this.circle2, this.circle5];
@@ -240,8 +254,6 @@ export default class MaruNiUmebachi2 extends Kamon2 {
     const form = {a: 1, b: 0, c: 0};
     const apex1 = this.pentaInters[0];
     const apex2 = new THREE.Vector3(- 200 , 0, 0);
-    // const theta = Math.atan(- 1 / form.a);
-    // console.log(THREE.MathUtils.radToDeg(theta))
     const theta = THREE.MathUtils.degToRad(90);
     const p = w * Math.cos(theta);
     const q = w * Math.sin(theta);
@@ -298,7 +310,6 @@ export default class MaruNiUmebachi2 extends Kamon2 {
     const q1 = 4 * Math.sin(r1);
     const point1d = new THREE.Vector3(point1.x - p1, point1.y - q1, 0);
     const theta1 = 18 - THREE.MathUtils.radToDeg(Math.asin(point1d.x / 204));
-    // console.log(theta1)
     const arc1 = this.curvePointGen(c5.a, c5.b, c5.r + 4, - 72 - theta1, - 108 + theta1, true);
     const arc2 = this.curvePointGen(c5.a, c5.b, c5.r + 4,   72 + theta1,   108 - theta1, false);
 
@@ -315,17 +326,9 @@ export default class MaruNiUmebachi2 extends Kamon2 {
     const point4 = new THREE.Vector3(apex3.x, apex3.y + 4, 0);
 
     // 台形
-    const f0 = this.pentaForms[0];
-    // const point5 = this.getIntersect(Math.tan(r4), 0, f0.a, f0.b);
-    // const r3 = THREE.MathUtils.degToRad(18);
-    // const p3 = 5 * Math.cos(r3);
-    // const q3 = 8 * Math.sin(r3);
-    // console.log(r3, p3, q3)
-    // const point5d = new THREE.Vector3(point5.x - p3, point5.y - q3, 0);
     const point5d = new THREE.Vector3(- point2d.x - 1.5, - point2d.y - 1.5, 0);
     const point6 = new THREE.Vector3(- point5d.x, point5d.y, 0);
 
-// console.log(point2d, point6)
     const points1 = [point2d, point4, point3].concat(arc1);
     const points2 = [point6, point5d].concat(arc2);
     const lineGeo1 = this.shapeGeoGen(points1);
@@ -343,110 +346,162 @@ export default class MaruNiUmebachi2 extends Kamon2 {
 
   // ガイドラインの表示制御
   guidelineDisplayControl = (progRatio) => {
-    const p = this.guidelineParams;
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
+    const param = this.guidelineParams;
+    const drawInRatio   = THREE.MathUtils.smoothstep(progRatio, param.drawIn[0]  , param.drawIn[1]  );
+    const drawOutRatio  = THREE.MathUtils.smoothstep(progRatio, param.drawOut[0] , param.drawOut[1] );
+    const fadeInRatio1  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn1[0] , param.fadeIn1[1] );
+    const fadeOutRatio1 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut1[0], param.fadeOut1[1]);
+    const fadeInRatio2  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn2[0] , param.fadeIn2[1] );
+    const fadeOutRatio2 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut2[0], param.fadeOut2[1]);
+    const scaleInRatio  = THREE.MathUtils.smoothstep(progRatio, param.scaleIn[0] , param.scaleIn[1] );
+    const scaleOutRatio = THREE.MathUtils.smoothstep(progRatio, param.scaleOut[0], param.scaleOut[1]);
+
+    // 描画アニメーションの進捗
+    const drawDelayFactor = 0.03;
+    const maxDrawDelay = drawDelayFactor * this.guidelines.children.length;
+    const drawRatio = drawInRatio - drawOutRatio;
+
+    // スケールアニメーションの進捗
+    const scaleDelayFactor = 0.04;
+    const maxScaleDelay = scaleDelayFactor * this.guidelines.children.length;
+    const scaleRatio = scaleInRatio - scaleOutRatio;
+
+    // フェードアニメーションの進捗
+    const fadeRatio = (fadeInRatio1 - fadeOutRatio1) + (fadeInRatio2 - fadeOutRatio2);
 
     for (var i = 0;i <= this.guidelines.children.length - 1;i ++) {
-      const maxDelay = 0.03 * this.guidelines.children.length;
-      const delay = 0.03 * i;
-      const inRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, inRatio);
-      const mesh = this.guidelines.children[i];
-      mesh.geometry.setDrawRange(0, this.divCount * inRatioD);
-      mesh.material.opacity = 1.0 - outRatio;
-      if (outRatio >= 1.0) {
-        mesh.visible = false;
+      const drawDelay = drawDelayFactor * i;
+      const drawRatioD = THREE.MathUtils.inverseLerp(drawDelay, 1.0 + drawDelay - maxDrawDelay, drawRatio);
+
+      const scaleDelay = scaleDelayFactor * (this.guidelines.children.length - i);
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
+
+      const control = (mesh) => {
+        mesh.geometry.setDrawRange(0, this.divCount * drawRatioD);
+        mesh.material.opacity = fadeRatio;
+        mesh.scale.set(scaleRatioD, scaleRatioD);
+      }
+
+      const child = this.guidelines.children[i];
+      if (child.isGroup) {
+        child.children.forEach((mesh) => control(mesh));
       } else {
-        mesh.visible = true;
+        control(child);
       }
     }
-
   }
 
   // アウトラインの表示制御
   outlineDisplayControl = (progRatio) => {
-    const p = this.outlineParams;
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
-    const control = (mesh) => {
-      mesh.material.opacity = inRatio - outRatio;
-      if (outRatio >= 1.0) {
-        mesh.visible = false;
-      } else {
-        mesh.visible = true;
+    const param = this.outlineParams;
+    const fadeInRatio1  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn1[0] , param.fadeIn1[1] );
+    const fadeOutRatio1 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut1[0], param.fadeOut1[1]);
+    const fadeInRatio2  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn2[0] , param.fadeIn2[1] );
+    const fadeOutRatio2 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut2[0], param.fadeOut2[1]);
+    const scaleInRatio  = THREE.MathUtils.smoothstep(progRatio, param.scaleIn[0] , param.scaleIn[1] );
+    const scaleOutRatio = THREE.MathUtils.smoothstep(progRatio, param.scaleOut[0], param.scaleOut[1]);
+
+    // スケールアニメーションの進捗
+    const scaleDelayFactor = 0.0;
+    const maxScaleDelay = scaleDelayFactor * this.guidelines.children.length;
+    const scaleRatio = scaleInRatio - scaleOutRatio;
+
+    // フェードアニメーションの進捗
+    const fadeRatio = (fadeInRatio1 - fadeOutRatio1) + (fadeInRatio2 - fadeOutRatio2);
+
+    for (var i = 0;i <= this.outlines.children.length - 1;i ++) {
+
+      const scaleDelay = scaleDelayFactor * i;
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
+
+      const control = (mesh) => {
+        mesh.material.opacity = fadeRatio;
+        mesh.scale.set(scaleRatioD, scaleRatioD);
       }
-    }
-    this.outlines.children.forEach((child) => {
+
+      const child = this.outlines.children[i];
       if (child.isGroup) {
         child.children.forEach((mesh) => control(mesh));
       } else {
         control(child);
       }
-    });
-    this.outlineEdges.children.forEach((mesh) => {
-      mesh.material.opacity = inRatio - outRatio * 1.8;
-    });
+    }
+
+    for (var i = 0;i <= this.outlineEdges.children.length - 1;i ++) {
+      const scaleDelay = scaleDelayFactor * i;
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
+
+      mesh.material.opacity = fadeRatio * 1.8;
+      mesh.scale.set(scaleRatioD, scaleRatioD);
+    }
   }
 
-  // 拡大縮小の表示制御
-  scaleDisplayControl = (progRatio) => {
-    // const p = this.outlineParams;
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, 0.2, 0.3);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, 0.75, 0.8);
-    const control = (mesh) => {
-      const scaleRatio = inRatio - outRatio;
-      mesh.scale.set(scaleRatio, scaleRatio);
-    }
-    // const scaleRatio = inRatio - outRatio;
-    // this.guidelines.scale.set(scaleRatio, scaleRatio);
-    // this.outlines.scale.set(scaleRatio, scaleRatio);
-    // this.shapes.scale.set(scaleRatio, scaleRatio);
+  // 図形の表示制御
+  shapeDisplayControl = (progRatio) => {
+    const param = this.shapeParams;
+    const fadeInRatio  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn[0] , param.fadeIn[1] );
+    const fadeOutRatio = THREE.MathUtils.smoothstep(progRatio, param.fadeOut[0], param.fadeOut[1]);
 
-    this.guidelines.children.forEach((mesh) => {
-      control(mesh);
-    });
-    this.outlines.children.forEach((child) => {
+    const fadeRatio = fadeInRatio - fadeOutRatio;
+
+    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
+
+      const control = (mesh) => {
+        mesh.material.opacity = fadeRatio;
+      }
+
+      const child = this.shapes.children[i];
       if (child.isGroup) {
         child.children.forEach((mesh) => control(mesh));
       } else {
         control(child);
       }
-    });
-    this.shapes.children.forEach((mesh) => {
-      control(mesh);
-    });
-
-
-    // this.outlineEdges.children.forEach((mesh) => {
-    //   mesh.material.opacity = inRatio - outRatio * 1.8;
-    // });
+    }
   }
+
+
+  // // 拡大縮小の表示制御
+  // scaleDisplayControl = (progRatio) => {
+  //   const p = this.scaleParams;
+  //   const inRatio  = THREE.MathUtils.smootherstep(progRatio, p.inStart, p.inEnd);
+  //   const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
+  //   const control = (mesh) => {
+  //     const scaleRatio = inRatio - outRatio;
+  //     mesh.scale.set(scaleRatio, scaleRatio);
+  //   }
+
+  //   var index = 0;
+  //   this.guidelines.children.forEach((child) => {
+  //     const maxDelay = 0.04 * this.guidelines.children.length;
+  //     const delay = 0.04 * index;
+  //     // const inRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, inRatio);
+  //     const inRatioD = THREE.MathUtils.smootherstep(inRatio, delay, 1.0 + delay - maxDelay);
+  //     // console.log(inRatioD)
+  //     const scaleRatio = inRatioD - outRatio;
+  //     child.scale.set(scaleRatio, scaleRatio);
+  //     index ++;
+
+  //     // if (child.isGroup) {
+  //     //   child.children.forEach((mesh) => control(mesh));
+  //     // } else {
+  //     //   control(child);
+  //     // }
+  //   });
+  //   this.outlines.children.forEach((child) => {
+  //     if (child.isGroup) {
+  //       child.children.forEach((mesh) => control(mesh));
+  //     } else {
+  //       control(child);
+  //     }
+  //   });
+  //   this.shapes.children.forEach((mesh) => {
+  //     control(mesh);
+  //   });
+  // }
 
 
   // 図形のアニメーション制御
   shapeRotationControl(progRatio) {
-    // const p = this.shapeRotParams;
-    // var ratio = THREE.MathUtils.smootherstep(progRatio, p.start, p.end);
-    // for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-    //   const shape = this.shapes.children[i];
-    //   const j = i - 1;
-    //   const num = Math.trunc(j / 2);
-    //   const adjust1 = 80;
-    //   const adjust2 = 20;
-    //   var ratioSx, ratioSy;
-    //   if (ratio < 0.1 + num / adjust1) {
-    //     ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-    //     ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-    //   } else if (ratio < 0.4 + num / adjust2) {
-    //     ratioSx = 0.3;
-    //     ratioSy = 0.3;
-    //   } else {
-    //     ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-    //     ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-    //   }
-    //   shape.scale.set(ratioSx, ratioSy)
-    //   this.shapes.rotation.z = 720 * ratio * (Math.PI / 180);
-    // }
   }
 
 }
