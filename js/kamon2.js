@@ -27,35 +27,41 @@ export default class Kamon2 extends Founder {
     this.enNameText = '';
     this.enDescText = '';
 
-    // ガイドラインのアニメーションパラメータ
     this.guidelineParams = {
-      inStart : 0.0,
-      inEnd   : 0.0,
-      outStart: 0.0,
-      outEnd  : 0.0,
-      gDelay  : 0.0,
-      lDelay  : 0.0,
+      drawIn   : [0.10, 0.40],
+      drawOut  : [0.55, 0.80],
+      fadeIn1  : [0.00, 0.00],
+      fadeOut1 : [0.35, 0.40],
+      fadeIn2  : [0.625, 0.675],
+      fadeOut2 : [0.80, 0.85],
+      scaleIn  : [0.00, 0.00],
+      scaleOut : [0.70, 0.90],
     }
 
-    // アウトラインのアニメーションパラメータ
+    // アウトラインの表示アニメーションパラメータ
     this.outlineParams = {
-      inStart : 0.0,
-      inEnd   : 0.0,
-      outStart: 0.0,
-      outEnd  : 0.0,
+      fadeIn1  : [0.30, 0.35],
+      fadeOut1 : [0.35 ,0.40],
+      fadeIn2  : [0.60, 0.65],
+      fadeOut2 : [0.65, 0.70],
+      scaleIn  : [0.00, 0.00],
+      scaleOut : [0.70, 0.90],
     }
 
-    // 図形のアニメーションパラメータ
+    // 図形の表示アニメーションパラメータ
     this.shapeParams = {
-      inStart : 0.0,
-      inEnd   : 0.0,
-      outStart: 0.0,
-      outEnd  : 0.0,
+      fadeIn   : [0.35, 0.40],
+      fadeOut  : [0.60, 0.65],
+    }
+
+    // 説明欄の表示アニメーションパラメータ
+    this.descParams = {
+      fadeIn   : [0.35, 0.40],
+      fadeOut  : [0.60, 0.65],
     }
 
     // オブジェクト格納用のグループ
     this.guidelines = new THREE.Group();
-    // this.guidelineSubs = new THREE.Group();
     this.outlines = new THREE.Group();
     this.outlineEdges = new THREE.Group();
     this.shapes = new THREE.Group();
@@ -260,72 +266,108 @@ export default class Kamon2 extends Founder {
 
   // ガイドラインの表示制御
   guidelineDisplayControl = (progRatio) => {
-    const p = this.guidelineParams;
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
-    const groupNum = this.guidelines.children.length;
-    for (var i = 0;i <= groupNum - 1;i ++) {
-      const group = this.guidelines.children[i]
-      const lineNum = group.children.length;
-      const maxDelay = p.gDelay * groupNum + p.lDelay * lineNum;
-      for (var j = 0;j <= lineNum - 1;j ++) {
-        const line = group.children[j];
-        const delay = p.gDelay * i + p.lDelay * j;
-        const inRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, inRatio);
-        if (inRatio >= 0.0 && outRatio == 0.0) {
-          line.visible = true;
-          line.geometry.setDrawRange(0, this.divCount * inRatioD);
-          line.material.opacity = 1.0 - outRatio;
-        } else if (outRatio > 0.0 && outRatio < 1.0) {
-          line.visible = true;
-          line.geometry.setDrawRange(0, this.divCount * inRatioD);
-          line.material.opacity = 1.0 - outRatio;
-        } else if (outRatio >= 1.0) {
-          line.visible = false;
-        }
+    const param = this.guidelineParams;
+    const drawInRatio   = THREE.MathUtils.smoothstep(progRatio, param.drawIn[0]  , param.drawIn[1]  );
+    const drawOutRatio  = THREE.MathUtils.smoothstep(progRatio, param.drawOut[0] , param.drawOut[1] );
+    const fadeInRatio1  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn1[0] , param.fadeIn1[1] );
+    const fadeOutRatio1 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut1[0], param.fadeOut1[1]);
+    const fadeInRatio2  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn2[0] , param.fadeIn2[1] );
+    const fadeOutRatio2 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut2[0], param.fadeOut2[1]);
+    const scaleInRatio  = THREE.MathUtils.smoothstep(progRatio, param.scaleIn[0] , param.scaleIn[1] );
+    const scaleOutRatio = THREE.MathUtils.smoothstep(progRatio, param.scaleOut[0], param.scaleOut[1]);
+
+    // 描画アニメーションの進捗
+    const drawDelayFactor = 0.03;
+    const maxDrawDelay = drawDelayFactor * this.guidelines.children.length;
+    const drawRatio = drawInRatio - drawOutRatio;
+
+    // スケールアニメーションの進捗
+    const scaleDelayFactor = 0.04;
+    const maxScaleDelay = scaleDelayFactor * this.guidelines.children.length;
+    const scaleRatio = scaleInRatio - scaleOutRatio;
+
+    // フェードアニメーションの進捗
+    const fadeRatio = (fadeInRatio1 - fadeOutRatio1) + (fadeInRatio2 - fadeOutRatio2);
+
+    for (var i = 0;i <= this.guidelines.children.length - 1;i ++) {
+      const drawDelay = drawDelayFactor * i;
+      const drawRatioD = THREE.MathUtils.inverseLerp(drawDelay, 1.0 + drawDelay - maxDrawDelay, drawRatio);
+
+      const scaleDelay = scaleDelayFactor * (this.guidelines.children.length - i);
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
+
+      const control = (mesh) => {
+        mesh.geometry.setDrawRange(0, this.divCount * drawRatioD);
+        mesh.material.opacity = fadeRatio;
+        mesh.scale.set(scaleRatioD, scaleRatioD);
+      }
+
+      const child = this.guidelines.children[i];
+      if (child.isGroup) {
+        child.children.forEach((mesh) => control(mesh));
+      } else {
+        control(child);
       }
     }
   }
 
   // アウトラインの表示制御
   outlineDisplayControl = (progRatio) => {
-    const p = this.outlineParams;
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
-    this.outlines.children.forEach((line) => {
-      if (inRatio > 0.0 && inRatio <= 1.0 && outRatio == 0.0) {
-        line.visible = true;
-        line.geometry.setDrawRange(0, this.divCount * inRatio);
-        line.material.opacity = 1.0 - outRatio;
-      } else if (inRatio >= 1.0 && outRatio > 0.0 && outRatio < 1.0) {
-        line.visible = true;
-        line.geometry.setDrawRange(0, this.divCount * inRatio);
-        line.material.opacity = 1.0 - outRatio;
-      } else {
-        line.visible = false;
+    const param = this.outlineParams;
+    const fadeInRatio1  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn1[0] , param.fadeIn1[1] );
+    const fadeOutRatio1 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut1[0], param.fadeOut1[1]);
+    const fadeInRatio2  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn2[0] , param.fadeIn2[1] );
+    const fadeOutRatio2 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut2[0], param.fadeOut2[1]);
+    const scaleInRatio  = THREE.MathUtils.smoothstep(progRatio, param.scaleIn[0] , param.scaleIn[1] );
+    const scaleOutRatio = THREE.MathUtils.smoothstep(progRatio, param.scaleOut[0], param.scaleOut[1]);
+
+    // スケールアニメーションの進捗
+    const scaleDelayFactor = 0.0;
+    const maxScaleDelay = scaleDelayFactor * this.outlines.children.length;
+    const scaleRatio = scaleInRatio - scaleOutRatio;
+
+    // フェードアニメーションの進捗
+    const fadeRatio = (fadeInRatio1 - fadeOutRatio1) + (fadeInRatio2 - fadeOutRatio2);
+
+    for (var i = 0;i <= this.outlines.children.length - 1;i ++) {
+
+      const scaleDelay = scaleDelayFactor * i;
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
+
+      const control = (mesh) => {
+        mesh.material.opacity = fadeRatio;
+        mesh.scale.set(scaleRatioD, scaleRatioD);
       }
-    });
-    this.outlineEdges.children.forEach((mesh) => {
-      mesh.material.opacity = inRatio - outRatio * 1.2;
-    });
+
+      const child = this.outlines.children[i];
+      if (child.isGroup) {
+        child.children.forEach((mesh) => control(mesh));
+      } else {
+        control(child);
+      }
+    }
+
+    for (var i = 0;i <= this.outlineEdges.children.length - 1;i ++) {
+      const scaleDelay = scaleDelayFactor * i;
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
+
+      mesh.material.opacity = fadeRatio * 1.8;
+      mesh.scale.set(scaleRatioD, scaleRatioD);
+    }
   }
 
   // 図形の表示制御
   shapeDisplayControl = (progRatio) => {
-    const p = this.shapeParams;
-    const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-    const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
+    const param = this.shapeParams;
+    const fadeInRatio  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn[0] , param.fadeIn[1] );
+    const fadeOutRatio = THREE.MathUtils.smoothstep(progRatio, param.fadeOut[0], param.fadeOut[1]);
+
+    const fadeRatio = fadeInRatio - fadeOutRatio;
+
     const control = (mesh) => {
-      if (inRatio > 0.0 && outRatio == 0.0) {
-        mesh.visible = true;
-        mesh.material.opacity = inRatio;
-      } else if (outRatio > 0.0) {
-        mesh.visible = true;
-        mesh.material.opacity = 1.0 - outRatio;
-      } else {
-        mesh.visible = false;
-      }
+      mesh.material.opacity = fadeRatio;
     }
+
     this.shapes.children.forEach((child) => {
       if (child.isGroup) {
         child.children.forEach((mesh) => control(mesh));
@@ -334,5 +376,6 @@ export default class Kamon2 extends Founder {
       }
     })
   }
+
 
 }

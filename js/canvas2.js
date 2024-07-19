@@ -7,12 +7,11 @@ import Mist from './mist.js';
 import KageIgeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 import Kikyou from './kamon/kikyou.js';
-import GenjiGuruma from './kamon/genji-guruma.js';
+import GenjiGuruma2 from './kamon/genji-guruma2.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
-import MaruNiUmebachi from './kamon/maru-ni-umebachi.js';
 import MaruNiUmebachi2 from './kamon/maru-ni-umebachi2.js';
-import MaruNiFutatsuKarigane from './kamon/maru-ni-futatsu-karigane.js';
+import MaruNiFutatsuKarigane2 from './kamon/maru-ni-futatsu-karigane2.js';
 
 export default class Canvas2 {
 
@@ -106,11 +105,11 @@ export default class Canvas2 {
     const kamonList = [
       // new HidariFutatsuDomoe(),
       // new Kikyou(),
-      // new GenjiGuruma(),
+      new GenjiGuruma2(),
       // new ChigaiTakanoha(),
       // new DakiMyouga(),
       new MaruNiUmebachi2,
-      // new MaruNiFutatsuKarigane
+      // new MaruNiFutatsuKarigane2(),
     ];
     const maxNum = 7;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
@@ -359,7 +358,7 @@ export default class Canvas2 {
     this.kamon.guidelineDisplayControl(this.progRatio);
     this.kamon.outlineDisplayControl(this.progRatio);
     this.kamon.shapeDisplayControl(this.progRatio);
-    this.kamon.shapeRotationControl(this.progRatio);
+    // this.kamon.shapeRotationControl(this.progRatio);
     // this.kamon.scaleDisplayControl(this.progRatio);
 
     // ロゴなどのアニメーションを制御
