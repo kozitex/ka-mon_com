@@ -17,10 +17,17 @@ export default class Founder {
     }
   }
 
-  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, r: 半径, s:角度）
-  circle(a, b, r, s) {
-    const sr = s * Math.PI / 180;
-    return new THREE.Vector3(a + r * Math.cos(sr), b + r * Math.sin(sr), 0);
+  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, r: 半径, t:角度）
+  circle(a, b, r, t) {
+    const rt = THREE.MathUtils.degToRad(t);
+    const x = a + r * Math.cos(rt);
+    const y = b + r * Math.sin(rt);
+    return new THREE.Vector3(x, y, 0);
+  }
+
+  // 円弧の角度を求める式（a: 中心X座標, b: 中心Y座標, x: 円周X座標, x: 円周Y座標）
+  arc(a, b, x, y) {
+    return THREE.MathUtils.radToDeg(Math.atan2(y - b, x - a));
   }
 
   // 直線と円の交点を求める（r: 半径, h: 中心X座標, h: 中心Y座標, m: 直線式の傾き, n: 直線式の切片）

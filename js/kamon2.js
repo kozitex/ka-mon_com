@@ -253,6 +253,13 @@ export default class Kamon2 extends Founder {
     return curve.getPoints(100);
   }
 
+  // 円弧の図形用座標を生成
+  curvePointGen2 = (arc, angle) => {
+    return this.curvePointGen(
+      arc.a, arc.b, arc.r, 
+      angle[0], angle[1], angle[0] > angle[1] ? true : false);
+  }
+
   // ポイントからシェイプを生成
   shapeGeoGen = (shapes, pathes) => {
     const shape = new THREE.Shape(shapes);
@@ -262,6 +269,16 @@ export default class Kamon2 extends Founder {
     }
     const geometry = new THREE.ShapeGeometry(shape);
     return geometry;
+  }
+
+  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, r: 半径, t:角度）
+  circlePoint(circle, theta) {
+    return this.circle(circle.a, circle.b, circle.r, theta);
+  }
+
+  // 円弧の角度を求める式（v1: 円情報(a, b, r), v2: 円周座標(vector3)）
+  arcAngle(v1, v2) {
+    return this.arc(v1.a, v1.b, v2.x, v2.y);
   }
 
   // ガイドラインの表示制御
