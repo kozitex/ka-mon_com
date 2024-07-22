@@ -58,11 +58,24 @@ export default class Founder {
     return {a: a, b: b};
   }
 
+  // ２点の座標から方程式のa,bを取得
+  from2Points2 = (v1, v2) => {
+    return this.from2Points(v1.x, v1.y, v2.x, v2.y);
+  }
+
   // ２直線の交点を求める式
   getIntersect(a1, b1, a2, b2) {
     const interX = (b2 - b1) / (a1 - a2);
     const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
     return new THREE.Vector3(interX, interY, 0);
+  }
+
+  // ２直線の交点を求める式
+  getIntersect2(f1, f2) {
+    return this.getIntersect(f1.a, f1.b, f2.a, f2.b);
+    // const interX = (b2 - b1) / (a1 - a2);
+    // const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
+    // return new THREE.Vector3(interX, interY, 0);
   }
 
   // 直線の描画座標を生成

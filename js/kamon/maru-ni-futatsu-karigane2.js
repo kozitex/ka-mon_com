@@ -18,13 +18,13 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     // ガイドラインの表示アニメーションパラメータ
     this.guidelineParams = {
       drawIn   : [0.10, 0.40],
-      drawOut  : [0.55, 0.80],
+      drawOut  : [0.65, 0.80],
       fadeIn1  : [0.00, 0.00],
       fadeOut1 : [0.35, 0.40],
       fadeIn2  : [0.625, 0.675],
       fadeOut2 : [0.80, 0.85],
       scaleIn  : [0.00, 0.00],
-      scaleOut : [0.70, 0.90],
+      scaleOut : [0.65, 0.90],
     }
 
     // アウトラインの表示アニメーションパラメータ
@@ -49,40 +49,6 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
       fadeOut  : [0.60, 0.65],
     }
 
-    // // ガイドラインの表示アニメーションパラメータ
-    // this.guidelineParams = {
-    //   inStart : 0.05,
-    //   inEnd   : 0.5,
-    //   outStart: 0.55,
-    //   outEnd  : 0.6,
-    //   gDelay  : 0.03,
-    //   lDelay  : 0.06,
-    // }
-
-    // // アウトラインの表示アニメーションパラメータ
-    // this.outlineParams = {
-    //   inStart : 0.5,
-    //   inEnd   : 0.625,
-    //   outStart: 0.65,
-    //   outEnd  : 0.7,
-    // }
-
-    // // 図形の表示アニメーションパラメータ
-    // this.shapeParams = {
-    //   inStart : 0.625,
-    //   inEnd   : 0.7,
-    //   outStart: 0.95,
-    //   outEnd  : 1.0,
-    // }
-
-    // // 図形の回転アニメーションパラメータ
-    // this.shapeRotParams = {
-    //   start : 0.7,
-    //   end   : 0.85,
-    // }
-
-    
-
     // 外周円
     this.circle1 = {a: 0, b: 0, r: 1600};
     this.circle2 = {a: 0, b: 0, r: 1310};
@@ -105,12 +71,14 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     this.arc12 = {a: this.arc11.a, b: this.arc11.b, r: this.arc11.r + 4};
     this.arc13 = {a: this.arc11.a, b: this.arc11.b, r: this.arc11.r - 4};
     this.arc14 = {a: - 100, b:  1052, r:   24};
+    this.arc15 = {a: this.arc14.a, b: this.arc14.b, r: this.arc14.r + 4};
+    this.arc16 = {a: this.arc14.a, b: this.arc14.b, r: this.arc14.r - 4};
 
     // 円弧の描画角度
-    this.angle1  = [128,  43];
-    this.angle2  = [ 90, 155];
-    this.angle3  = [ 25,  90];
-    this.angle4  = [137,  52];
+    this.angle1  = [128.5, 43];
+    this.angle2  = [ 89, 154.5];
+    this.angle3  = [ 25.5,  91];
+    this.angle4  = [137,  51.5];
 
     this.angle5  = [130,  20];
     this.angle6  = [ 95, 128];
@@ -124,106 +92,6 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     this.apex2 = this.circlePoint(this.arc5, this.angle5[0]);
     this.apex3 = this.circlePoint(this.arc7, this.angle7[1]);
     this.apex4 = new THREE.Vector3(- 410, 1008, 0);
-
-    this.form1 = this.from2Points(this.apex1.x, this.apex1.y, this.apex2.x, this.apex2.y);
-    this.form2 = this.from2Points(this.apex1.x, this.apex1.y, this.apex3.x, this.apex3.y);
-    this.form3 = this.from2Points(this.apex4.x, this.apex4.y, this.apex2.x, this.apex2.y);
-    this.form4 = this.from2Points(this.apex4.x, this.apex4.y, this.apex3.x, this.apex3.y);
-    this.form5 = this.from2Points(this.apex1.x, this.apex1.y, this.apex4.x, this.apex4.y);
-
-
-
-    this.wingArc1 = {a:  474, b:   140, r:  765};
-    this.wingArc2 = {a: 1012, b: - 458, r: 1120};
-    this.wingArc3 = {a: - this.wingArc2.a, b: this.wingArc2.b, r: this.wingArc2.r};
-    this.wingArc4 = {a: - this.wingArc1.a, b: this.wingArc1.b, r: this.wingArc1.r};
-
-    this.wingApex1 = new THREE.Vector3(1035, 660, 0);
-    this.wingApex2 = new THREE.Vector3(   0, 740, 0);
-    this.wingApex3 = new THREE.Vector3(   0,  20, 0);
-    this.wingApex4 = new THREE.Vector3(- this.wingApex1.x, this.wingApex1.y, 0);
-
-    this.wingAngle1 = [
-      this.arcAngle(this.wingArc1, this.wingApex2),
-      this.arcAngle(this.wingArc1, this.wingApex1)
-    ];
-    this.wingAngle2 = [
-      this.arcAngle(this.wingArc2, this.wingApex1),
-      this.arcAngle(this.wingArc2, this.wingApex3)
-    ];
-    this.wingAngle3 = [
-      this.arcAngle(this.wingArc3, this.wingApex3),
-      this.arcAngle(this.wingArc3, this.wingApex4)
-    ];
-    this.wingAngle4 = [
-      this.arcAngle(this.wingArc4, this.wingApex4),
-      this.arcAngle(this.wingArc4, this.wingApex2)
-    ];
-
-    // console.log(this.wingAngle1, this.wingAngle2, this.wingAngle3, this.wingAngle4)
-
-    // 頭
-    this.headArc1 = {a: 0, b: 762, r: 426};
-    this.headArc2 = {a:   this.wingArc1.a, b: this.wingArc1.b, r: this.wingArc1.r + 8};
-    this.headArc3 = {a: - this.wingArc1.a, b: this.wingArc1.b, r: this.wingArc1.r + 8};
-
-    this.headApex1 = new THREE.Vector3(  402,  908, 0);
-    this.headApex2 = new THREE.Vector3(- 270, 1088, 0);
-    this.headApex3 = new THREE.Vector3(- 192,  976, 0);
-    this.headApex4 = new THREE.Vector3(- 288,  890, 0);
-    this.headApex5 = new THREE.Vector3(    0,  756, 0);
-
-    this.headLine1 = this.from2Points(this.headApex2.x, this.headApex2.y, this.headApex3.x, this.headApex3.y);
-    this.headLine2 = this.from2Points(this.headApex4.x, this.headApex4.y, this.headApex3.x, this.headApex3.y);
-
-    this.headAngle1 = THREE.MathUtils.radToDeg(Math.atan((this.headApex1.y - this.headArc1.b) / this.headApex1.x));
-    this.headAngle2 = 180 - THREE.MathUtils.radToDeg(Math.atan((this.headApex2.y - this.headArc1.b) / - this.headApex2.x));
-    this.headAngle3 = 180 - THREE.MathUtils.radToDeg(Math.atan((this.headApex5.y - this.wingArc1.b) / this.wingArc1.a));
-    this.headAngle4 = 180 - THREE.MathUtils.radToDeg(Math.atan((this.headApex1.y - this.wingArc1.b) / (this.wingArc1.a - this.headApex1.x)));
-    this.headAngle5 = THREE.MathUtils.radToDeg(Math.atan((this.headApex5.y - this.wingArc1.b) / this.wingArc1.a));
-    this.headAngle6 = THREE.MathUtils.radToDeg(Math.atan((this.headApex4.y - this.wingArc1.b) / (this.headApex4.x + this.wingArc1.a)));
-
-    // console.log(this.headAngle1, this.headAngle2, this.headAngle3, this.headAngle4, this.headAngle5, this.headAngle6)
-
-    // 目
-    this.eyeCircle1 = {a: - 100, b: 1052, r:  66};
-    this.eyeCircle2 = {a: - 100, b: 1052, r:  58};
-    this.eyeCircle3 = {a: - 100, b: 1052, r:  24};
-
-    // しわ
-    this.creaseArc1 = {a: - 60, b: 1028, r: 130};
-    this.creaseArc2 = {a: - 60, b: 1028, r: 138};
-    this.creaseArc3 = {a:   14, b: 1141, r:   4};
-    this.creaseArc4 = {a: - 56, b:  894, r:   4};
-
-    this.creaseApex1 = new THREE.Vector3(    6, 1160, 0);
-    this.creaseApex2 = new THREE.Vector3( - 56,  940, 0);
-    this.creaseApex3 = new THREE.Vector3( - 56,  912, 0);
-    this.creaseApex4 = new THREE.Vector3(   24, 1184, 0);
-
-    this.creaseAngle1 = THREE.MathUtils.radToDeg(Math.atan((this.creaseApex1.y - this.creaseArc1.b) / (this.creaseApex1.x - this.creaseArc1.a)));
-    this.creaseAngle2 = - 180 + THREE.MathUtils.radToDeg(Math.atan((this.creaseArc1.b - this.creaseApex2.y) / (this.creaseApex2.x - this.creaseArc1.a)));
-    this.creaseAngle3 = - 180 + THREE.MathUtils.radToDeg(Math.atan((this.creaseArc2.b - this.creaseApex3.y) / (this.creaseApex3.x - this.creaseArc2.a)));
-    this.creaseAngle4 = THREE.MathUtils.radToDeg(Math.atan((this.creaseApex4.y - this.creaseArc2.b) / (this.creaseApex4.x - this.creaseArc2.a)));
-
-    // console.log(this.creaseAngle1, this.creaseAngle2, this.creaseAngle3, this.creaseAngle4)
-
-    // くちばし
-    this.beakApex1 = new THREE.Vector3(- 278, 1084, 0);
-    this.beakApex2 = new THREE.Vector3(- 410, 1012, 0);
-    this.beakApex3 = new THREE.Vector3(- 204,  980, 0);
-
-    this.beakApex4 = new THREE.Vector3(- 295,  896, 0);
-    this.beakApex5 = new THREE.Vector3(- 412, 1002, 0);
-    this.beakApex6 = new THREE.Vector3(- 208,  972, 0);
-
-    this.beakLine1 = this.from2Points(this.beakApex1.x, this.beakApex1.y, this.beakApex2.x, this.beakApex2.y);
-    this.beakLine2 = this.from2Points(this.beakApex2.x, this.beakApex2.y, this.beakApex3.x, this.beakApex3.y);
-    this.beakLine3 = this.from2Points(this.beakApex3.x, this.beakApex3.y, this.beakApex1.x, this.beakApex1.y);
-
-    this.beakLine4 = this.from2Points(this.beakApex4.x, this.beakApex4.y, this.beakApex5.x, this.beakApex5.y);
-    this.beakLine5 = this.from2Points(this.beakApex5.x, this.beakApex5.y, this.beakApex6.x, this.beakApex6.y);
-    this.beakLine6 = this.from2Points(this.beakApex6.x, this.beakApex6.y, this.beakApex4.x, this.beakApex4.y);
   }
 
   // オブジェクトを生成
@@ -233,7 +101,7 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     this.generateGuideline();
 
     // アウトラインの作成
-    // this.generateOutline();
+    this.generateOutline();
 
     // 塗りつぶし図形の描画
     this.generateShape();
@@ -243,186 +111,83 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
   // ガイドラインを作成
   generateGuideline = () => {
 
-    const surplus = 5;
-
     // 外周円
-    // this.circles = new THREE.Group();
     const outers = [this.circle1, this.circle2];
     outers.forEach((outer) => {
-      const points = this.circlePointGen(outer.a, outer.b, outer.r, 90, 450, this.divCount);
-      const circle = this.guidelineGen(points);
-      this.guidelines.add(circle);
+      const points = this.circlePointGen2(outer,[90, 450], this.divCount);
+      const mesh = this.guidelineGen(points);
+      this.guidelines.add(mesh);
     });
-    // this.guidelines.add(this.circles);
 
-    // 鳥
-    // this.bird = new THREE.Group();
+    const heads = [this.arc5, this.arc8, this.arc11, this.arc14];
+    for (var i = 0;i <= 3;i ++) {
+      const points = this.circlePointGen2(heads[i], [0, 450], this.divCount);
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      for (var j = 0;j <= 1;j ++) {
+        const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
+        mesh.position.y = - 1250 * j;
+        this.guidelines.add(mesh);
+      }
+    }
 
-    // 翼
-    // this.wing = new THREE.Group();
+    const wings = [this.arc1, this.arc4, this.arc2, this.arc3];
+    for (var i = 0;i <= 3;i ++) {
+      const points = this.circlePointGen2(wings[i], [0, 450], this.divCount);
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      for (var j = 0;j <= 1;j ++) {
+        const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
+        mesh.position.y = - 1250 * j;
+        this.guidelines.add(mesh);
+      }
+    }
 
-    const wingAngle1 = this.wingAngle1 + surplus;
-    const wingAngle2 = this.wingAngle2 - surplus;
-    const wingAngle3 = this.wingAngle3 + surplus;
-    const wingAngle4 = this.wingAngle4 - surplus;
+    const beaks = [
+      [this.apex1, this.apex2],
+      [this.apex2, this.apex4],
+      [this.apex4, this.apex1],
+      [this.apex4, this.apex3],
+      [this.apex3, this.apex1]
+    ];
+    for (var i = 0;i <= 4;i ++) {
+      const beak = beaks[i];
+      const points = this.linePointGen2(beak[0], beak[1], 20, this.divCount);
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      for (var j = 0;j <= 1;j ++) {
+        const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
+        mesh.position.y = - 1250 * j;
+        this.guidelines.add(mesh);
+      }
+    }
 
-    const wingPoints1 = this.circlePointGen(  this.wingArc1.a, this.wingArc1.b, this.wingArc1.r, 90, 450, this.divCount);
-    const wingPoints2 = this.circlePointGen(  this.wingArc2.a, this.wingArc2.b, this.wingArc2.r, 90, 450, this.divCount);
-    const wingPoints3 = this.circlePointGen(- this.wingArc1.a, this.wingArc1.b, this.wingArc1.r, 90, 450, this.divCount);
-    const wingPoints4 = this.circlePointGen(- this.wingArc2.a, this.wingArc2.b, this.wingArc2.r, 90, 450, this.divCount);
-    // const wingPoints1 = this.circlePointGen(  this.wingArc1.a, this.wingArc1.b, this.wingArc1.r,       wingAngle1,       wingAngle2, this.divCount);
-    // const wingPoints2 = this.circlePointGen(  this.wingArc2.a, this.wingArc2.b, this.wingArc2.r,       wingAngle3,       wingAngle4, this.divCount);
-    // const wingPoints3 = this.circlePointGen(- this.wingArc1.a, this.wingArc1.b, this.wingArc1.r, 180 - wingAngle1, 180 - wingAngle2, this.divCount);
-    // const wingPoints4 = this.circlePointGen(- this.wingArc2.a, this.wingArc2.b, this.wingArc2.r, 180 - wingAngle3, 180 - wingAngle4, this.divCount);
-
-    const wingArc1 = this.guidelineGen(wingPoints1);
-    const wingArc2 = this.guidelineGen(wingPoints2);
-    const wingArc3 = this.guidelineGen(wingPoints3);
-    const wingArc4 = this.guidelineGen(wingPoints4);
-
-    this.guidelines.add(wingArc1, wingArc2, wingArc3, wingArc4);
-
-    // 頭（輪郭）
-    // this.head = new THREE.Group();
-
-    const headAngle1 = this.headAngle1 - surplus;
-    const headAngle2 = this.headAngle2 + surplus;
-    const headAngle3 = this.headAngle3 + surplus;
-    const headAngle4 = this.headAngle4 - surplus;
-    const headAngle5 = this.headAngle5 - surplus;
-    const headAngle6 = this.headAngle6 + surplus;
-
-    const headPoints1 = this.circlePointGen(this.headArc1.a, this.headArc1.b, this.headArc1.r, 90, 450, this.divCount);
-    const headPoints2 = this.circlePointGen(this.headArc2.a, this.headArc2.b, this.headArc2.r, 90, 450, this.divCount);
-    const headPoints3 = this.circlePointGen(this.headArc3.a, this.headArc3.b, this.headArc3.r, 90, 450, this.divCount);
-    const headPoints4 = this.linePointGen(this.headLine1.a, 1, this.headLine1.b, this.headApex2.x - 20, this.headApex3.x + 20, this.divCount);
-    const headPoints5 = this.linePointGen(this.headLine2.a, 1, this.headLine2.b, this.headApex4.x - 20, this.headApex3.x + 20, this.divCount);
-
-    const headArc1  = this.guidelineGen(headPoints1);
-    const headArc2  = this.guidelineGen(headPoints2);
-    const headArc3  = this.guidelineGen(headPoints3);
-    const headLine1 = this.guidelineGen(headPoints4);
-    const headLine2 = this.guidelineGen(headPoints5);
-
-    this.guidelines.add(headArc1, headArc2, headArc3, headLine1, headLine2);
-
-    // 目
-    // this.eye = new THREE.Group();
-
-    const eyePoints1 = this.circlePointGen(this.eyeCircle1.a, this.eyeCircle1.b, this.eyeCircle1.r, 90, 450, this.divCount);
-    const eyePoints2 = this.circlePointGen(this.eyeCircle2.a, this.eyeCircle2.b, this.eyeCircle2.r, 90, 450, this.divCount);
-    const eyePoints3 = this.circlePointGen(this.eyeCircle3.a, this.eyeCircle3.b, this.eyeCircle3.r, 90, 450, this.divCount);
-
-    const eyeCircle1  = this.guidelineGen(eyePoints1);
-    const eyeCircle2  = this.guidelineGen(eyePoints2);
-    const eyeCircle3  = this.guidelineGen(eyePoints3);
-
-    this.guidelines.add(eyeCircle1, eyeCircle2, eyeCircle3);
-
-    // しわ
-    // this.crease = new THREE.Group();
-
-    const creaseAngle1 = this.creaseAngle1 + surplus;
-    const creaseAngle2 = this.creaseAngle2 - surplus;
-    const creaseAngle3 = this.creaseAngle3 - surplus;
-    const creaseAngle4 = this.creaseAngle4 + surplus;
-
-    const creasePoints1 = this.circlePointGen(this.creaseArc1.a, this.creaseArc1.b, this.creaseArc1.r, 90, 450, this.divCount);
-    const creasePoints2 = this.circlePointGen(this.creaseArc2.a, this.creaseArc2.b, this.creaseArc2.r, 90, 450, this.divCount);
-    const creasePoints3 = this.circlePointGen(this.creaseArc3.a, this.creaseArc3.b, this.creaseArc3.r, 90, 450, this.divCount);
-    const creasePoints4 = this.circlePointGen(this.creaseArc4.a, this.creaseArc4.b, this.creaseArc4.r, 90, 450, this.divCount);
-
-    const creaseArc1  = this.guidelineGen(creasePoints1);
-    const creaseArc2  = this.guidelineGen(creasePoints2);
-    const creaseArc3  = this.guidelineGen(creasePoints3);
-    const creaseArc4  = this.guidelineGen(creasePoints4);
-
-    this.guidelines.add(creaseArc1, creaseArc2, creaseArc3, creaseArc4);
-
-    // くちばし
-    // this.beak = new THREE.Group();
-
-    const beakPoints1 = this.linePointGen(this.beakLine1.a, 1, this.beakLine1.b, this.beakApex1.x + 20, this.beakApex2.x - 20, this.divCount);
-    const beakPoints2 = this.linePointGen(this.beakLine2.a, 1, this.beakLine2.b, this.beakApex2.x - 20, this.beakApex3.x + 20, this.divCount);
-    const beakPoints3 = this.linePointGen(this.beakLine3.a, 1, this.beakLine3.b, this.beakApex3.x + 20, this.beakApex1.x - 20, this.divCount);
-
-    const beakPoints4 = this.linePointGen(this.beakLine4.a, 1, this.beakLine4.b, this.beakApex4.x + 20, this.beakApex5.x - 20, this.divCount);
-    const beakPoints5 = this.linePointGen(this.beakLine5.a, 1, this.beakLine5.b, this.beakApex5.x - 20, this.beakApex6.x + 20, this.divCount);
-    const beakPoints6 = this.linePointGen(this.beakLine6.a, 1, this.beakLine6.b, this.beakApex6.x + 20, this.beakApex4.x - 20, this.divCount);
-
-    const beakLine1  = this.guidelineGen(beakPoints1);
-    const beakLine2  = this.guidelineGen(beakPoints2);
-    const beakLine3  = this.guidelineGen(beakPoints3);
-
-    const beakLine4  = this.guidelineGen(beakPoints4);
-    const beakLine5  = this.guidelineGen(beakPoints5);
-    const beakLine6  = this.guidelineGen(beakPoints6);
-
-    this.guidelines.add(beakLine1, beakLine2, beakLine3, beakLine4, beakLine5, beakLine6);
-
-    // this.bird1 = new THREE.Group();
-    // this.bird1.add(this.wing, this.head, this.eye, this.crease, this.beak);
-    // this.bird2 = this.bird1.clone();
-    // this.bird.add(this.bird1, this.bird2)
-
-    // this.guidelines.add(this.bird);
     this.group.add(this.guidelines);
   }
 
   // アウトラインを作成
   generateOutline = () => {
 
+    const w = 4;
+
     // 外周円
     const outers = [this.circle1, this.circle2];
     outers.forEach((outer) => {
-      const shape = this.curvePointGen(outer.a, outer.b, outer.r + 6, 0, 360, false);
-      const path  = this.curvePointGen(outer.a, outer.b, outer.r - 6, 0, 360, false);
+      const outer1 = {a: outer.a, b: outer.b, r: outer.r + w};
+      const outer2 = {a: outer.a, b: outer.b, r: outer.r - w};
+      const shape = this.curvePointGen2(outer1, [0, 360]);
+      const path  = this.curvePointGen2(outer2, [0, 360]);
       const geo = this.shapeGeoGen(shape, path);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
-    })
+    });
 
     // 翼
-    const wingArcs = [this.wingArc1, this.wingArc2];
-    const wingAngles = [
-      [this.wingAngle1[0], this.wingAngle1[1]],
-      [this.wingAngle2[0], this.wingAngle2[1]],
-    ];
-    for (var i = 0;i <= wingArcs.length - 1;i ++) {
-      const arc = wingArcs[i];
-      const angle = wingAngles[i]
-      const point1 = this.curvePointGen(arc.a, arc.b, arc.r + 6, angle[0], angle[1], true);
-      const point2 = this.curvePointGen(arc.a, arc.b, arc.r - 6, angle[1], angle[0], false);
-      const points = point1.concat(point2);
-      const geo = this.shapeGeoGen(points);
-      for (var j = 0;j <= 3;j ++) {
-        const mesh = new THREE.Mesh(geo, this.outlineMat);
-        mesh.rotation.y = THREE.MathUtils.degToRad(180 * Math.trunc(j / 2));
-        mesh.position.y = - 1250 * Math.abs(j % 2);
-        this.outlines.add(mesh);
-      }
-    }
-
-    // 頭
-    const headArcs = [
-      this.headArc1, this.headArc2, this.headArc3,
-      this.eyeCircle1, this.eyeCircle2, this.eyeCircle3,
-      this.creaseArc1, this.creaseArc2, this.creaseArc3, this.creaseArc4,
-    ];
-    const headAngles = [
-      [this.headAngle2, this.headAngle1],
-      [this.headAngle3, this.headAngle4],
-      [this.headAngle6, this.headAngle5],
-      [0, 360], [0, 360], [0, 360],
-      [this.creaseAngle1, this.creaseAngle2],
-      [this.creaseAngle4, this.creaseAngle3],
-      [240, 40], [270, 90],
-    ];
-    for (var i = 0;i <= headArcs.length - 1;i ++) {
-      const arc = headArcs[i];
-      const angle = headAngles[i]
-      const point1 = this.curvePointGen(arc.a, arc.b, arc.r + 6, angle[0], angle[1], true);
-      const point2 = this.curvePointGen(arc.a, arc.b, arc.r - 6, angle[1], angle[0], false);
+    const arcs1 = [this.arc1, this.arc2, this.arc3, this.arc4, this.arc5];
+    const angles1 = [this.angle1, this.angle2, this.angle3, this.angle4, this.angle5];
+    for (var i = 0;i <= 4;i ++) {
+      const arc1 = {a: arcs1[i].a, b: arcs1[i].b, r: arcs1[i].r + (i == 0 || i == 3 ? w * 2: w)};
+      const arc2 = {a: arcs1[i].a, b: arcs1[i].b, r: arcs1[i].r - (i == 0 || i == 3 ? 0: w)};
+      const angle = angles1[i]
+      const point1 = this.curvePointGen2(arc1, [angle[0], angle[1]]);
+      const point2 = this.curvePointGen2(arc2, [angle[1], angle[0]]);
       const points = point1.concat(point2);
       const geo = this.shapeGeoGen(points);
       for (var j = 0;j <= 1;j ++) {
@@ -432,56 +197,45 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
       }
     }
 
-    // くちばし
-    const beakLines = [
-      this.headLine1, this.headLine2,
-      this.beakLine1, this.beakLine2, this.beakLine3,
-      this.beakLine4, this.beakLine5, this.beakLine6,
+    const eyePoint1 = this.curvePointGen2(this.arc12, [0, 360]);
+    const eyePoint2 = this.curvePointGen2(this.arc13, [0, 360]);
+    const eyePoint3 = this.curvePointGen2(this.arc15, [0, 360]);
+    const eyePoint4 = this.curvePointGen2(this.arc16, [0, 360]);
+    const eyeGeo1 = this.shapeGeoGen(eyePoint1, eyePoint2);
+    const eyeGeo2 = this.shapeGeoGen(eyePoint3, eyePoint4);
+    for (var j = 0;j <= 1;j ++) {
+      const mesh1 = new THREE.Mesh(eyeGeo1, this.outlineMat);
+      const mesh2 = new THREE.Mesh(eyeGeo2, this.outlineMat);
+      mesh1.position.y = - 1250 * j;
+      mesh2.position.y = - 1250 * j;
+      this.outlines.add(mesh1, mesh2);
+    }
+
+    const creasePoint1 = this.curvePointGen2(this.arc9,  this.angle9);
+    const creasePoint2 = this.curvePointGen2(this.arc10, this.angle10);
+    const creases    = creasePoint1.concat(creasePoint2);
+    const creaseShape = new THREE.Shape(creases);
+    const creaseGeo = new THREE.ShapeGeometry(creaseShape);
+    for (var j = 0;j <= 1;j ++) {
+      const mesh = new THREE.Mesh(creaseGeo, this.outlineMat);
+      mesh.position.y = - 1250 * j;
+      this.outlines.add(mesh);
+    }
+
+    const beaks = [
+      [this.apex1, this.apex2],
+      [this.apex1, this.apex3],
+      [this.apex4, this.apex2],
+      [this.apex4, this.apex3],
+      [this.apex1, this.apex4],
     ];
-    const beakApexes = [
-      [this.headApex2, this.headApex3],
-      [this.headApex4, this.headApex3],
-      [this.beakApex1, this.beakApex2],
-      [this.beakApex2, this.beakApex3],
-      [this.beakApex3, this.beakApex1],
-      [this.beakApex4, this.beakApex5],
-      [this.beakApex5, this.beakApex6],
-      [this.beakApex6, this.beakApex4],
-    ];
-    for (var i = 0;i <= beakLines.length - 1;i ++) {
-      const line = beakLines[i];
-      const apex = beakApexes[i];
-      const theta = Math.atan(- 1 / line.a);
-      const p = 6 * Math.cos(theta);
-      const q = 6 * Math.sin(theta);
-      const linePoint1 = new THREE.Vector3(apex[0].x + p, apex[0].y + q, 0);
-      const linePoint2 = new THREE.Vector3(apex[0].x - p, apex[0].y - q, 0);
-      const linePoint3 = new THREE.Vector3(apex[1].x - p, apex[1].y - q, 0);
-      const linePoint4 = new THREE.Vector3(apex[1].x + p, apex[1].y + q, 0);
-      const points = [linePoint1, linePoint2, linePoint3, linePoint4];
-      const geo = this.shapeGeoGen(points);
+    for (var i = 0;i <= 4;i ++) {
+      const beak = beaks[i];
+      const geo = this.outlineGeoGen(beak[0], beak[1]);
       for (var j = 0;j <= 1;j ++) {
         const mesh = new THREE.Mesh(geo, this.outlineMat);
         mesh.position.y = - 1250 * j;
         this.outlines.add(mesh);
-      }
-    }
-
-    // エッジ処理
-    const wingApex4 = new THREE.Vector3(- this.wingApex1.x, this.wingApex1.y, 0);
-    const edgeApexes = [
-      this.wingApex1, this.wingApex2, this.wingApex3, wingApex4,
-      this.headApex1, this.headApex2, this.headApex3, this.headApex4, this.headApex5,
-      this.beakApex1, this.beakApex2, this.beakApex3, this.beakApex4, this.beakApex5, this.beakApex6,
-    ]
-    for (var i = 0;i <= edgeApexes.length - 1;i ++) {
-      const apex = edgeApexes[i];
-      const points = this.curvePointGen(apex.x, apex.y, 6, 0, 360, false);
-      const geo = this.shapeGeoGen(points);
-      for (var j = 0;j <= 1;j ++) {
-        const mesh = new THREE.Mesh(geo, this.edgeMat);
-        mesh.position.y = - 1250 * j;
-        this.outlineEdges.add(mesh);
       }
     }
 
@@ -492,68 +246,42 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
   generateShape = () => {
 
     // 外周円
-    const outerCircles = [this.circle1, this.circle2];
+    const outers = [this.circle1, this.circle2];
     for (var i = 0;i <= 0;i ++) {
-      const circle1 = outerCircles[0];
-      const circle2 = outerCircles[1];
-      const shape = this.curvePointGen2(circle1, [0, 360]);
-      const path  = this.curvePointGen2(circle2, [0, 360]);
-      // const shape = this.curvePointGen(circle1.a, circle1.b, circle1.r, 0, 360, false);
-      // const path  = this.curvePointGen(circle2.a, circle2.b, circle2.r, 0, 360, false);
+      const shape = this.curvePointGen2(outers[0], [0, 360]);
+      const path  = this.curvePointGen2(outers[1], [0, 360]);
       const geo   = this.shapeGeoGen(shape, path);
       const mesh  = new THREE.Mesh(geo, this.shapeMat);
       this.shapes.add(mesh);
     }
-    // const outerCircleShape = this.curvePointGen(this.circle1.a, this.circle1.b, this.circle1.r, 0, 360, false);
-    // const outerCirclePath  = this.curvePointGen(this.circle2.a, this.circle2.b, this.circle2.r, 0, 360, false);
-    // const outerCircleGeo   = this.shapeGeoGen(outerCircleShape, outerCirclePath);
-    // const outerCircleMesh  = new THREE.Mesh(outerCircleGeo, this.shapeMat);
-    // this.shapes.add(outerCircleMesh);
 
     // 翼
     const arcs1 = [this.arc1, this.arc2, this.arc3, this.arc4];
     const angles1 = [this.angle1, this.angle2, this.angle3, this.angle4];
-    // const clocks = [true, false, false, true];
     var wingShapes = [];
     for (var i = 0;i <= 3;i ++) {
       const arc = arcs1[i];
       const angle = angles1[i];
-      // const clockwise = angle[0] > angle[1] ? true : false;
       const shape = this.curvePointGen2(arc, angle);
       wingShapes = wingShapes.concat(shape);
     }
     const wingGeo = this.shapeGeoGen(wingShapes);
 
     // 頭
-    const headShape1 = this.curvePointGen2(this.arc5, this.angle5);
+    const headShape1 = this.curvePointGen2(this.arc5, [this.angle5[0] - 0.5, this.angle5[1]]);
     const headShape2 = this.curvePointGen2(this.arc6, this.angle6);
-    const headShape3 = this.curvePointGen2(this.arc7, this.angle7);
-
-    // const headShape1 = this.curvePointGen(this.headArc1.a, this.headArc1.b, this.headArc1.r, this.headAngle1 + 0.3, this.headAngle2, false);
-    // const headShape2 = this.curvePointGen(this.headArc3.a, this.headArc3.b, this.headArc3.r,       this.headAngle6, this.headAngle5, true);
-    // const headShape3 = this.curvePointGen(this.headArc2.a, this.headArc2.b, this.headArc2.r,       this.headAngle3, this.headAngle4, true);
+    const headShape3 = this.curvePointGen2(this.arc7, [this.angle7[0], this.angle7[1] - 0.3]);
 
     const eyeShape1 = this.curvePointGen2(this.arc12, [0, 360]);
     const eyeShape2 = this.curvePointGen2(this.arc13, [0, 360]);
     const eyeShape3 = this.curvePointGen2(this.arc14, [0, 360]);
 
-    // const eyeShape1 = this.curvePointGen(this.eyeCircle1.a, this.eyeCircle1.b, this.eyeCircle1.r, 0, 360, false);
-    // const eyeShape2 = this.curvePointGen(this.eyeCircle2.a, this.eyeCircle2.b, this.eyeCircle2.r, 0, 360, false);
-    // const eyeShape3 = this.curvePointGen(this.eyeCircle3.a, this.eyeCircle3.b, this.eyeCircle3.r, 0, 360, false);
-
     const creaseShape1 = this.curvePointGen2(this.arc9,  this.angle9);
     const creaseShape2 = this.curvePointGen2(this.arc10, this.angle10);
-    // const creaseShape3 = this.curvePointGen(this.creaseArc3.a, this.creaseArc3.b, this.creaseArc3.r,                70,               240, false);
-    // const creaseShape4 = this.curvePointGen(this.creaseArc4.a, this.creaseArc4.b, this.creaseArc4.r,                90,               270, false);
 
-    // const creaseShape1 = this.curvePointGen(this.creaseArc1.a, this.creaseArc1.b, this.creaseArc1.r, this.creaseAngle1, this.creaseAngle2, true);
-    // const creaseShape2 = this.curvePointGen(this.creaseArc2.a, this.creaseArc2.b, this.creaseArc2.r, this.creaseAngle3, this.creaseAngle4, false);
-    // const creaseShape3 = this.curvePointGen(this.creaseArc3.a, this.creaseArc3.b, this.creaseArc3.r,                70,               240, false);
-    // const creaseShape4 = this.curvePointGen(this.creaseArc4.a, this.creaseArc4.b, this.creaseArc4.r,                90,               270, false);
-
-    const headShapes =   headShape1.concat(headShape2, headShape3, this.apex1);
+    const apex = new THREE.Vector3(this.apex1.x + 3, this.apex1.y, 0);
+    const headShapes =   headShape1.concat(headShape2, headShape3, apex);
     const creases    = creaseShape1.concat(creaseShape2);
-    // const creases    = creaseShape1.concat(creaseShape4, creaseShape2, creaseShape3);
 
     const headShape = new THREE.Shape(headShapes);
     const headPath1 = new THREE.Path(eyeShape1);
@@ -562,8 +290,25 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
 
     const headGeo = new THREE.ShapeGeometry(headShape);
     const eyeGeo = this.shapeGeoGen(eyeShape2, eyeShape3);
-    const upperBeakGeo = this.shapeGeoGen([this.beakApex1, this.beakApex2, this.beakApex3]);
-    const lowerBeakGeo = this.shapeGeoGen([this.beakApex4, this.beakApex5, this.beakApex6]);
+
+    const w = 4;
+    const form1 = this.lineShift(this.apex1, this.apex2, - w);
+    const form2 = this.lineShift(this.apex2, this.apex4, w);
+    const form3 = this.lineShift(this.apex4, this.apex1, w);
+
+    const form4 = this.lineShift(this.apex1, this.apex3, - w);
+    const form5 = this.lineShift(this.apex3, this.apex4, w);
+    const form6 = this.lineShift(this.apex4, this.apex1, - w);
+
+    const apex1 = this.getIntersect2(form1, form2);
+    const apex2 = this.getIntersect2(form2, form3);
+    const apex3 = this.getIntersect2(form3, form1);
+
+    const apex4 = this.getIntersect2(form4, form5);
+    const apex5 = this.getIntersect2(form5, form6);
+    const apex6 = this.getIntersect2(form6, form4);
+    const upperBeakGeo = this.shapeGeoGen([apex1, apex2, apex3]);
+    const lowerBeakGeo = this.shapeGeoGen([apex4, apex5, apex6]);
 
     for (var i = 0;i <= 1;i ++) {
       const bird = new THREE.Group();
@@ -581,102 +326,52 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
 
   }
 
-  // // ガイドラインの表示制御
-  // guidelineDisplayControl = (progRatio) => {
-  //   const p = this.guidelineParams;
-  //   const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-  //   const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
+  // ガイドラインの表示制御
+  guidelineDisplayControl = (progRatio) => {
+    const param = this.guidelineParams;
+    const drawInRatio   = THREE.MathUtils.smoothstep(progRatio, param.drawIn[0]  , param.drawIn[1]  );
+    const drawOutRatio  = THREE.MathUtils.smoothstep(progRatio, param.drawOut[0] , param.drawOut[1] );
+    const fadeInRatio1  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn1[0] , param.fadeIn1[1] );
+    const fadeOutRatio1 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut1[0], param.fadeOut1[1]);
+    const fadeInRatio2  = THREE.MathUtils.smoothstep(progRatio, param.fadeIn2[0] , param.fadeIn2[1] );
+    const fadeOutRatio2 = THREE.MathUtils.smoothstep(progRatio, param.fadeOut2[0], param.fadeOut2[1]);
+    const scaleInRatio  = THREE.MathUtils.smoothstep(progRatio, param.scaleIn[0] , param.scaleIn[1] );
+    const scaleOutRatio = THREE.MathUtils.smoothstep(progRatio, param.scaleOut[0], param.scaleOut[1]);
 
-  //   const outerCirclesInRatio = THREE.MathUtils.smoothstep(inRatio, 0.0, 0.3);
-  //   const birdDrawRatio = THREE.MathUtils.smoothstep(inRatio, 0.3, 0.65);
-  //   const birdMoveRatio = THREE.MathUtils.smoothstep(inRatio, 0.65, 1.0);
+    // 描画アニメーションの進捗
+    const drawDelayFactor = 0.03;
+    const maxDrawDelay = drawDelayFactor * this.guidelines.children.length;
+    const drawRatio = drawInRatio - drawOutRatio;
 
-  //   // 外周円
-  //   for (var i = 0;i <= this.circles.children.length - 1;i ++) {
-  //     const maxDelay = 0.06 * this.circles.children.length;
-  //     const delay = 0.06 * i;
-  //     const outerCirclesInRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, outerCirclesInRatio);
-  //     const mesh = this.circles.children[i];
-  //     mesh.geometry.setDrawRange(0, this.divCount * outerCirclesInRatioD);
-  //     mesh.material.opacity = 1.0 - outRatio;
-  //     if (outRatio >= 1.0) {
-  //       mesh.visible = false;
-  //     } else {
-  //       mesh.visible = true;
-  //     }
-  //   }
+    // スケールアニメーションの進捗
+    const scaleDelayFactor = 0.03;
+    const maxScaleDelay = scaleDelayFactor * this.guidelines.children.length;
+    const scaleRatio = scaleInRatio - scaleOutRatio;
 
-  //   // 鳥
-  //   for (var i = 0;i <= this.bird.children.length - 1;i ++) {
-  //     const group1 = this.bird.children[i];
-  //     group1.position.y = - 1250 * i * birdMoveRatio;
+    // フェードアニメーションの進捗
+    const fadeRatio = (fadeInRatio1 - fadeOutRatio1) + (fadeInRatio2 - fadeOutRatio2);
 
-  //     for (var j = 0; j <= group1.children.length - 1;j ++) {
-  //       const group2 = group1.children[j];
+    for (var i = 0;i <= this.guidelines.children.length - 1;i ++) {
+      const drawDelay = drawDelayFactor * i;
+      const drawRatioD = THREE.MathUtils.inverseLerp(drawDelay, 1.0 + drawDelay - maxDrawDelay, drawRatio);
 
-  //       for (var k = 0;k <= group2.children.length - 1;k ++) {
-  //         const maxDelay = 0.06 * group2.children.length;
-  //         const delay = 0.06 * k;
-  //         const birdDrawRatioD = THREE.MathUtils.inverseLerp(delay, 1.0 + delay - maxDelay, birdDrawRatio);
-  //         const mesh = group2.children[k];
-  //         mesh.geometry.setDrawRange(0, this.divCount * birdDrawRatioD);
-  //         mesh.material.opacity = 1.0 - outRatio;
-  //         if (outRatio >= 1.0) {
-  //           mesh.visible = false;
-  //         } else {
-  //           mesh.visible = true;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+      const scaleDelay = scaleDelayFactor * (this.guidelines.children.length - i);
+      // const scaleDelay = scaleDelayFactor * i;
+      const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
 
-  // // アウトラインの表示制御
-  // outlineDisplayControl = (progRatio) => {
-  //   const p = this.outlineParams;
-  //   const inRatio  = THREE.MathUtils.smoothstep(progRatio, p.inStart, p.inEnd);
-  //   const outRatio = THREE.MathUtils.smoothstep(progRatio, p.outStart, p.outEnd);
-  //   const control = (mesh) => {
-  //     mesh.material.opacity = inRatio - outRatio;
-  //     if (outRatio >= 1.0) {
-  //       mesh.visible = false;
-  //     } else {
-  //       mesh.visible = true;
-  //     }
-  //   }
-  //   this.outlines.children.forEach((child) => {
-  //     if (child.isGroup) {
-  //       child.children.forEach((mesh) => control(mesh));
-  //     } else {
-  //       control(child);
-  //     }
-  //   });
-  //   this.outlineEdges.children.forEach((mesh) => {
-  //     mesh.material.opacity = inRatio - outRatio * 1.8;
-  //   });
-  // }
+      const control = (mesh) => {
+        mesh.geometry.setDrawRange(0, this.divCount * drawRatioD);
+        mesh.material.opacity = fadeRatio;
+        mesh.scale.set(scaleRatioD, scaleRatioD);
+      }
 
-  // // 図形のアニメーション制御
-  // shapeRotationControl(progRatio) {
-  //   const p = this.shapeRotParams;
-  //   var ratio = THREE.MathUtils.smootherstep(progRatio, p.start, p.end);
-  //   const num = 1;
-  //   const adjust1 = 80;
-  //   const adjust2 = 20;
-  //   var ratioSx, ratioSy;
-  //   if (ratio < 0.1 + num / adjust1) {
-  //     ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-  //     ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-  //   } else if (ratio < 0.4 + num / adjust2) {
-  //     ratioSx = 0.3;
-  //     ratioSy = 0.3;
-  //   } else {
-  //     ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-  //     ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-  //   }
-
-  //   this.shapes.scale.set(ratioSx, ratioSy, 1);
-  //   this.shapes.rotation.z = 720 * ratio * (Math.PI / 180);
-  // }
+      const child = this.guidelines.children[i];
+      if (child.isGroup) {
+        child.children.forEach((mesh) => control(mesh));
+      } else {
+        control(child);
+      }
+    }
+  }
 
 }

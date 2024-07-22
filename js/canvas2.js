@@ -105,10 +105,10 @@ export default class Canvas2 {
     const kamonList = [
       // new HidariFutatsuDomoe(),
       // new Kikyou(),
-      // new GenjiGuruma2(),
+      new GenjiGuruma2(),
       // new ChigaiTakanoha(),
       // new DakiMyouga(),
-      // new MaruNiUmebachi2,
+      new MaruNiUmebachi2,
       new MaruNiFutatsuKarigane2(),
     ];
     const maxNum = 7;

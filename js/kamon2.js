@@ -170,6 +170,31 @@ export default class Kamon2 extends Founder {
     return geometry;
   }
 
+  outlineGeoGen = (v1, v2) => {
+    const w = 4;
+    const form = this.from2Points2(v1, v2);
+    const theta = Math.atan(- 1 / form.a);
+    const p = w * Math.cos(theta);
+    const q = w * Math.sin(theta);
+    const point1 = new THREE.Vector3(v1.x + p, v1.y + q, 0);
+    const point2 = new THREE.Vector3(v1.x - p, v1.y - q, 0);
+    const point3 = new THREE.Vector3(v2.x - p, v2.y - q, 0);
+    const point4 = new THREE.Vector3(v2.x + p, v2.y + q, 0);
+    const points = [point1, point2, point3, point4];
+    return this.shapeGeoGen(points);
+  }
+
+  lineShift = (v1, v2, w) => {
+    const form = this.from2Points2(v1, v2);
+    const theta = Math.atan(- 1 / form.a);
+    const p = w * Math.cos(theta);
+    const q = w * Math.sin(theta);
+    const point1 = new THREE.Vector3(v1.x + p, v1.y + q, 0);
+    const point2 = new THREE.Vector3(v2.x + p, v2.y + q, 0);
+    return this.from2Points2(point1, point2); 
+    // return [point1, point2];
+  }
+
   // アウトラインの直線のメッシュを生成
   outlineLineMeshGen = (geometry, a, b, g, rotX, rotY, rotZ) => {
     const mesh = new THREE.Line(geometry, this.outlineMat);
@@ -231,6 +256,14 @@ export default class Kamon2 extends Founder {
     return points;
   }
 
+  // 直線の描画座標を生成
+  linePointGen2 = (v1, v2, s, d) => {
+    const form = this.from2Points2(v1, v2);
+    const f = v1.x > v2.x ? v1.x + s : v1.x - s;
+    const t = v1.x > v2.x ? v2.x - s : v2.x + s;
+    return this.linePointGen(form.a, 1, form.b, f, t, d);
+  }
+
   // 円弧の描画座標を生成
   circlePointGen = (a, b, r, f, t, d) => {
     const points = [];
@@ -240,6 +273,18 @@ export default class Kamon2 extends Founder {
       points.push(point);
     }
     return points;
+  }
+
+  // 円弧の描画座標を生成
+  circlePointGen2 = (circle, angle, d) => {
+    return this.circlePointGen(circle.a, circle.b, circle.r, angle[0], angle[1], d);
+    // const points = [];
+    // for (var i = 0;i <= d - 1;i ++) {
+    //   const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+    //   const point = this.circle(a, b, r, p);
+    //   points.push(point);
+    // }
+    // return points;
   }
 
   // 円弧の図形用座標を生成
