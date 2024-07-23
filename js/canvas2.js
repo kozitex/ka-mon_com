@@ -6,7 +6,7 @@ import Mist from './mist.js';
 // import Mist2 from './mist2.js';
 import KageIgeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
-import Kikyou from './kamon/kikyou.js';
+import Kikyou2 from './kamon/kikyou2.js';
 import GenjiGuruma2 from './kamon/genji-guruma2.js';
 import ChigaiTakanoha from './kamon/chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
@@ -104,7 +104,7 @@ export default class Canvas2 {
     this.nowIndex = 0
     const kamonList = [
       // new HidariFutatsuDomoe(),
-      // new Kikyou(),
+      new Kikyou2(),
       new GenjiGuruma2(),
       // new ChigaiTakanoha(),
       // new DakiMyouga(),

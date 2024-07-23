@@ -27,6 +27,7 @@ export default class Kamon2 extends Founder {
     this.enNameText = '';
     this.enDescText = '';
 
+    // ガイドラインの表示アニメーションパラメータ
     this.guidelineParams = {
       drawIn   : [0.10, 0.40],
       drawOut  : [0.55, 0.80],

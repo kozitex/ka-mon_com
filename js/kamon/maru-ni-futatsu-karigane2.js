@@ -122,10 +122,10 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     const heads = [this.arc5, this.arc8, this.arc11, this.arc14];
     for (var i = 0;i <= 3;i ++) {
       const points = this.circlePointGen2(heads[i], [0, 450], this.divCount);
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
       for (var j = 0;j <= 1;j ++) {
+        const geo = new THREE.BufferGeometry().setFromPoints(points);
         const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
-        mesh.position.y = - 1250 * j;
+        mesh.geometry.translate(0, - 1250 * j, 0);
         this.guidelines.add(mesh);
       }
     }
@@ -133,10 +133,10 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     const wings = [this.arc1, this.arc4, this.arc2, this.arc3];
     for (var i = 0;i <= 3;i ++) {
       const points = this.circlePointGen2(wings[i], [0, 450], this.divCount);
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
       for (var j = 0;j <= 1;j ++) {
+        const geo = new THREE.BufferGeometry().setFromPoints(points);
         const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
-        mesh.position.y = - 1250 * j;
+        mesh.geometry.translate(0, - 1250 * j, 0);
         this.guidelines.add(mesh);
       }
     }
@@ -151,10 +151,10 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     for (var i = 0;i <= 4;i ++) {
       const beak = beaks[i];
       const points = this.linePointGen2(beak[0], beak[1], 20, this.divCount);
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
       for (var j = 0;j <= 1;j ++) {
+        const geo = new THREE.BufferGeometry().setFromPoints(points);
         const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
-        mesh.position.y = - 1250 * j;
+        mesh.geometry.translate(0, - 1250 * j, 0);
         this.guidelines.add(mesh);
       }
     }
@@ -344,7 +344,7 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
     const drawRatio = drawInRatio - drawOutRatio;
 
     // スケールアニメーションの進捗
-    const scaleDelayFactor = 0.03;
+    const scaleDelayFactor = 0.02;
     const maxScaleDelay = scaleDelayFactor * this.guidelines.children.length;
     const scaleRatio = scaleInRatio - scaleOutRatio;
 
@@ -356,7 +356,6 @@ export default class MaruNiFutatsuKarigane2 extends Kamon2 {
       const drawRatioD = THREE.MathUtils.inverseLerp(drawDelay, 1.0 + drawDelay - maxDrawDelay, drawRatio);
 
       const scaleDelay = scaleDelayFactor * (this.guidelines.children.length - i);
-      // const scaleDelay = scaleDelayFactor * i;
       const scaleRatioD = THREE.MathUtils.smootherstep(scaleRatio, scaleDelay, 1.0 + scaleDelay - maxScaleDelay);
 
       const control = (mesh) => {

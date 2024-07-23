@@ -25,6 +25,11 @@ export default class Founder {
     return new THREE.Vector3(x, y, 0);
   }
 
+  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, r: 半径, t:角度）
+  circleShort(param, t) {
+    return this.circle(param.a, param.b, param.r, t);
+  }
+
   // 円弧の角度を求める式（a: 中心X座標, b: 中心Y座標, x: 円周X座標, x: 円周Y座標）
   arc(a, b, x, y) {
     return THREE.MathUtils.radToDeg(Math.atan2(y - b, x - a));
