@@ -248,10 +248,12 @@ export default class Kamon2 extends Founder {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
       var point;
       if (b == 0) {
-        point = this.straight(a, b, r, undefined, p);
+        point = new THREE.Vector3(r, p, 0);
+        // point = this.straight(a, b, r, undefined, p);
       } else {
         point = this.straight(a, b, r, p, undefined);
       }
+      // console.log(point)
       points.push(point);
     }
     return points;
@@ -263,6 +265,22 @@ export default class Kamon2 extends Founder {
     const f = v1.x > v2.x ? v1.x + s : v1.x - s;
     const t = v1.x > v2.x ? v2.x - s : v2.x + s;
     return this.linePointGen(form.a, 1, form.b, f, t, d);
+  }
+
+  // 直線の描画座標を生成
+  linePointGen3 = (v1, v2, s, d) => {
+    const form = this.from2Points3(v1, v2);
+    // console.log(form)
+    var f, t;
+    if (form.b == 0) {
+      f = v1.y > v2.y ? v1.y + s : v1.y - s;
+      t = v1.y > v2.y ? v2.y - s : v2.y + s;
+    } else {
+      f = v1.x > v2.x ? v1.x + s : v1.x - s;
+      t = v1.x > v2.x ? v2.x - s : v2.x + s;
+    }
+    // console.log(form, f, t)
+    return this.linePointGen(form.a, form.b, form.c, f, t, d);
   }
 
   // 円弧の描画座標を生成
@@ -304,6 +322,13 @@ export default class Kamon2 extends Founder {
     return this.curvePointGen(
       arc.a, arc.b, arc.r, 
       angle[0], angle[1], angle[0] > angle[1] ? true : false);
+  }
+
+  // 円弧の図形用座標を生成
+  curvePointGen3 = (arc, angle, clockwise) => {
+    return this.curvePointGen(
+      arc.a, arc.b, arc.r, 
+      angle[0], angle[1], clockwise);
   }
 
   // ポイントからシェイプを生成

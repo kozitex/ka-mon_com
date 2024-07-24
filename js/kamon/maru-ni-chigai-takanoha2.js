@@ -1,9 +1,9 @@
 'use strict';
 
 import * as THREE from 'three';
-import Kamon from '../kamon.js';
+import Kamon2 from '../kamon2.js';
 
-export default class ChigaiTakanoha extends Kamon {
+export default class MaruNiChigaiTakanoha2 extends Kamon2 {
 
   constructor() {
 
@@ -24,44 +24,170 @@ export default class ChigaiTakanoha extends Kamon {
 
     // ガイドラインの表示アニメーションパラメータ
     this.guidelineParams = {
-      inStart : 0.05,
-      inEnd   : 0.35,
-      outStart: 0.35,
-      outEnd  : 0.45,
-      gDelay  : 0.07,
-      lDelay  : 0.02,
+      drawIn   : [0.10, 0.40],
+      drawOut  : [0.55, 0.80],
+      fadeIn1  : [0.00, 0.00],
+      fadeOut1 : [0.35, 0.40],
+      fadeIn2  : [0.625, 0.675],
+      fadeOut2 : [0.80, 0.85],
+      scaleIn  : [0.00, 0.00],
+      scaleOut : [0.70, 0.90],
     }
 
     // アウトラインの表示アニメーションパラメータ
     this.outlineParams = {
-      inStart : 0.3,
-      inEnd   : 0.5,
-      outStart: 0.5,
-      outEnd  : 0.55,
+      fadeIn1  : [0.30, 0.35],
+      fadeOut1 : [0.35 ,0.40],
+      fadeIn2  : [0.60, 0.65],
+      fadeOut2 : [0.65, 0.70],
+      scaleIn  : [0.00, 0.00],
+      scaleOut : [0.70, 0.90],
     }
 
     // 図形の表示アニメーションパラメータ
     this.shapeParams = {
-      inStart : 0.5,
-      inEnd   : 0.6,
-      outStart: 0.95,
-      outEnd  : 1.0,
+      fadeIn   : [0.35, 0.40],
+      fadeOut  : [0.60, 0.65],
     }
 
-    // 図形の回転アニメーションパラメータ
-    this.shapeRotParams = {
-      start : 0.6,
-      end   : 0.8,
+    // 説明欄の表示アニメーションパラメータ
+    this.descParams = {
+      fadeIn   : [0.35, 0.40],
+      fadeOut  : [0.60, 0.65],
     }
 
-    // // ガイドラインの作成
-    // this.generateGuideline();
+    // 中心円
+    this.circle1 = {a: 0, b: 0, r: 1600};
+    this.circle2 = {a: 0, b: 0, r: 1300};
 
-    // // アウトラインの作成
-    // this.generateOutline();
+    // 羽の輪郭円
+    this.wingR = 530;
+    this.circle3 = {a:   this.wingR      , b:   this.wingR      , r: this.wingR};
+    this.circle4 = {a: - this.wingR      , b: - this.wingR      , r: this.wingR};
+    this.circle5 = {a: - this.wingR +  50, b: - this.wingR +  50, r: this.wingR};
+    this.circle6 = {a: - this.wingR + 100, b: - this.wingR + 100, r: this.wingR};
 
-    // // 塗りつぶし図形の描画
-    // this.generateShape();
+    // 対角線１
+    const apex1 = this.circleShort(this.circle1,  45);
+    const apex2 = this.circleShort(this.circle1, 225);
+    this.radiation1 = [apex1, apex2];
+
+    // 対角線２
+    const theta1 = THREE.MathUtils.radToDeg(Math.asin(40 / this.wingR));
+    const apex3 = this.circleShort(this.circle3,  45 - theta1);
+    const apex4 = this.circleShort(this.circle4, 225 + theta1);
+    const apex5 = this.circleShort(this.circle3,  45 + theta1);
+    const apex6 = this.circleShort(this.circle4, 225 - theta1);
+    this.radiation2 = [apex3, apex4];
+    this.radiation3 = [apex5, apex6];
+
+    // 羽の輪郭線
+    const apex7  = this.circleShort(this.circle3, - 45);
+    const apex8  = this.circleShort(this.circle4, - 45);
+    const apex9  = this.circleShort(this.circle3,  135);
+    const apex10 = this.circleShort(this.circle4,  135);
+    this.contour1 = [apex7, apex8];
+    this.contour2 = [apex9, apex10];
+
+    // 羽の模様
+    // const radForm2 = this.from2Points2(apex3, apex4);
+    this.decorations = [];
+    // const radForms = [
+    //   this.from2Points3(apex3, apex4),
+    //   this.from2Points3(apex5, apex6),
+    // ];
+    // const decoFormsArr = [
+    //   [{a: 0, b: 1, c: 110}, {a: 0, b: 1, c: 210}, {a: 0, b: 1, c: 310}],
+    //   [{a: 1, b: 0, c: 110}, {a: 1, b: 0, c: 210}, {a: 1, b: 0, c: 310}],
+    // ];
+    // for (var i = 0;i <= radForms.length - 1;i ++) {
+    //   const radForm = radForms[i];
+    //   const decoForms = decoFormsArr[i];
+    //   for (var j = 0;j <= decoForms.length - 1; j ++) {
+    //     const decoForm = decoForms[j];
+    //     console.log(radForm, decoForm)
+    //     const apexF = this.getIntersect2(radForm, decoForm);
+    //     console.log(apexF)
+    //     const apexTd = this.interLineCircle2(this.circle3, decoForm);
+    //     console.log(apexTd)
+    //     const apexT = apexTd[0].x > apexTd[1].x ? apexTd[0] : apexTd[1];
+    //     console.log(apexF, apexT)
+    //     this.decorations.push([apexF, apexT]);
+
+    //   }
+    // }
+    // const radiations = [this.radiation2, this.radiation3];
+    // const lineSet = [
+    //   [
+    //     [new THREE.Vector3(0, 110, 0), new THREE.Vector3(1600, 110, 0)],
+    //     [new THREE.Vector3(0, 210, 0), new THREE.Vector3(1600, 210, 0)],
+    //     [new THREE.Vector3(0, 310, 0), new THREE.Vector3(1600, 310, 0)],
+    //   ],
+    //   [
+    //     [new THREE.Vector3(110, 0, 0), new THREE.Vector3(110, 1600, 0)],
+    //     [new THREE.Vector3(210, 0, 0), new THREE.Vector3(210, 1600, 0)],
+    //     [new THREE.Vector3(310, 0, 0), new THREE.Vector3(310, 1600, 0)],
+    //   ],
+    // ];
+    const lines1 = [
+      [new THREE.Vector3(0, 110, 0), new THREE.Vector3(1600, 110, 0)],
+      [new THREE.Vector3(0, 210, 0), new THREE.Vector3(1600, 210, 0)],
+      [new THREE.Vector3(0, 310, 0), new THREE.Vector3(1600, 310, 0)],
+    ];
+    for (var i = 0;i <= lines1.length - 1;i ++) {
+      const apexF = this.getIntersect3(this.radiation2, lines1[i]);
+      const apexTd = this.interLineCircle3(this.circle3, lines1[i]);
+      // console.log(apexF, apexTd)
+      const apexT = apexTd[0].x > apexTd[1].x ? apexTd[0] : apexTd[1];
+      // console.log(apexF, apexTd, apexT)
+      this.decorations.push([apexF, apexT]);
+    }
+
+    const lines2 = [
+      [new THREE.Vector3(110, 0, 0), new THREE.Vector3(110, 1600, 0)],
+      [new THREE.Vector3(210, 0, 0), new THREE.Vector3(210, 1600, 0)],
+      [new THREE.Vector3(310, 0, 0), new THREE.Vector3(310, 1600, 0)],
+    ];
+    for (var i = 0;i <= lines2.length - 1;i ++) {
+      const apexF = this.getIntersect3(this.radiation3, lines2[i]);
+      const apexTd = this.interLineCircle3(this.circle3, lines2[i]);
+      // console.log(apexF, apexTd)
+      const apexT = apexTd[0].y > apexTd[1].y ? apexTd[0] : apexTd[1];
+      // console.log(apexF, apexTd, apexT)
+      this.decorations.push([apexF, apexT]);
+    }
+// console.log(this.decorations)
+
+    // for (var i = 0;i <= lineSet.length - 1;i ++) {
+    //   const lines = lineSet[i];
+    //   for (var j = 0;j <= lines.length - 1;j ++) {
+    //     const apexF = this.getIntersect3(radiations[i], lines[j]);
+    //     const apexTd = this.interLineCircle3(this.circle3, lines[j]);
+    //     // console.log(apexF, apexTd)
+    //     const apexT = apexTd[0].x > apexTd[1].x ? apexTd[0] : apexTd[1];
+    //     console.log(apexF, apexTd, apexT)
+    //     this.decorations.push([apexF, apexT]);
+    //   }
+    // }
+
+
+    // const decoForm1 = {a: 0, b: 110};
+    // const decoApex1 = this.getIntersect2(radForm2, decoForm1);
+    // const decoApex2d = this.interLineCircle2(this.circle3, decoForm1);
+    // const decoApex2 = decoApex2d[0].x > decoApex2d[1].x ? decoApex2d[0] : decoApex2d[1];
+    // this.decoration1 = [decoApex1, decoApex2];
+
+    // const decoForm2 = {a: 0, b: 210};
+    // const decoForm3 = {a: 0, b: 310};
+    // // console.log(decoApex2d, this.decoration1)
+    // const decoApex3 = this.getIntersect2(radForm2, decoForm2);
+    // const decoApex5 = this.getIntersect2(radForm2, decoForm3);
+
+
+
+
+    const radForm3 = this.from2Points2(apex5, apex6);
+
 
   }
 
@@ -72,93 +198,153 @@ export default class ChigaiTakanoha extends Kamon {
     this.generateGuideline();
 
     // アウトラインの作成
-    this.generateOutline();
+    // this.generateOutline();
 
     // 塗りつぶし図形の描画
     this.generateShape();
 
-    // super.generate();
   }
 
-  // テーマカラー変更
-  changeTheme(frontColor, backColor, guideColor) {
-    super.changeTheme(frontColor, backColor, guideColor);
-    this.blackBoardMat.color = new THREE.Color(backColor);
-  }
+  // // テーマカラー変更
+  // changeTheme(frontColor, backColor, guideColor) {
+  //   super.changeTheme(frontColor, backColor, guideColor);
+  //   this.blackBoardMat.color = new THREE.Color(backColor);
+  // }
 
   // ガイドラインを作成
   generateGuideline = () => {
 
-    // 外円
-    const outCircles = new THREE.Group();
-    const rs = [1600, 1300];
-    rs.forEach((r) => {
-      const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
-      const circle = this.guidelineGen(points);
-      outCircles.add(circle);
-    });
-    this.guidelines.add(outCircles);
-
-    // 羽
-    for (var i = 0;i <= 1;i ++) {
-
-      // 羽の輪郭円
-      const group1 = new THREE.Group();
-      const params1 = [
-        {a:   516, b:   516, r: 516},
-        {a: - 416, b: - 416, r: 516},
-        {a: - 466, b: - 466, r: 516},
-        {a: - 516, b: - 516, r: 516},
-        {a: - 416, b: - 416, r: 550},
-        {a: - 466, b: - 466, r: 550},
-      ];
-      params1.forEach((param) => {
-        const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
-        const circle = this.guidelineGen(points);
-        circle.rotation.z = THREE.MathUtils.degToRad(90 * i);
-        group1.add(circle);
-      });
-
-      // 羽の輪郭線
-      const group2 = new THREE.Group();
-      const theta = THREE.MathUtils.degToRad(45);
-      const params2 = [
-        {p:   516 * Math.cos(theta), q:   516 * Math.cos(theta), f: 700, t: - 700},
-        {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta), f: 700, t: - 700},
-        {p:    35 * Math.cos(theta), q:    35 * Math.cos(theta), f: 950, t: - 950},
-        {p:    71 * Math.cos(theta), q:    71 * Math.cos(theta), f: 950, t: - 950},
-      ];
-      params2.forEach((param) => {
-        for (var j = 0;j <= 1;j ++) {
-          const points = this.linePointGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, this.divCount);
-          const line = this.guidelineGen(points);
-          line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
-          group2.add(line);
-        }
-      });
-
-      // 羽の模様（タテ）
-      const group3 = new THREE.Group();
-      const params3 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
-      params3.forEach((param) => {
-        const points = this.linePointGen(1, 0, - param, 1100, - 1100, this.divCount);
-        const line = this.guidelineGen(points);
-        line.rotation.z = THREE.MathUtils.degToRad(90 * i);
-        group3.add(line);
-      });
-
-      // 羽の模様（ヨコ）
-      const group4 = new THREE.Group();
-      const params4 = [- 94, - 130, - 194, - 230, - 294, - 330, 646, 610, 546, 510, 446, 410];
-      params4.forEach((param) => {
-        const points = this.linePointGen(0, 1, - param, 1100, - 1100, this.divCount);
-        const line = this.guidelineGen(points);
-        line.rotation.z = THREE.MathUtils.degToRad(90 * i);
-        group4.add(line);
-      });
-
-      this.guidelines.add(group1, group2, group3, group4);
+    // 中心円
+    const circles1 = [this.circle1, this.circle2];
+    for (var i = 0;i <= circles1.length - 1;i ++) {
+      const circle = circles1[i];
+      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+      const mesh = this.guidelineGen(points);
+      this.guidelines.add(mesh);
     }
+
+    // // 補助円１
+    // const rad = this.wingR /  Math.cos(THREE.MathUtils.degToRad(45));
+    // // console.log(rad)
+    // const auxCircle = {a: 0, b: 0, r: rad};
+    // const auxPoints = this.circlePointGen2(auxCircle,[90, 450], this.divCount);
+    // const auxMesh = this.sublineGen(auxPoints);
+    // this.guidelines.add(auxMesh);
+
+
+    // 羽の輪郭円
+    const circles2 = [this.circle3, this.circle4, this.circle5, this.circle6];
+    for (var i = 0;i <= circles2.length - 1;i ++) {
+      const circle = circles2[i];
+      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+      const mesh = this.guidelineGen(points);
+      this.guidelines.add(mesh);
+    }
+
+    // 羽の輪郭線
+    const contours = [this.contour1, this.contour2];
+    for (var i = 0;i <= contours.length - 1;i ++) {
+      const contour = contours[i];
+      const points = this.linePointGen2(contour[0], contour[1], 0, this.divCount);
+      const mesh = this.guidelineGen(points);
+      this.guidelines.add(mesh);
+    }
+
+    // 対角線１
+    const radPoints = this.linePointGen2(this.radiation1[0], this.radiation1[1], 0, this.divCount);
+    const radMesh = this.sublineGen(radPoints);
+    this.guidelines.add(radMesh);
+
+    // 対角線２
+    const radiations = [this.radiation2, this.radiation3];
+    for (var i = 0;i <= radiations.length - 1;i ++) {
+      const rad = radiations[i];
+      const points = this.linePointGen2(rad[0], rad[1], 0, this.divCount);
+      const mesh = this.guidelineGen(points);
+      this.guidelines.add(mesh);
+    }
+
+    // 羽の模様
+    //  const decorations = [this.decoration1];
+    for (var i = 0;i <= this.decorations.length - 1;i ++) {
+      const deco = this.decorations[i];
+      // console.log(deco)
+      const points = this.linePointGen3(deco[0], deco[1], 0, this.divCount);
+      const mesh = this.guidelineGen(points);
+      // console.log(i, points)
+      this.guidelines.add(mesh);
+    }
+ 
+    // // 外円
+    // const outCircles = new THREE.Group();
+    // const rs = [1600, 1300];
+    // rs.forEach((r) => {
+    //   const points = this.circlePointGen(0, 0, r, 90, 450, this.divCount);
+    //   const circle = this.guidelineGen(points);
+    //   outCircles.add(circle);
+    // });
+    // this.guidelines.add(outCircles);
+
+    // // 羽
+    // for (var i = 0;i <= 1;i ++) {
+
+    //   // 羽の輪郭円
+    //   const group1 = new THREE.Group();
+    //   const params1 = [
+    //     {a:   516, b:   516, r: 516},
+    //     {a: - 416, b: - 416, r: 516},
+    //     {a: - 466, b: - 466, r: 516},
+    //     {a: - 516, b: - 516, r: 516},
+    //     {a: - 416, b: - 416, r: 550},
+    //     {a: - 466, b: - 466, r: 550},
+    //   ];
+    //   params1.forEach((param) => {
+    //     const points = this.circlePointGen(param.a, param.b, param.r, 90, 450, this.divCount);
+    //     const circle = this.guidelineGen(points);
+    //     circle.rotation.z = THREE.MathUtils.degToRad(90 * i);
+    //     group1.add(circle);
+    //   });
+
+    //   // 羽の輪郭線
+    //   const group2 = new THREE.Group();
+    //   const theta = THREE.MathUtils.degToRad(45);
+    //   const params2 = [
+    //     {p:   516 * Math.cos(theta), q:   516 * Math.cos(theta), f: 700, t: - 700},
+    //     {p:   552 * Math.cos(theta), q:   552 * Math.cos(theta), f: 700, t: - 700},
+    //     {p:    35 * Math.cos(theta), q:    35 * Math.cos(theta), f: 950, t: - 950},
+    //     {p:    71 * Math.cos(theta), q:    71 * Math.cos(theta), f: 950, t: - 950},
+    //   ];
+    //   params2.forEach((param) => {
+    //     for (var j = 0;j <= 1;j ++) {
+    //       const points = this.linePointGen(1, 1, - (param.p + param.q), param.f + param.p, param.t + param.p, this.divCount);
+    //       const line = this.guidelineGen(points);
+    //       line.rotation.z = THREE.MathUtils.degToRad(90 * i + 180 * j);
+    //       group2.add(line);
+    //     }
+    //   });
+
+    //   // 羽の模様（タテ）
+    //   const group3 = new THREE.Group();
+    //   const params3 = [94, 130, 194, 230, 294, 330, - 646, - 610, - 546, - 510, - 446, - 410];
+    //   params3.forEach((param) => {
+    //     const points = this.linePointGen(1, 0, - param, 1100, - 1100, this.divCount);
+    //     const line = this.guidelineGen(points);
+    //     line.rotation.z = THREE.MathUtils.degToRad(90 * i);
+    //     group3.add(line);
+    //   });
+
+    //   // 羽の模様（ヨコ）
+    //   const group4 = new THREE.Group();
+    //   const params4 = [- 94, - 130, - 194, - 230, - 294, - 330, 646, 610, 546, 510, 446, 410];
+    //   params4.forEach((param) => {
+    //     const points = this.linePointGen(0, 1, - param, 1100, - 1100, this.divCount);
+    //     const line = this.guidelineGen(points);
+    //     line.rotation.z = THREE.MathUtils.degToRad(90 * i);
+    //     group4.add(line);
+    //   });
+
+    //   this.guidelines.add(group1, group2, group3, group4);
+    // }
 
     this.group.add(this.guidelines);
   }
@@ -681,7 +867,7 @@ export default class ChigaiTakanoha extends Kamon {
     const bbMesh = new THREE.Mesh(bbGeo, this.blackBoardMat);
     this.blackBoard.add(bbMesh);
     this.blackBoard.position.z = - 1;
-    this.group.add(this.blackBoard);
+    // this.group.add(this.blackBoard);
 
     // 羽
 
@@ -817,32 +1003,5 @@ export default class ChigaiTakanoha extends Kamon {
     this.group.add(this.shapes);
   }
 
-  // 図形のアニメーション制御
-  shapeRotationControl(progRatio) {
-    const p = this.shapeRotParams;
-    var ratio = THREE.MathUtils.smootherstep(progRatio, p.start, p.end);
-    for (var i = 0;i <= this.shapes.children.length - 1;i ++) {
-      const shape = this.shapes.children[i];
-      const j = i - 1;
-      const num = Math.trunc(j / 4);
-      const adjust1 = 80;
-      const adjust2 = 20;
-      var ratioSx, ratioSy;
-      if (ratio < 0.1 + num / adjust1) {
-        ratioSx = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-        ratioSy = THREE.MathUtils.mapLinear(ratio, 0.0, 0.1 + num / adjust1, 1.0, 0.3);
-      } else if (ratio < 0.4 + num / adjust2) {
-        ratioSx = 0.3;
-        ratioSy = 0.3;
-      } else {
-        ratioSx = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-        ratioSy = THREE.MathUtils.mapLinear(ratio, 0.4 + num / adjust2, 1.0, 0.3, 1.0);
-      }
-      this.blackBoard.scale.set(ratioSx, ratioSy)
-      shape.scale.set(ratioSx, ratioSy)
-    }
-    if (this.blackBoard) this.blackBoard.rotation.z = - 1440 * ratio * (Math.PI / 180);
-    this.shapes.rotation.z = - 1440 * ratio * (Math.PI / 180);
-  }
 
 }

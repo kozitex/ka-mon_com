@@ -10,6 +10,7 @@ export default class Founder {
 
   // 直線の方程式
   straight = (a, b, c, x, y) => {
+    // console.log(a, b, c, x, y)
     if (x == undefined) {
       return new THREE.Vector3((b * y - c) / a, y, 0);
     } else if (y == undefined) {
@@ -35,7 +36,7 @@ export default class Founder {
     return THREE.MathUtils.radToDeg(Math.atan2(y - b, x - a));
   }
 
-  // 直線と円の交点を求める（r: 半径, h: 中心X座標, h: 中心Y座標, m: 直線式の傾き, n: 直線式の切片）
+  // 直線と円の交点を求める（r: 半径, h: 中心X座標, k: 中心Y座標, m: 直線式の傾き, n: 直線式の切片）
   interLineCircle = (r, h, k, m, n) => {
     var a = 1 + Math.pow(m, 2);
     var b = -2 * h + 2 * m * (n - k);
@@ -56,6 +57,86 @@ export default class Founder {
     return kouten;
   }
 
+  interLineCircle2 = (circle, form) => {
+    return this.interLineCircle(circle.r, circle.a, circle.b, form.a, form.b);
+  }
+
+  // interLineCircle3 = (circle, apices) => {
+  //   const form = this.from2Points3(apices[0], apices[1]);
+  //   return this.interLineCircle(circle.r, circle.a, circle.b, form.a, form.c);
+  // }
+
+  // #直線の座標A、直線の座標、円の中心点の座標、円の半径
+  // aX,aY,bX,bY,cX,cY,r
+  interLineCircle3 = (circle, apices) => {
+    const cx = circle.a;
+    const cy = circle.b;
+    const cr = circle.r;
+    const x1 = apices[0].x;
+    const y1 = apices[0].y;
+    const x2 = apices[1].x;
+    const y2 = apices[1].y;
+
+    const a = y2 - y1;
+    const b = x2 - x1;
+    const c = - (a * x1 + b * y1);
+
+    const l = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+
+    const ex = (x2 - x1) / l;
+    const ey = (y2 - y1) / l;
+
+    const vx = - ey;
+    const vy = ex;
+
+    const k = - (a * cx + b * cy + c) / (a * vx + b * vy);
+
+    const px = cx + k * vx;
+    const py = cy + k * vy;
+
+    if (cr < k) {
+      return false;
+    } else {
+      const s = Math.sqrt(cr * cr - k * k);
+      const v1 = new THREE.Vector3(px + s * ex, py + s * ey, 0);
+      const v2 = new THREE.Vector3(px - s * ex, py - s * ey, 0);
+      return [v1, v2];
+    }
+
+    // getPointsOfIntersectionWithLineAndCircle=(aX,aY,bX,bY,cX,cY,r)->
+    
+      // a = bY - aY
+      // b = aX - bX
+      // c = -( a*aX + b*aY )
+    
+      // l = Math.sqrt((bX-aX)*(bX-aX)+(bY-aY)*(bY-aY))
+    
+      // eX = (bX - aX) / l
+      // eY = (bY - aY) / l
+    
+      // vX = -eY
+      // vY = eX
+    
+      // k = - (a*cX + b*cY + c)/(a*vX+b*vY)
+    
+      // pX = cX + k*vX
+      // pY = cY + k*vY
+    
+      // if r<k
+      //   return false
+      // else
+      //   S = Math.sqrt( r*r - k*k )
+    
+      //   x1 = pX + S*eX
+      //   y1 = pY + S*eY
+      //   x2 = pX - S*eX
+      //   y2 = pY - S*eY
+    
+        // return [x1,y1,x2,y2]
+    
+  }
+
+
   // ２点の座標から方程式のa,bを取得
   from2Points = (x1, y1, x2, y2) => {
     const a = (y2 - y1) / (x2 - x1);
@@ -66,6 +147,23 @@ export default class Founder {
   // ２点の座標から方程式のa,bを取得
   from2Points2 = (v1, v2) => {
     return this.from2Points(v1.x, v1.y, v2.x, v2.y);
+  }
+
+  // ２点の座標から方程式のa,bを取得
+  from2Points3 = (v1, v2) => {
+    const x1 = v1.x, y1 = v1.y;
+    const x2 = v2.x, y2 = v2.y;
+    var a, b, c;
+    if (y1 == y2) {
+      a = 0, b = 1, c = y1;
+    } else if (x1 == x2) {
+      a = 1, b = 0, c = x1;
+    } else {
+      a = (y2 - y1) / (x2 - x1);
+      b = 1;
+      c = (x2 * y1 - x1 * y2) / (x2 - x1);
+    }
+    return {a: a, b: b, c: c};
   }
 
   // ２直線の交点を求める式
@@ -81,6 +179,30 @@ export default class Founder {
     // const interX = (b2 - b1) / (a1 - a2);
     // const interY = ((a1 * b2) - (a2 * b1)) / (a1 - a2);
     // return new THREE.Vector3(interX, interY, 0);
+  }
+
+  // ２直線の交点を求める式
+  getIntersect3(vs1, vs2) {
+    const form1 = this.from2Points3(vs1[0], vs1[1]);
+    const form2 = this.from2Points3(vs2[0], vs2[1]);
+    const a1 = form1.a;
+    const b1 = form1.b;
+    const c1 = form1.c;
+    const a2 = form2.a;
+    const b2 = form2.b;
+    const c2 = form2.c;
+    var x, y;
+    if (b1 == 0) {
+      x = c1;
+      y = (a2 * c1 + c2) / b2;
+    } else if (b2 == 0) {
+      x = c2;
+      y = (a1 * c2 + c1) / b1;
+    } else {
+      x = (c2 - c1) / (a1 - a2);
+      y = ((a1 * c2) - (a2 * c1)) / (a1 - a2);
+    }
+    return new THREE.Vector3(x, y, 0);
   }
 
   // 直線の描画座標を生成

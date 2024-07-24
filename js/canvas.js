@@ -7,7 +7,7 @@ import KageIgeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
 import Kikyou from './kamon/kikyou.js';
 import GenjiGuruma from './kamon/genji-guruma.js';
-import ChigaiTakanoha from './kamon/chigai-takanoha.js';
+import MaruNiChigaiTakanoha from './kamon/maru-ni-chigai-takanoha.js';
 import DakiMyouga from './kamon/daki-myouga.js';
 import MaruNiUmebachi from './kamon/maru-ni-umebachi.js';
 import MaruNiFutatsuKarigane from './kamon/maru-ni-futatsu-karigane.js';

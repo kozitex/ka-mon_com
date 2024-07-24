@@ -5,10 +5,10 @@ import Grid from './grid.js';
 import Mist from './mist.js';
 // import Mist2 from './mist2.js';
 import KageIgeta from './kamon/kage-igeta.js';
-import HidariFutatsuDomoe from './kamon/hidari-futatsu-domoe.js';
+import HidariFutatsuDomoe2 from './kamon/hidari-futatsu-domoe2.js';
 import Kikyou2 from './kamon/kikyou2.js';
 import GenjiGuruma2 from './kamon/genji-guruma2.js';
-import ChigaiTakanoha from './kamon/chigai-takanoha.js';
+import MaruNiChigaiTakanoha2 from './kamon/maru-ni-chigai-takanoha2.js';
 import DakiMyouga from './kamon/daki-myouga.js';
 import MaruNiUmebachi2 from './kamon/maru-ni-umebachi2.js';
 import MaruNiFutatsuKarigane2 from './kamon/maru-ni-futatsu-karigane2.js';
@@ -103,13 +103,13 @@ export default class Canvas2 {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      // new HidariFutatsuDomoe(),
-      new Kikyou2(),
-      new GenjiGuruma2(),
-      // new ChigaiTakanoha(),
+      // new HidariFutatsuDomoe2(),
+      // new Kikyou2(),
+      // new GenjiGuruma2(),
+      new MaruNiChigaiTakanoha2(),
       // new DakiMyouga(),
-      new MaruNiUmebachi2,
-      new MaruNiFutatsuKarigane2(),
+      // new MaruNiUmebachi2,
+      // new MaruNiFutatsuKarigane2(),
     ];
     const maxNum = 7;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
