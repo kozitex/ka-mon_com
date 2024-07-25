@@ -205,6 +205,16 @@ export default class Founder {
     return new THREE.Vector3(x, y, 0);
   }
 
+  // 座標の回転(v: 座標、t: 回転角度)
+  rotateCoordinate = (vertex, theta) => {
+    const t = THREE.MathUtils.degToRad(theta);
+    const x = vertex.x;
+    const y = vertex.y;
+    const xd = x * Math.cos(t) - y * Math.sin(t);
+    const yd = x * Math.sin(t) - y * Math.cos(t);
+    return new THREE.Vector3(xd, yd, 0);
+  }
+
   // 直線の描画座標を生成
   linePointGen = (a, b, r, f, t, d) => {
     const points = [];
