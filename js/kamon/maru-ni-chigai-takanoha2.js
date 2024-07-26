@@ -59,242 +59,141 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     const w = 4;
 
     // 中心円
-    this.circle1 = {a: 0, b: 0, r: 1600};
-    this.circle2 = {a: 0, b: 0, r: 1300};
+    this.outer1 = {a: 0, b: 0, r: 1600};
+    this.outer2 = {a: 0, b: 0, r: 1300};
 
-    // 羽の輪郭円
+    // 羽の輪郭円（[内中外][４円]）
     this.wingR = 530;
-    this.circle3 = {a:   this.wingR      , b:   this.wingR      , r: this.wingR};
-    this.circle4 = {a: - this.wingR      , b: - this.wingR      , r: this.wingR};
-    this.circle5 = {a: - this.wingR +  50, b: - this.wingR +  50, r: this.wingR};
-    this.circle6 = {a: - this.wingR + 100, b: - this.wingR + 100, r: this.wingR};
-
-    this.inCircle1 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r - w};
-    this.inCircle2 = {a: this.circle4.a, b: this.circle4.b, r: this.circle4.r - w};
-    this.inCircle3 = {a: this.circle5.a, b: this.circle5.b, r: this.circle5.r - w};
-    this.inCircle4 = {a: this.circle6.a, b: this.circle6.b, r: this.circle6.r - w};
-
-    this.outCircle1 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r + w};
-    this.outCircle2 = {a: this.circle4.a, b: this.circle4.b, r: this.circle4.r + w};
-    this.outCircle3 = {a: this.circle5.a, b: this.circle5.b, r: this.circle5.r + w};
-    this.outCircle4 = {a: this.circle6.a, b: this.circle6.b, r: this.circle6.r + w};
-
-    // 対角線１
-    const radApex1 = this.circleShort(this.circle1,  45);
-    const radApex2 = this.circleShort(this.circle1, 225);
-    this.radiation1 = [radApex1, radApex2];
-
-    // 対角線２
-    const radTheta = THREE.MathUtils.radToDeg(Math.asin(40 / this.wingR));
-    const radApex3 = this.circleShort(this.circle3,  45 - radTheta);
-    const radApex4 = this.circleShort(this.circle4, 225 + radTheta);
-    const radApex5 = this.circleShort(this.circle3,  45 + radTheta);
-    const radApex6 = this.circleShort(this.circle4, 225 - radTheta);
-    this.radiation2 = [radApex3, radApex4];
-    this.radiation3 = [radApex5, radApex6];
-
-    // 対角線２（内側）
-    const inRadTheta = THREE.MathUtils.radToDeg(Math.asin((40 - w) / (this.wingR - w)));
-    const inRadApex3 = this.circleShort(this.inCircle1,  45 - inRadTheta);
-    const inRadApex4 = this.circleShort(this.inCircle4, 225 + inRadTheta);
-    const inRadApex5 = this.circleShort(this.inCircle1,  45 + inRadTheta);
-    const inRadApex6 = this.circleShort(this.inCircle4, 225 - inRadTheta);
-    this.inRadiation2 = [inRadApex3, inRadApex4];
-    this.inRadiation3 = [inRadApex6, inRadApex5];
-
-    // 対角線２（外側）
-    const outRadTheta = THREE.MathUtils.radToDeg(Math.asin((40 + w) / (this.wingR + w)));
-    const outRadApex3 = this.circleShort(this.outCircle1,  45 - outRadTheta);
-    const outRadApex4 = this.circleShort(this.outCircle4, 225 + outRadTheta);
-    const outRadApex5 = this.circleShort(this.outCircle1,  45 + outRadTheta);
-    const outRadApex6 = this.circleShort(this.outCircle4, 225 - outRadTheta);
-    this.outRadiation2 = [outRadApex3, outRadApex4];
-    this.outRadiation3 = [outRadApex5, outRadApex6];
-
-    // 羽の輪郭線
-    const conApex1 = this.circleShort(this.circle3, - 45);
-    const conApex2 = this.circleShort(this.circle4, - 45);
-    const conApex3 = this.circleShort(this.circle3,  135);
-    const conApex4 = this.circleShort(this.circle4,  135);
-    this.contour1 = [conApex1, conApex2];
-    this.contour2 = [conApex3, conApex4];
-
-    // 羽の輪郭線（内側）
-    const inConApex1 = this.circleShort(this.inCircle1, - 45);
-    const inConApex2 = this.circleShort(this.inCircle2, - 45);
-    const inConApex3 = this.circleShort(this.inCircle1,  135);
-    const inConApex4 = this.circleShort(this.inCircle2,  135);
-    this.inContour1 = [inConApex1, inConApex2];
-    this.inContour2 = [inConApex3, inConApex4];
-
-    // 羽の輪郭線（外側）
-    const outConApex1 = this.circleShort(this.outCircle1, - 45);
-    const outConApex2 = this.circleShort(this.outCircle2, - 45);
-    const outConApex3 = this.circleShort(this.outCircle1,  135);
-    const outConApex4 = this.circleShort(this.outCircle2,  135);
-    this.outContour1 = [outConApex1, outConApex2];
-    this.outContour2 = [outConApex3, outConApex4];
-
-    // 回転後の輪郭線
-    const conApex1d = this.rotateCoordinate(conApex1, 90);
-    const conApex2d = this.rotateCoordinate(conApex2, 90);
-    const conApex3d = this.rotateCoordinate(conApex3, 90);
-    const conApex4d = this.rotateCoordinate(conApex4, 90);
-    this.contour1d = [conApex1d, conApex2d];
-    this.contour2d = [conApex3d, conApex4d];
-
-    // 回転後の輪郭線（外側）
-    const outConApex1d = this.rotateCoordinate(outConApex1, 90);
-    const outConApex2d = this.rotateCoordinate(outConApex2, 90);
-    const outConApex3d = this.rotateCoordinate(outConApex3, 90);
-    const outConApex4d = this.rotateCoordinate(outConApex4, 90);
-    this.outContour1d = [outConApex1d, outConApex2d];
-    this.outContour2d = [outConApex3d, outConApex4d];
-
-    // 対角線と輪郭線の交差
-    const interApex1 = this.getIntersect3(this.radiation2, this.contour1d);
-    const interApex2 = this.getIntersect3(this.radiation2, this.contour2d);
-    const interApex3 = this.getIntersect3(this.radiation3, this.contour1d);
-    const interApex4 = this.getIntersect3(this.radiation3, this.contour2d);
-    this.radiation4 = [radApex3, interApex1];
-    this.radiation5 = [interApex2, radApex4];
-    this.radiation6 = [radApex5, interApex3];
-    this.radiation7 = [interApex4, radApex6];
-
-    // 輪郭線同士の交差
-    const interApex5 = this.getIntersect3(this.contour1, this.contour1d);
-    const interApex6 = this.getIntersect3(this.contour1, this.contour2d);
-    const interApex7 = this.getIntersect3(this.contour2, this.contour1d);
-    const interApex8 = this.getIntersect3(this.contour2, this.contour2d);
-    this.contour3 = [conApex1, interApex5];
-    this.contour4 = [interApex6, conApex2];
-    this.contour5 = [conApex3, interApex7];
-    this.contour6 = [interApex8, conApex4];
-
-    // 羽の模様
-    this.decorations1 = [];
-    this.decorations2 = [];
-
-    for (var i = 0;i <= 3;i ++) {
-      for (var j = 0;j <= 2;j ++) {
-
-        // 交点の算出用の座標パラメータ
-        const val = i <= 1 ? 110 + 100 * j : - 630 + 100 * j;
-        const x1 = i % 2 == 0 ?    0 : val, y1 = i % 2 == 0 ? val :    0;
-        const x2 = i % 2 == 0 ? 1600 : val, y2 = i % 2 == 0 ? val : 1600;
-        const line = [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
-
-        // 対角線や輪郭との交点を算出
-        const radiation = i % 2 == 0 ? this.radiation2 : this.radiation3;
-        const apexF = this.getIntersect3(radiation, line);
-        var apexT;
-        const n = i * 3 + j;
-        if (n == 0) {
-          const contour = i % 2 == 0 ? this.contour1 : this.contour2;
-          apexT = this.getIntersect3(contour, line);
-        } else if (i <= 1) {
-          const apexTd = this.interLineCircle3(this.circle3, line);
-          apexT = i % 2 == 0
-            ? apexTd[0].x > apexTd[1].x ? apexTd[0] : apexTd[1]
-            : apexTd[0].y > apexTd[1].y ? apexTd[0] : apexTd[1];
-        } else {
-          const contour = i % 2 == 0 ? this.contour1 : this.contour2;
-          apexT = this.getIntersect3(contour, line);
-        }
-        this.decorations1.push([apexF, apexT]);
-
-        // 対角線や輪郭との交点を算出（回転用）
-        const inter1 = i <= 1 ? this.contour1d : i == 2 ? this.radiation2 : this.radiation3;
-        const apexF2 = this.getIntersect3(inter1, line);
-        var apexT2 = i <= 1 ? apexT : this.getIntersect3(this.contour2d, line);
-        this.decorations2.push([apexF2, apexT2]);
-
+    this.wingC = [];
+    for (var i = 0;i <= 2;i ++) {
+      const circles = [];
+      for (var j = 0;j <= 3;j ++) {
+        const s = j > 0 ? - 1 : 1;
+        const o = j > 0 ? (j - 1) * 50 : 0;
+        circles.push({a: s * this.wingR + o, b: s * this.wingR + o, r: this.wingR + (i - 1) * w});
       }
+      this.wingC.push(circles);
     }
 
-    // 羽の模様（内側・上ズレ）
-    this.innerDeco1 = [];
-    this.innerDeco2 = [];
+    // 対角線
+    this.rad = [
+      this.circleShort(this.outer1,  45),
+      this.circleShort(this.outer1, 225)
+    ];
 
-    for (var i = 0;i <= 3;i ++) {
+    // 羽弁（[i: 回転（＋α）][j: 内中外][k: 右左（右２左２）][l: ２点]）
+    this.vane = [];
+    for (var i = 0;i <= 2;i ++) {
+      const shapes = [];
       for (var j = 0;j <= 2;j ++) {
-
-        // 交点の算出用の座標パラメータ
-        const val = i <= 1 ? 110 + w + 100 * j : - 630 + w + 100 * j;
-        const x1 = i % 2 == 0 ?    0 : val, y1 = i % 2 == 0 ? val :    0;
-        const x2 = i % 2 == 0 ? 1600 : val, y2 = i % 2 == 0 ? val : 1600;
-        const line = [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
-
-        // 対角線や輪郭との交点を算出
-        const radiation = i % 2 == 0 ? this.outRadiation2 : this.outRadiation3;
-        const apexF = this.getIntersect3(radiation, line);
-        var apexT;
-        const n = i * 3 + j;
-        if (n == 0) {
-          const contour = i % 2 == 0 ? this.inContour1 : this.inContour2;
-          apexT = this.getIntersect3(contour, line);
-        } else if (i <= 1) {
-          const apexTd = this.interLineCircle3(this.inCircle1, line);
-          apexT = i % 2 == 0
-            ? apexTd[0].x > apexTd[1].x ? apexTd[0] : apexTd[1]
-            : apexTd[0].y > apexTd[1].y ? apexTd[0] : apexTd[1];
+        const lines = [];
+        if (i == 2) {
+          for (var k = 0;k <= 3;k ++) {
+            const m = Math.trunc(k / 2);
+            const n = k % 2 == 0 ? 0 : 1;
+            const inter = this.getIntersect3(this.vane[0][j][m], this.vane[1][j][n]);
+            lines.push([this.vane[0][j][m][n], inter]);
+          }  
         } else {
-          const contour = i % 2 == 0 ? this.inContour1 : this.inContour2;
-          apexT = this.getIntersect3(contour, line);
+          for (var k = 0;k <= 1;k ++) {
+            const points = [];
+            const a = 45 + (90 * k);
+            const s = k == 1 ? 1 : - 1;
+            for (var l = 0;l <= 1;l ++) {
+              var point = this.circleShort(this.wingC[j][l], a * s);
+              if (i == 1) point = this.rotateCoordinate(point, 90);
+              points.push(point);
+            }
+            lines.push(points);
+          }
         }
-        this.innerDeco1.push([apexF, apexT]);
-
-        // 対角線や輪郭との交点を算出（回転用）
-        const inter1 = i <= 1 ? this.outContour1d : i == 2 ? this.radiation2 : this.radiation3;
-        const apexF2 = this.getIntersect3(inter1, line);
-        var apexT2 = i <= 1 ? apexT : this.getIntersect3(this.outContour2d, line);
-        this.innerDeco2.push([apexF2, apexT2]);
-
+        shapes.push(lines);
       }
+      this.vane.push(shapes);
     }
 
-    // 羽の模様（内側・下ズレ）
-    this.innerDeco3 = [];
-    this.innerDeco4 = [];
-
-    for (var i = 0;i <= 3;i ++) {
+    // 羽軸（[i: 回転][j: 内中外][k: 右左（右２左２）][l: ２点]）
+    this.rachis = [];
+    for (var i = 0;i <= 1;i ++) {
+      const shapes = [];
       for (var j = 0;j <= 2;j ++) {
-
-        // 交点の算出用の座標パラメータ
-        const val = i <= 1 ? 110 - w + 100 * j : - 630 - w + 100 * j;
-        const x1 = i % 2 == 0 ?    0 : val, y1 = i % 2 == 0 ? val :    0;
-        const x2 = i % 2 == 0 ? 1600 : val, y2 = i % 2 == 0 ? val : 1600;
-        const line = [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
-
-        // 対角線や輪郭との交点を算出
-        const radiation = i % 2 == 0 ? this.outRadiation2 : this.outRadiation3;
-        const apexF = this.getIntersect3(radiation, line);
-        var apexT;
-        const n = i * 3 + j;
-        if (n == 0) {
-          const contour = i % 2 == 0 ? this.inContour1 : this.inContour2;
-          apexT = this.getIntersect3(contour, line);
-        } else if (i <= 1) {
-          const apexTd = this.interLineCircle3(this.inCircle1, line);
-          apexT = i % 2 == 0
-            ? apexTd[0].x > apexTd[1].x ? apexTd[0] : apexTd[1]
-            : apexTd[0].y > apexTd[1].y ? apexTd[0] : apexTd[1];
+        const lines = [];
+        const jw = (j - 1) * w;
+        const t = THREE.MathUtils.radToDeg(Math.asin((40 + jw) / (this.wingR + jw)));
+        if (i == 0) {
+          for (var k = 0;k <= 1;k ++) {
+            const points = [];
+            for (var l = 0;l <= 1;l ++) {
+              const a = 45 + (180 * l);
+              const s = k + l == 1 ? 1 : - 1;
+              points.push(this.circleShort(this.wingC[j][l], a + s * t));
+            }
+            lines.push(points);
+          }
         } else {
-          const contour = i % 2 == 0 ? this.inContour1 : this.inContour2;
-          apexT = this.getIntersect3(contour, line);
+          for (var k = 0;k <= 3;k ++) {
+            const m = Math.trunc(k / 2);
+            const n = k % 2 == 0 ? 0 : 1;
+            const inter = this.getIntersect3(this.rachis[0][j][m], this.vane[1][2][n]);
+            lines.push([this.rachis[0][j][m][n], inter]);
+          }
         }
-        this.innerDeco3.push([apexF, apexT]);
-
-        // 対角線や輪郭との交点を算出（回転用）
-        const inter1 = i <= 1 ? this.outContour1d : i == 2 ? this.radiation2 : this.radiation3;
-        const apexF2 = this.getIntersect3(inter1, line);
-        var apexT2 = i <= 1 ? apexT : this.getIntersect3(this.outContour2d, line);
-        this.innerDeco4.push([apexF2, apexT2]);
-
+        shapes.push(lines);
       }
+      this.rachis.push(shapes);
     }
 
+    // 羽枝（[i: 回転][j: 下中上][k: 右２左２][l: 線３本]）
+    this.barb = [];
+    for (var i = 0;i <= 1;i ++) {
+      const shapes = [];
+      for (var j = 0;j <= 2;j ++) {
+        const sides = [];
+        for (var k = 0;k <= 3;k ++) {
+          const lines = [];
+          const m = k % 2 == 0 ? 0 : 1;
+          const jw = (j - 1) * w;
+          for (var l = 0;l <= 2;l ++) {
 
+            // 交点の算出用の座標パラメータ
+            const val = m == 0 ? 110 + jw + 100 * l : - 630 + jw + 100 * l;
+            const x1 = k <= 1 ?    0 : val, y1 = k <= 1 ? val :    0;
+            const x2 = k <= 1 ? 1600 : val, y2 = k <= 1 ? val : 1600;
+            const refLine = [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
+
+            const n = j == 1 ? 1 : 2;
+            var object;
+            if (i == 1 && m == 0) {
+              object = this.vane[1][n][0];
+            } else {
+              object = k <= 1 ? this.rachis[0][n][0] : this.rachis[0][n][1];
+            }
+            const pointF = this.getIntersect3(object, refLine);
+
+            var pointT;
+            if (m == 0 && l >= 1) {
+              const inters = this.interLineCircle3(this.wingC[0][0], refLine);
+              pointT = k <= 1
+                ? inters[0].x > inters[1].x ? inters[0] : inters[1]
+                : inters[0].y > inters[1].y ? inters[0] : inters[1];
+            } else {
+              var object;
+              if (i == 1 && m == 1) {
+                object = this.vane[1][n][1];
+              } else {
+                const o = j == 1 ? 1 : 0;
+                object = k <= 1 ? this.vane[0][o][0] : this.vane[0][o][1];  
+              }
+              pointT = this.getIntersect3(object, refLine);
+            }
+            lines.push([pointF, pointT]);
+          }
+          sides.push(lines);
+        }
+        shapes.push(sides);
+      }
+      this.barb.push(shapes);
+    }
 
 
   }
@@ -318,52 +217,51 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     var shadows = new THREE.Group();
 
     // 中心円
-    const circles1 = [this.circle1, this.circle2];
-    for (var i = 0;i <= circles1.length - 1;i ++) {
-      const circle = circles1[i];
-      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+    const outers = [this.outer1, this.outer2];
+    for (var i = 0;i <= outers.length - 1;i ++) {
+      const outer = outers[i];
+      const points = this.circlePointGen2(outer,[90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
       this.guidelines.add(mesh);
     }
 
     // 羽の輪郭円
     var pointsSum1 = [];
-    const circles2 = [this.circle3, this.circle4, this.circle5, this.circle6];
-    for (var i = 0;i <= circles2.length - 1;i ++) {
-      const circle = circles2[i];
+    for (var i = 0;i <= this.wingC[1].length - 1;i ++) {
+      const circle = this.wingC[1][i];
       const points = this.circlePointGen2(circle,[90, 450], this.divCount);
       pointsSum1.push(points);
     }
 
-    // 羽の輪郭線
+    // 羽弁
     var pointsSum2 = [];
-    const contours = [this.contour1, this.contour2];
-    for (var i = 0;i <= contours.length - 1;i ++) {
-      const contour = contours[i];
+    for (var i = 0;i <= this.vane[0][1].length - 1;i ++) {
+      const contour = this.vane[0][1][i];
       const points = this.linePointGen2(contour[0], contour[1], 0, this.divCount);
       pointsSum2.push(points);
     }
 
-    // 対角線１
-    const radPoints = this.linePointGen2(this.radiation1[0], this.radiation1[1], 0, this.divCount);
+    // 対角線
+    const radPoints = this.linePointGen2(this.rad[0], this.rad[1], 0, this.divCount);
     const radMesh = this.sublineGen(radPoints);
     this.guidelines.add(radMesh);
 
-    // 対角線２
+    // 羽軸
     var pointsSum3 = [];
-    const radiations = [this.radiation2, this.radiation3];
-    for (var i = 0;i <= radiations.length - 1;i ++) {
-      const rad = radiations[i];
+    for (var i = 0;i <= this.rachis[0][1].length - 1;i ++) {
+      const rad = this.rachis[0][1][i];
       const points = this.linePointGen2(rad[0], rad[1], 0, this.divCount);
       pointsSum3.push(points);
     }
 
-    // 羽の模様
+    // 羽枝
     var pointsSum4 = [];
-    for (var i = 0;i <= this.decorations1.length - 1;i ++) {
-      const deco = this.decorations1[i];
-      const points = this.linePointGen3(deco[0], deco[1], 0, this.divCount);
-      pointsSum4.push(points);
+    for (var i = 0;i <= this.barb[0][1].length - 1;i ++) {
+      const lines = this.barb[0][1][i];
+      lines.forEach((line) => {
+        const points = this.linePointGen3(line[0], line[1], 0, this.divCount);
+        pointsSum4.push(points);
+      })
     }
  
     for (var i = 0;i <= 1;i ++) {
@@ -390,26 +288,22 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     const w = 4;
 
     // 中心円
-    const circles1 = [this.circle1, this.circle2];
-    circles1.forEach((circle) => {
-      const circle1 = {a: circle.a, b: circle.b, r: circle.r + w};
-      const circle2 = {a: circle.a, b: circle.b, r: circle.r - w};
-      const shape = this.curvePointGen2(circle1, [0, 360]);
-      const path  = this.curvePointGen2(circle2, [0, 360]);
+    const outers = [this.outer1, this.outer2];
+    outers.forEach((outer) => {
+      const outer1 = {a: outer.a, b: outer.b, r: outer.r + w};
+      const outer2 = {a: outer.a, b: outer.b, r: outer.r - w};
+      const shape = this.curvePointGen2(outer1, [0, 360]);
+      const path  = this.curvePointGen2(outer2, [0, 360]);
       const geo = this.shapeGeoGen(shape, path);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
     });
 
-    // 対角線
-    const radGroup = [
-      [this.radiation2, this.radiation3],
-      [this.radiation4, this.radiation5, this.radiation6,this.radiation7],
-    ];
-    for (var i = 0;i <= radGroup.length - 1;i ++) {
-      const radiations = radGroup[i];
-      radiations.forEach((radiation) => {
-        const geo = this.outlineGeoGen(radiation[0], radiation[1]);
+    // 羽軸
+    for (var i = 0;i <= this.rachis.length - 1;i ++) {
+      const lines = this.rachis[i][1];
+      lines.forEach((line) => {
+        const geo = this.outlineGeoGen(line[0], line[1]);
         const mesh = new THREE.Mesh(geo, this.outlineMat);
         mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
         this.outlines.add(mesh);
@@ -417,12 +311,11 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     }
 
     // 羽の輪郭円
-    const circles2 = [this.circle3, this.circle4, this.circle5, this.circle6];
     const angles = [
       [- 45, 135], [135, 315], [135, 315], [135, 315]
     ]
-    for (var i = 0;i <= circles2.length - 1;i ++) {
-      const circle = circles2[i];
+    for (var i = 0;i <= this.wingC[1].length - 1;i ++) {
+      const circle = this.wingC[1][i];
       const angle = angles[i];
       const arc1 = {a: circle.a, b: circle.b, r: circle.r + w};
       const arc2 = {a: circle.a, b: circle.b, r: circle.r - w};
@@ -437,30 +330,28 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       }
     }
 
-    // 羽の輪郭線
-    const contoursGroup = [
-      [this.contour1, this.contour2],
-      [this.contour3, this.contour4, this.contour5,this.contour6],
-    ];
-    for (var i = 0;i <= contoursGroup.length - 1;i ++) {
-      const contours = contoursGroup[i];
-      contours.forEach((radiation) => {
-        const geo = this.outlineGeoGen(radiation[0], radiation[1]);
+    // 羽弁
+    const vanes = [this.vane[0], this.vane[2]];
+    for (var i = 0;i <= vanes.length - 1;i ++) {
+      const lines = vanes[i][1];
+      lines.forEach((line) => {
+        const geo = this.outlineGeoGen(line[0], line[1]);
         const mesh = new THREE.Mesh(geo, this.outlineMat);
         mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
         this.outlines.add(mesh);
       })
     }
 
-    // 羽の模様
-    const decoGroup = [this.decorations1, this.decorations2];
-    for (var i = 0;i <= decoGroup.length - 1;i ++) {
-      const decorations = decoGroup[i];
-      decorations.forEach((decoration) => {
-        const geo = this.outlineGeoGen(decoration[0], decoration[1]);
-        const mesh = new THREE.Mesh(geo, this.outlineMat);
-        mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
-        this.outlines.add(mesh);
+    // 羽枝
+    for (var i = 0;i <= this.barb.length - 1;i ++) {
+      const sides = this.barb[i][1];
+      sides.forEach((lines) => {
+        lines.forEach((line) => {
+          const geo = this.outlineGeoGen(line[0], line[1]);
+          const mesh = new THREE.Mesh(geo, this.outlineMat);
+          mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
+          this.outlines.add(mesh);  
+        })
       })
     }
 
@@ -473,7 +364,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     const w = 4;
 
     // 中心円
-    const outers = [this.circle1, this.circle2];
+    const outers = [this.outer1, this.outer2];
     for (var i = 0;i <= 0;i ++) {
       const shape = this.curvePointGen2(outers[0], [0, 360]);
       const path  = this.curvePointGen2(outers[1], [0, 360]);
@@ -482,43 +373,21 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       this.shapes.add(mesh);
     }
 
-    // 対角線
-    const radTheta = THREE.MathUtils.radToDeg(Math.asin((40 - w) / this.inCircle1.r));
+    // 羽軸
+    const rTheta = THREE.MathUtils.radToDeg(Math.asin((40 - w) / this.wingC[0][0].r));
+    const rachisArcs = [];
+    rachisArcs.push(this.curvePointGen3(this.wingC[0][0], [ 45 + rTheta,  45 - rTheta], true));
+    rachisArcs.push(this.curvePointGen3(this.wingC[0][3], [225 + rTheta, 225 - rTheta], true));
+    rachisArcs.push(this.curvePointGen3(this.wingC[2][3], [225 - rTheta, 225 + rTheta], false));
+    rachisArcs.push(this.curvePointGen3(this.wingC[0][2], [225 + rTheta, 225 - rTheta], true));
+    rachisArcs.push(this.curvePointGen3(this.wingC[2][2], [225 - rTheta, 225 + rTheta], false));
+    rachisArcs.push(this.curvePointGen3(this.wingC[0][1], [225 + rTheta, 225 - rTheta], true));
 
-    const radArc1 = this.curvePointGen3(this.inCircle1,  [ 45 + radTheta,  45 - radTheta], true);
-    const radArc2 = this.curvePointGen3(this.inCircle4,  [225 + radTheta, 225 - radTheta], true);
-    const radArc3 = this.curvePointGen3(this.outCircle4, [225 - radTheta, 225 + radTheta], false);
-    const radArc4 = this.curvePointGen3(this.inCircle3,  [225 + radTheta, 225 - radTheta], true);
-    const radArc5 = this.curvePointGen3(this.outCircle3, [225 - radTheta, 225 + radTheta], false);
-    const radArc6 = this.curvePointGen3(this.inCircle2,  [225 + radTheta, 225 - radTheta], true);
-
-    // // 羽の輪郭線
-    // const conApex1 = this.circleShort(this.outCircle1, - 45);
-    // const conApex2 = this.circleShort(this.outCircle2, - 45);
-    // const conApex3 = this.circleShort(this.outCircle1,  135);
-    // const conApex4 = this.circleShort(this.outCircle2,  135);
-
-    // // 回転後の輪郭線
-    // const conApex1d = this.rotateCoordinate(conApex1, 90);
-    // const conApex2d = this.rotateCoordinate(conApex2, 90);
-    // const conApex3d = this.rotateCoordinate(conApex3, 90);
-    // const conApex4d = this.rotateCoordinate(conApex4, 90);
-
-    // const radApex1  = this.circleShort(this.inCircle1,  45 - radTheta);
-    // const radApex2  = this.circleShort(this.inCircle4, 225 + radTheta);
-    // const radApex3  = this.circleShort(this.inCircle4, 225 - radTheta);
-    // const radApex4  = this.circleShort(this.inCircle1,  45 + radTheta);
-
-    const radApex5 = this.getIntersect3(this.inRadiation2, this.outContour1d);
-    const radApex6 = this.getIntersect3(this.inRadiation3, this.outContour1d);
-    const radApex7 = this.getIntersect3(this.inRadiation2, this.outContour2d);
-    const radApex8 = this.getIntersect3(this.inRadiation3, this.outContour2d);
-
-    const radPoints1 = radArc1.concat(radArc2);
-    const radPoints2 = radArc3.concat(radArc4);
-    const radPoints3 = radArc5.concat(radArc6);
-    const radPoints4 = radArc1.concat([radApex5, radApex6]);
-    const radPoints5 = radArc2.concat([radApex8, radApex7]);
+    const radPoints1 = rachisArcs[0].concat(rachisArcs[1]);
+    const radPoints2 = rachisArcs[2].concat(rachisArcs[3]);
+    const radPoints3 = rachisArcs[4].concat(rachisArcs[5]);
+    const radPoints4 = rachisArcs[0].concat([this.rachis[1][0][0][1], this.rachis[1][0][2][1]]);
+    const radPoints5 = rachisArcs[1].concat([this.rachis[1][0][3][1], this.rachis[1][0][1][1]]);
 
     const radGeo1 = this.shapeGeoGen(radPoints1);
     const radGeo2 = this.shapeGeoGen(radPoints2);
@@ -540,34 +409,36 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       })
     }
 
-    // 羽の輪郭
-    const conTheta = THREE.MathUtils.radToDeg(Math.asin((40 + w) / this.inCircle1.r));
-    const conAngle1 = this.arcAngle(this.inCircle1, this.innerDeco1[2][1]);
-    const conArc1 = this.curvePointGen3(this.inCircle1, [45 - conTheta, conAngle1], true);
-    const interApex1 = this.getIntersect3(this.outRadiation2, this.outContour1d);
-    const conPoints1 = conArc1.concat(this.innerDeco1[2][0]);
-    const conPoints2 = conArc1.concat(this.innerDeco2[2][0], interApex1);
+    // 羽枝
+
+    // 羽弁
+    const conTheta = THREE.MathUtils.radToDeg(Math.asin((40 + w) / this.wingC[0][0].r));
+    const conAngle1 = this.arcAngle(this.wingC[0][0], this.barb[0][2][0][2][1]);
+    const conArc1 = this.curvePointGen3(this.wingC[0][0], [45 - conTheta, conAngle1], true);
+    const interApex1 = this.getIntersect3(this.rachis[0][2][0], this.vane[1][2][0]);
+    const conPoints1 = conArc1.concat(this.barb[0][2][0][2][0]);
+    const conPoints2 = conArc1.concat(this.barb[1][2][0][2][0], interApex1);
     const conGeo1 = this.shapeGeoGen(conPoints1);
     const conGeo2 = this.shapeGeoGen(conPoints2);
 
-    const conAngle2 = this.arcAngle(this.inCircle1, this.innerDeco3[2][1]);
-    const conAngle3 = this.arcAngle(this.inCircle1, this.innerDeco1[1][1]);
-    const conArc2 = this.curvePointGen3(this.inCircle1, [conAngle2, conAngle3], true);
-    const conPoints3 = conArc2.concat(this.innerDeco1[1][0], this.innerDeco3[2][0]);
-    const conPoints4 = conArc2.concat(this.innerDeco2[1][0], this.innerDeco4[2][0]);
+    const conAngle2 = this.arcAngle(this.wingC[0][0], this.barb[0][0][0][2][1]);
+    const conAngle3 = this.arcAngle(this.wingC[0][0], this.barb[0][2][0][1][1]);
+    const conArc2 = this.curvePointGen3(this.wingC[0][0], [conAngle2, conAngle3], true);
+    const conPoints3 = conArc2.concat(this.barb[0][2][0][1][0], this.barb[0][0][0][2][0]);
+    const conPoints4 = conArc2.concat(this.barb[1][2][0][1][0], this.barb[1][0][0][2][0]);
     const conGeo3 = this.shapeGeoGen(conPoints3);
     const conGeo4 = this.shapeGeoGen(conPoints4);
 
-    const conAngle4 = this.arcAngle(this.inCircle1, this.innerDeco3[1][1]);
-    const conArc3 = this.curvePointGen3(this.inCircle1, [conAngle4, - 45], true);
-    const conPoints5 = conArc3.concat(this.innerDeco1[0][1], this.innerDeco1[0][0], this.innerDeco3[1][0]);
-    const conPoints6 = conArc3.concat(this.innerDeco2[0][1], this.innerDeco2[0][0], this.innerDeco4[1][0]);
+    const conAngle4 = this.arcAngle(this.wingC[0][0], this.barb[0][0][0][1][1]);
+    const conArc3 = this.curvePointGen3(this.wingC[0][0], [conAngle4, - 45], true);
+    const conPoints5 = conArc3.concat(this.barb[0][2][0][0][1], this.barb[0][2][0][0][0], this.barb[0][0][0][1][0]);
+    const conPoints6 = conArc3.concat(this.barb[1][2][0][0][1], this.barb[1][2][0][0][0], this.barb[1][0][0][1][0]);
     const conGeo5 = this.shapeGeoGen(conPoints5);
     const conGeo6 = this.shapeGeoGen(conPoints6);
 
-    const interApex2 = this.getIntersect3(this.inContour1, this.outContour1d);
-    const conPoints7 = this.innerDeco3[0].concat(this.innerDeco1[8][1], this.innerDeco1[8][0]);
-    const conPoints8 = this.innerDeco4[0].concat(interApex2);
+    const interApex2 = this.getIntersect3(this.vane[0][0][0], this.vane[1][2][0]);
+    const conPoints7 = this.barb[0][0][0][0].concat(this.barb[0][2][1][2][1], this.barb[0][2][1][2][0]);
+    const conPoints8 = this.barb[1][0][0][0].concat(interApex2);
     const conGeo7 = this.shapeGeoGen(conPoints7);
     const conGeo8 = this.shapeGeoGen(conPoints8);
 
@@ -576,6 +447,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       [conGeo1, conGeo3, conGeo5, conGeo7],
       [conGeo2, conGeo4, conGeo6, conGeo8],
       [conGeo2, conGeo4, conGeo6, conGeo8],
+      // [conGeo1, conGeo3, conGeo5, conGeo7],
+      // [conGeo1, conGeo3, conGeo5, conGeo7],
+      // [conGeo2, conGeo4, conGeo6, conGeo8],
+      // [conGeo2, conGeo4, conGeo6, conGeo8],
     ];
 
     for (var i = 0;i <= conGeos.length - 1;i ++) {

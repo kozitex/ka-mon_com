@@ -212,6 +212,7 @@ export default class Founder {
     const y = vertex.y;
     const xd = x * Math.cos(t) - y * Math.sin(t);
     const yd = x * Math.sin(t) - y * Math.cos(t);
+    // console.log(theta, x, y, xd, yd)
     return new THREE.Vector3(xd, yd, 0);
   }
 
