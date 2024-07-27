@@ -248,6 +248,19 @@ const init = () => {
     }
   });
 
+  // キー入力時の処理
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyK' || e.code === 'Space') {
+      if (nowPlaying) {
+        soundPlay();
+        pause();
+      } else {
+        soundPlay();
+        play();
+      }
+    }
+  });
+
   // 読み込み後に動きがなければガイドを表示
   promptTimeout = setTimeout(() => {
     if (window.scrollY <= 0) {
