@@ -91,9 +91,9 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
           for (var k = 0;k <= 3;k ++) {
             const m = Math.trunc(k / 2);
             const n = k % 2 == 0 ? 0 : 1;
-            const inter = this.getIntersect3(this.vane[0][j][m], this.vane[1][j][n]);
+            const inter = this.getIntersect3(this.vane[0][j][m], this.vane[1][2][n]);
             lines.push([this.vane[0][j][m][n], inter]);
-          }  
+          }
         } else {
           for (var k = 0;k <= 1;k ++) {
             const points = [];
@@ -383,25 +383,26 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     rachisArcs.push(this.curvePointGen3(this.wingC[2][2], [225 - rTheta, 225 + rTheta], false));
     rachisArcs.push(this.curvePointGen3(this.wingC[0][1], [225 + rTheta, 225 - rTheta], true));
 
-    const radPoints1 = rachisArcs[0].concat(rachisArcs[1]);
-    const radPoints2 = rachisArcs[2].concat(rachisArcs[3]);
-    const radPoints3 = rachisArcs[4].concat(rachisArcs[5]);
-    const radPoints4 = rachisArcs[0].concat([this.rachis[1][0][0][1], this.rachis[1][0][2][1]]);
-    const radPoints5 = rachisArcs[1].concat([this.rachis[1][0][3][1], this.rachis[1][0][1][1]]);
+    const rachisPoints = [];
+    rachisPoints.push(rachisArcs[0].concat(rachisArcs[1]));
+    rachisPoints.push(rachisArcs[2].concat(rachisArcs[3]));
+    rachisPoints.push(rachisArcs[4].concat(rachisArcs[5]));
+    rachisPoints.push(rachisArcs[0].concat([this.rachis[1][0][0][1], this.rachis[1][0][2][1]]));
+    rachisPoints.push(rachisArcs[1].concat([this.rachis[1][0][3][1], this.rachis[1][0][1][1]]));
 
-    const radGeo1 = this.shapeGeoGen(radPoints1);
-    const radGeo2 = this.shapeGeoGen(radPoints2);
-    const radGeo3 = this.shapeGeoGen(radPoints3);
-    const radGeo4 = this.shapeGeoGen(radPoints4);
-    const radGeo5 = this.shapeGeoGen(radPoints5);
+    const rachisGeos = [];
+    const numArr = [[0, 1, 2], [3, 4, 1, 2]];
+    numArr.forEach((nums) => {
+      const group = [];
+      nums.forEach((num) => {
+        const points = rachisPoints[num];
+        group.push(this.shapeGeoGen(points));
+      })
+      rachisGeos.push(group);
+    })
 
-    const radGeos = [
-      [radGeo1, radGeo2, radGeo3],
-      [radGeo4, radGeo5, radGeo2, radGeo3],
-    ];
-
-    for (var i = 0;i <= radGeos.length - 1;i ++) {
-      const geos = radGeos[i];
+    for (var i = 0;i <= rachisGeos.length - 1;i ++) {
+      const geos = rachisGeos[i];
       geos.forEach((geo) => {
         const mesh = new THREE.Mesh(geo, this.shapeMat);
         mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
@@ -410,58 +411,173 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     }
 
     // 羽枝
+    const barbGeos = [];
+    const barbAngles = [];
+    const barbPoints = [];
+
+    // 一つ目
+    barbAngles.push([
+      this.arcAngle(this.wingC[0][0], this.barb[0][0][0][2][1]), 
+      this.arcAngle(this.wingC[0][0], this.barb[0][2][0][1][1])
+    ]);
+    barbPoints.push([
+      this.curvePointGen3(this.wingC[0][0], barbAngles[0], true).concat(
+        this.barb[0][2][0][1][0], this.barb[0][0][0][2][0]),
+      this.curvePointGen3(this.wingC[0][0], barbAngles[0], true).concat(
+        this.barb[1][2][0][1][0], this.barb[1][0][0][2][0])
+    ]);
+    barbGeos.push([
+      this.shapeGeoGen(barbPoints[0][0]),
+      this.shapeGeoGen(barbPoints[0][1])
+    ]);
+
+    // 二つ目
+    barbAngles.push([
+      this.arcAngle(this.wingC[0][0], this.barb[0][0][0][1][1]), 
+      - 45
+    ]);
+    barbPoints.push([
+      this.curvePointGen3(this.wingC[0][0], barbAngles[1], true).concat(
+        this.barb[0][2][0][0][1], this.barb[0][2][0][0][0], this.barb[0][0][0][1][0]),
+      this.curvePointGen3(this.wingC[0][0], barbAngles[1], true).concat(
+        this.barb[1][2][0][0][1], this.barb[1][2][0][0][0], this.barb[1][0][0][1][0])
+    ]);
+    barbGeos.push([
+      this.shapeGeoGen(barbPoints[1][0]),
+      this.shapeGeoGen(barbPoints[1][1])
+    ]);
+
+    // 三つ目
+    barbPoints.push([
+      [this.barb[0][0][1][2][0]].concat(this.barb[0][0][1][2][1], 
+        this.barb[0][2][1][1][1], this.barb[0][2][1][1][0]),
+      [this.barb[1][0][1][2][0]].concat(this.barb[1][0][1][2][1], 
+        this.barb[1][2][1][1][1], this.barb[1][2][1][1][0])
+    ]);
+    barbGeos.push([
+      this.shapeGeoGen(barbPoints[2][0]),
+      this.shapeGeoGen(barbPoints[2][1])
+    ]);
+
+    // 四つ目
+    barbPoints.push([
+      [this.barb[0][0][1][1][0]].concat(this.barb[0][0][1][1][1], 
+        this.barb[0][2][1][0][1], this.barb[0][2][1][0][0]),
+      [this.barb[1][0][1][1][0]].concat(this.barb[1][0][1][1][1], 
+        this.barb[1][2][1][0][1], this.barb[1][2][1][0][0])
+    ]);
+    barbGeos.push([
+      this.shapeGeoGen(barbPoints[3][0]),
+      this.shapeGeoGen(barbPoints[3][1])
+    ]);
+
+    barbGeos.forEach((geos) => {
+      for (var i = 0;i <= geos.length - 1;i ++) {
+        const geo = geos[i];
+        for (var j = 0;j <= 1;j ++) {
+          const mesh = new THREE.Mesh(geo, this.shapeMat);
+          mesh.rotation.y = THREE.MathUtils.degToRad(180 * (i + j));
+          mesh.rotation.z = THREE.MathUtils.degToRad(90 * j);
+          this.shapes.add(mesh);
+        }
+      }
+    })
 
     // 羽弁
-    const conTheta = THREE.MathUtils.radToDeg(Math.asin((40 + w) / this.wingC[0][0].r));
-    const conAngle1 = this.arcAngle(this.wingC[0][0], this.barb[0][2][0][2][1]);
-    const conArc1 = this.curvePointGen3(this.wingC[0][0], [45 - conTheta, conAngle1], true);
-    const interApex1 = this.getIntersect3(this.rachis[0][2][0], this.vane[1][2][0]);
-    const conPoints1 = conArc1.concat(this.barb[0][2][0][2][0]);
-    const conPoints2 = conArc1.concat(this.barb[1][2][0][2][0], interApex1);
-    const conGeo1 = this.shapeGeoGen(conPoints1);
-    const conGeo2 = this.shapeGeoGen(conPoints2);
+    const vaneGeos = [];
+    const vaneAngles = [];
+    const vanePoints = [];
 
-    const conAngle2 = this.arcAngle(this.wingC[0][0], this.barb[0][0][0][2][1]);
-    const conAngle3 = this.arcAngle(this.wingC[0][0], this.barb[0][2][0][1][1]);
-    const conArc2 = this.curvePointGen3(this.wingC[0][0], [conAngle2, conAngle3], true);
-    const conPoints3 = conArc2.concat(this.barb[0][2][0][1][0], this.barb[0][0][0][2][0]);
-    const conPoints4 = conArc2.concat(this.barb[1][2][0][1][0], this.barb[1][0][0][2][0]);
-    const conGeo3 = this.shapeGeoGen(conPoints3);
-    const conGeo4 = this.shapeGeoGen(conPoints4);
+    // 一つ目
+    vaneAngles.push([
+      this.arcAngle(this.wingC[0][0], this.rachis[0][2][0][0]), 
+      this.arcAngle(this.wingC[0][0], this.barb[0][2][0][2][1])
+    ]);
+    vanePoints.push([
+      this.curvePointGen3(this.wingC[0][0], vaneAngles[0], true).concat(
+        this.barb[0][2][0][2][0]),
+      this.curvePointGen3(this.wingC[0][0], vaneAngles[0], true).concat(
+        this.barb[1][2][0][2][0], this.rachis[1][2][0][1])
+    ]);
+    vaneGeos.push([
+      this.shapeGeoGen(vanePoints[0][0]),
+      this.shapeGeoGen(vanePoints[0][1])
+    ]);
 
-    const conAngle4 = this.arcAngle(this.wingC[0][0], this.barb[0][0][0][1][1]);
-    const conArc3 = this.curvePointGen3(this.wingC[0][0], [conAngle4, - 45], true);
-    const conPoints5 = conArc3.concat(this.barb[0][2][0][0][1], this.barb[0][2][0][0][0], this.barb[0][0][0][1][0]);
-    const conPoints6 = conArc3.concat(this.barb[1][2][0][0][1], this.barb[1][2][0][0][0], this.barb[1][0][0][1][0]);
-    const conGeo5 = this.shapeGeoGen(conPoints5);
-    const conGeo6 = this.shapeGeoGen(conPoints6);
+    // 二つ目
+    vanePoints.push([
+      [this.barb[0][0][0][0][0]].concat(this.barb[0][0][0][0][1], 
+        this.barb[0][2][1][2][1], this.barb[0][2][1][2][0]),
+      [this.barb[1][0][0][0][0]].concat(this.barb[1][0][0][0][1], 
+        this.vane[2][0][0][1])
+    ]);
+    vaneGeos.push([
+      this.shapeGeoGen(vanePoints[1][0]),
+      this.shapeGeoGen(vanePoints[1][1])
+    ]);
 
-    const interApex2 = this.getIntersect3(this.vane[0][0][0], this.vane[1][2][0]);
-    const conPoints7 = this.barb[0][0][0][0].concat(this.barb[0][2][1][2][1], this.barb[0][2][1][2][0]);
-    const conPoints8 = this.barb[1][0][0][0].concat(interApex2);
-    const conGeo7 = this.shapeGeoGen(conPoints7);
-    const conGeo8 = this.shapeGeoGen(conPoints8);
+    // 二つ目
+    vanePoints.push([
+      [],
+      [this.rachis[1][2][1][1]].concat(this.barb[1][2][1][2][1], 
+        this.barb[1][2][1][2][0])
+    ]);
+    vaneGeos.push([
+      ,
+      this.shapeGeoGen(vanePoints[2][1])
+    ]);
 
-    const conGeos = [
-      [conGeo1, conGeo3, conGeo5, conGeo7],
-      [conGeo1, conGeo3, conGeo5, conGeo7],
-      [conGeo2, conGeo4, conGeo6, conGeo8],
-      [conGeo2, conGeo4, conGeo6, conGeo8],
-      // [conGeo1, conGeo3, conGeo5, conGeo7],
-      // [conGeo1, conGeo3, conGeo5, conGeo7],
-      // [conGeo2, conGeo4, conGeo6, conGeo8],
-      // [conGeo2, conGeo4, conGeo6, conGeo8],
-    ];
 
-    for (var i = 0;i <= conGeos.length - 1;i ++) {
-      const geos = conGeos[i];
-      geos.forEach((geo) => {
-        const mesh = new THREE.Mesh(geo, this.shapeMat);
-        mesh.rotation.y = THREE.MathUtils.degToRad(180 * Math.ceil(i / 2));
-        mesh.rotation.z = THREE.MathUtils.degToRad(90 * Math.trunc(i % 2));
-        this.shapes.add(mesh);
-      })
-    }
+
+    // console.log(barbAngles, vaneAngles)
+
+    // const conTheta = THREE.MathUtils.radToDeg(Math.asin((40 + w) / this.wingC[0][0].r));
+    // const conAngle1 = this.arcAngle(this.wingC[0][0], this.barb[0][2][0][2][1]);
+    // const conArc1 = this.curvePointGen3(this.wingC[0][0], [45 - conTheta, conAngle1], true);
+    // const interApex1 = this.getIntersect3(this.rachis[0][2][0], this.vane[1][2][0]);
+    // const conPoints1 = conArc1.concat(this.barb[0][2][0][2][0]);
+    // const conPoints2 = conArc1.concat(this.barb[1][2][0][2][0], interApex1);
+    // const conGeo1 = this.shapeGeoGen(conPoints1);
+    // const conGeo2 = this.shapeGeoGen(conPoints2);
+
+    // const interApex2 = this.getIntersect3(this.vane[0][0][0], this.vane[1][2][0]);
+    // const conPoints7 = this.barb[0][0][0][0].concat(this.barb[0][2][1][2][1], this.barb[0][2][1][2][0]);
+    // const conPoints8 = this.barb[1][0][0][0].concat(interApex2);
+    // const conGeo7 = this.shapeGeoGen(conPoints7);
+    // const conGeo8 = this.shapeGeoGen(conPoints8);
+
+    // const conGeos = [
+    //   [conGeo1, conGeo7],
+    //   [conGeo1, conGeo7],
+    //   [conGeo2, conGeo8],
+    //   [conGeo2, conGeo8],
+    //   // [conGeo1, conGeo3, conGeo5, conGeo7],
+    //   // [conGeo1, conGeo3, conGeo5, conGeo7],
+    //   // [conGeo2, conGeo4, conGeo6, conGeo8],
+    //   // [conGeo2, conGeo4, conGeo6, conGeo8],
+    // ];
+
+    vaneGeos.forEach((geos) => {
+      for (var i = 0;i <= geos.length - 1;i ++) {
+        const geo = geos[i];
+        for (var j = 0;j <= 1;j ++) {
+          const mesh = new THREE.Mesh(geo, this.shapeMat);
+          mesh.rotation.y = THREE.MathUtils.degToRad(180 * (i + j));
+          mesh.rotation.z = THREE.MathUtils.degToRad(90 * j);
+          this.shapes.add(mesh);
+        }
+      }
+    })
+
+    // for (var i = 0;i <= conGeos.length - 1;i ++) {
+    //   const geos = conGeos[i];
+    //   geos.forEach((geo) => {
+    //     const mesh = new THREE.Mesh(geo, this.shapeMat);
+    //     mesh.rotation.y = THREE.MathUtils.degToRad(180 * Math.ceil(i / 2));
+    //     mesh.rotation.z = THREE.MathUtils.degToRad(90 * Math.trunc(i % 2));
+    //     this.shapes.add(mesh);
+    //   })
+    // }
 
 
 
