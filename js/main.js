@@ -1,6 +1,6 @@
 'use strict';
 import Canvas from './canvas.js';
-import Canvas2 from './canvas2.js';
+// import Canvas from './canvas2.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();
@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
 const init = () => {
 
   // キャンバスを展開
-  const canvas = new Canvas2();
+  const canvas = new Canvas();
 
   // アニメーションスクロール関数の定義
   const autoScroll = (target, duration = 10000) => {

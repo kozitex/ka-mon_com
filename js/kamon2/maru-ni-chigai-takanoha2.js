@@ -1,20 +1,13 @@
 'use strict';
 
 import * as THREE from 'three';
-import Kamon2 from '../kamon2.js';
+import Kamon from '../kamon2.js';
 
-export default class MaruNiChigaiTakanoha2 extends Kamon2 {
+export default class MaruNiChigaiTakanoha2 extends Kamon {
 
   constructor() {
 
     super();
-
-    // ブラックボード用のグループとマテリアル
-    this.blackBoard = new THREE.Group();
-    this.blackBoardMat = new THREE.MeshBasicMaterial({
-      side: THREE.DoubleSide,
-      transparent: true,
-    });
 
     // infoのテキスト
     this.jpNameText = '丸に違い鷹の羽';
@@ -62,7 +55,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
     this.outer1 = {a: 0, b: 0, r: 1600};
     this.outer2 = {a: 0, b: 0, r: 1300};
 
-    // 羽の輪郭円（[内中外][４円]）
+    // 羽弁の円（[i: 0=内側、1=中央、2=外側][j: 0=右上、1=左下、2=左下の1個右上、3=左下の2個右上]）
     this.wingR = 530;
     this.wingC = [];
     for (var i = 0;i <= 2;i ++) {
@@ -81,7 +74,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       this.circleShort(this.outer1, 225)
     ];
 
-    // 羽弁（[i: 回転（＋α）][j: 内中外][k: 右左（右２左２）][l: ２点]）
+    // 羽弁の線（[i: 0=手前の羽][j: 0=内側、1=中央、2=外側][k: 0=右下、1=左上][l: 0〜1=直線を結ぶ2点]）
+    // 　　　　（[i: 1=奥の羽][j: 0=内側、1=中央、2=外側][k: 0=右上、1=左下][l: 0〜1=直線を結ぶ2点]）
+    // 　　　　（[i: 2=奥の羽と交差][j: 0=内側、1=中央、2=外側]
+    // 　　　　　[k: 0=右下の上側、1=右下の下側、2=左上の上側、3=左上の下側][l: 0〜1=直線を結ぶ2点]）
     this.vane = [];
     for (var i = 0;i <= 2;i ++) {
       const shapes = [];
@@ -112,7 +108,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       this.vane.push(shapes);
     }
 
-    // 羽軸（[i: 回転][j: 内中外][k: 右左（右２左２）][l: ２点]）
+    // 羽軸（[i: 0=手前の羽　　][j: 0=内側、1=中央、2=外側]
+    // 　　　[k: 0=右下、1=左上][l: 0〜1=直線を結ぶ2点]）
+    // 　　（[i: 1=奥の羽と交差][j: 0=内側、1=中央、2=外側]
+    // 　　　[k: 0=右下の上側、1=右下の下側、2=左上の上側、3=左上の下側][l: 0〜1=直線を結ぶ2点]）
     this.rachis = [];
     for (var i = 0;i <= 1;i ++) {
       const shapes = [];
@@ -143,7 +142,9 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       this.rachis.push(shapes);
     }
 
-    // 羽枝（[i: 回転][j: 下中上][k: 右２左２][l: 線３本]）
+    // 羽枝（[i: 0=手前の羽、1=奥の羽と交差][j: 0=線の下端、1=線の中央、2=線の上端]
+    // 　　　[k: 0=右下の上側、1=右下の下側、2=左上の上側、3=左上の下側]
+    // 　　　[l: 0=一番下の線、1=真ん中の線、3=一番上の線][0=羽軸側の始点、1=羽弁側の終点]）
     this.barb = [];
     for (var i = 0;i <= 1;i ++) {
       const shapes = [];
@@ -225,7 +226,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       this.guidelines.add(mesh);
     }
 
-    // 羽の輪郭円
+    // 羽弁の円
     var pointsSum1 = [];
     for (var i = 0;i <= this.wingC[1].length - 1;i ++) {
       const circle = this.wingC[1][i];
@@ -233,7 +234,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       pointsSum1.push(points);
     }
 
-    // 羽弁
+    // 羽弁の線
     var pointsSum2 = [];
     for (var i = 0;i <= this.vane[0][1].length - 1;i ++) {
       const contour = this.vane[0][1][i];
@@ -310,7 +311,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       })
     }
 
-    // 羽の輪郭円
+    // 羽弁の円
     const angles = [
       [- 45, 135], [135, 315], [135, 315], [135, 315]
     ]
@@ -330,7 +331,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon2 {
       }
     }
 
-    // 羽弁
+    // 羽弁の線
     const vanes = [this.vane[0], this.vane[2]];
     for (var i = 0;i <= vanes.length - 1;i ++) {
       const lines = vanes[i][1];

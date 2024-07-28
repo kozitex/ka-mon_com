@@ -3,17 +3,16 @@
 import * as THREE from 'three';
 import Grid from './grid.js';
 import Mist from './mist.js';
-// import Mist2 from './mist2.js';
 import KageIgeta from './kamon/kage-igeta.js';
-import HidariFutatsuDomoe2 from './kamon/hidari-futatsu-domoe2.js';
-import Kikyou2 from './kamon/kikyou2.js';
-import GenjiGuruma2 from './kamon/genji-guruma2.js';
-import MaruNiChigaiTakanoha2 from './kamon/maru-ni-chigai-takanoha2.js';
+import HidariFutatsuDomoe from './kamon2/hidari-futatsu-domoe2.js';
+import Kikyou from './kamon2/kikyou2.js';
+import GenjiGuruma from './kamon2/genji-guruma2.js';
+import MaruNiChigaiTakanoha from './kamon2/maru-ni-chigai-takanoha2.js';
 import DakiMyouga from './kamon/daki-myouga.js';
-import MaruNiUmebachi2 from './kamon/maru-ni-umebachi2.js';
-import MaruNiFutatsuKarigane2 from './kamon/maru-ni-futatsu-karigane2.js';
+import MaruNiUmebachi from './kamon2/maru-ni-umebachi2.js';
+import MaruNiFutatsuKarigane from './kamon2/maru-ni-futatsu-karigane2.js';
 
-export default class Canvas2 {
+export default class Canvas {
 
   constructor() {
 
@@ -85,7 +84,6 @@ export default class Canvas2 {
     this.scene.add(grids);
 
     // ミストを生成
-    // this.mist = new Mist();
     this.mist = new Mist();
     const mists = this.mist.generate();
     this.scene.add(mists);
@@ -103,13 +101,13 @@ export default class Canvas2 {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      new HidariFutatsuDomoe2(),
-      new Kikyou2(),
-      new GenjiGuruma2(),
-      new MaruNiChigaiTakanoha2(),
+      // new HidariFutatsuDomoe(),
+      // new Kikyou(),
+      // new GenjiGuruma(),
+      new MaruNiChigaiTakanoha(),
       // new DakiMyouga(),
-      new MaruNiUmebachi2(),
-      new MaruNiFutatsuKarigane2(),
+      // new MaruNiUmebachi(),
+      // new MaruNiFutatsuKarigane(),
     ];
     const maxNum = 7;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;

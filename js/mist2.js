@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Founder from './founder.js';
 
-export default class Mist2 extends Founder {
+export default class Mist extends Founder {
 
   constructor () {
 

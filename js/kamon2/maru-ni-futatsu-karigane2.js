@@ -1,9 +1,9 @@
 'use strict';
 
 import * as THREE from 'three';
-import Kamon2 from '../kamon2.js';
+import Kamon from '../kamon2.js';
 
-export default class MaruNiFutatsuKarigane2 extends Kamon2 {
+export default class MaruNiFutatsuKarigane2 extends Kamon {
 
   constructor() {
 

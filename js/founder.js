@@ -10,7 +10,6 @@ export default class Founder {
 
   // 直線の方程式
   straight = (a, b, c, x, y) => {
-    // console.log(a, b, c, x, y)
     if (x == undefined) {
       return new THREE.Vector3((b * y - c) / a, y, 0);
     } else if (y == undefined) {

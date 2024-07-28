@@ -98,7 +98,7 @@ export default class Canvas {
       new HidariFutatsuDomoe(),
       new Kikyou(),
       new GenjiGuruma(),
-      new ChigaiTakanoha(),
+      new MaruNiChigaiTakanoha(),
       new DakiMyouga(),
       new MaruNiUmebachi,
       new MaruNiFutatsuKarigane
