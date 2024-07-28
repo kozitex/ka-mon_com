@@ -1,6 +1,6 @@
 'use strict';
-import Canvas from './canvas.js';
-// import Canvas from './canvas2.js';
+// import Canvas from './canvas.js';
+import Canvas from './canvas2.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   init();

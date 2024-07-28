@@ -89,8 +89,8 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
 
     // 単一座標
     this.apex1 = new THREE.Vector3(- 192,  976, 0);
-    this.apex2 = this.circlePoint(this.arc5, this.angle5[0]);
-    this.apex3 = this.circlePoint(this.arc7, this.angle7[1]);
+    this.apex2 = this.circle(this.arc5, this.angle5[0]);
+    this.apex3 = this.circle(this.arc7, this.angle7[1]);
     this.apex4 = new THREE.Vector3(- 410, 1008, 0);
   }
 
@@ -108,20 +108,31 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
 
   }
 
+  // 直線座標の平行移動
+  lineShift = (v1, v2, w) => {
+    const form = this.from2Points(v1, v2);
+    const theta = Math.atan(- 1 / form.a);
+    const p = w * Math.cos(theta);
+    const q = w * Math.sin(theta);
+    const point1 = new THREE.Vector3(v1.x + p, v1.y + q, 0);
+    const point2 = new THREE.Vector3(v2.x + p, v2.y + q, 0);
+    return [point1, point2];
+  }
+
   // ガイドラインを作成
   generateGuideline = () => {
 
     // 外周円
     const outers = [this.circle1, this.circle2];
     outers.forEach((outer) => {
-      const points = this.circlePointGen2(outer,[90, 450], this.divCount);
+      const points = this.circleLocusGen(outer,[90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
       this.guidelines.add(mesh);
     });
 
     const heads = [this.arc5, this.arc8, this.arc11, this.arc14];
     for (var i = 0;i <= 3;i ++) {
-      const points = this.circlePointGen2(heads[i], [0, 450], this.divCount);
+      const points = this.circleLocusGen(heads[i], [90, 450], this.divCount);
       for (var j = 0;j <= 1;j ++) {
         const geo = new THREE.BufferGeometry().setFromPoints(points);
         const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
@@ -132,7 +143,7 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
 
     const wings = [this.arc1, this.arc4, this.arc2, this.arc3];
     for (var i = 0;i <= 3;i ++) {
-      const points = this.circlePointGen2(wings[i], [0, 450], this.divCount);
+      const points = this.circleLocusGen(wings[i], [90, 450], this.divCount);
       for (var j = 0;j <= 1;j ++) {
         const geo = new THREE.BufferGeometry().setFromPoints(points);
         const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
@@ -150,7 +161,7 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     ];
     for (var i = 0;i <= 4;i ++) {
       const beak = beaks[i];
-      const points = this.linePointGen2(beak[0], beak[1], 20, this.divCount);
+      const points = this.lineLocusGen(beak[0], beak[1], 20, this.divCount);
       for (var j = 0;j <= 1;j ++) {
         const geo = new THREE.BufferGeometry().setFromPoints(points);
         const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
@@ -172,8 +183,8 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     outers.forEach((outer) => {
       const outer1 = {a: outer.a, b: outer.b, r: outer.r + w};
       const outer2 = {a: outer.a, b: outer.b, r: outer.r - w};
-      const shape = this.curvePointGen2(outer1, [0, 360]);
-      const path  = this.curvePointGen2(outer2, [0, 360]);
+      const shape = this.curvePointGen(outer1, [0, 360], true);
+      const path  = this.curvePointGen(outer2, [0, 360], true);
       const geo = this.shapeGeoGen(shape, path);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
@@ -182,12 +193,14 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     // 翼
     const arcs1 = [this.arc1, this.arc2, this.arc3, this.arc4, this.arc5];
     const angles1 = [this.angle1, this.angle2, this.angle3, this.angle4, this.angle5];
+    const clockwise1 = [[true, false], [false, true], [false, true], [true, false], [true, false]];
     for (var i = 0;i <= 4;i ++) {
       const arc1 = {a: arcs1[i].a, b: arcs1[i].b, r: arcs1[i].r + (i == 0 || i == 3 ? w * 2: w)};
       const arc2 = {a: arcs1[i].a, b: arcs1[i].b, r: arcs1[i].r - (i == 0 || i == 3 ? 0: w)};
       const angle = angles1[i]
-      const point1 = this.curvePointGen2(arc1, [angle[0], angle[1]]);
-      const point2 = this.curvePointGen2(arc2, [angle[1], angle[0]]);
+      const clockwise = clockwise1[i]
+      const point1 = this.curvePointGen(arc1, [angle[0], angle[1]], clockwise[0]);
+      const point2 = this.curvePointGen(arc2, [angle[1], angle[0]], clockwise[1]);
       const points = point1.concat(point2);
       const geo = this.shapeGeoGen(points);
       for (var j = 0;j <= 1;j ++) {
@@ -197,10 +210,10 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
       }
     }
 
-    const eyePoint1 = this.curvePointGen2(this.arc12, [0, 360]);
-    const eyePoint2 = this.curvePointGen2(this.arc13, [0, 360]);
-    const eyePoint3 = this.curvePointGen2(this.arc15, [0, 360]);
-    const eyePoint4 = this.curvePointGen2(this.arc16, [0, 360]);
+    const eyePoint1 = this.curvePointGen(this.arc12, [0, 360], true);
+    const eyePoint2 = this.curvePointGen(this.arc13, [0, 360], true);
+    const eyePoint3 = this.curvePointGen(this.arc15, [0, 360], true);
+    const eyePoint4 = this.curvePointGen(this.arc16, [0, 360], true);
     const eyeGeo1 = this.shapeGeoGen(eyePoint1, eyePoint2);
     const eyeGeo2 = this.shapeGeoGen(eyePoint3, eyePoint4);
     for (var j = 0;j <= 1;j ++) {
@@ -211,8 +224,8 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
       this.outlines.add(mesh1, mesh2);
     }
 
-    const creasePoint1 = this.curvePointGen2(this.arc9,  this.angle9);
-    const creasePoint2 = this.curvePointGen2(this.arc10, this.angle10);
+    const creasePoint1 = this.curvePointGen(this.arc9,  this.angle9, true);
+    const creasePoint2 = this.curvePointGen(this.arc10, this.angle10, false);
     const creases    = creasePoint1.concat(creasePoint2);
     const creaseShape = new THREE.Shape(creases);
     const creaseGeo = new THREE.ShapeGeometry(creaseShape);
@@ -248,8 +261,8 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     // 外周円
     const outers = [this.circle1, this.circle2];
     for (var i = 0;i <= 0;i ++) {
-      const shape = this.curvePointGen2(outers[0], [0, 360]);
-      const path  = this.curvePointGen2(outers[1], [0, 360]);
+      const shape = this.curvePointGen(outers[0], [0, 360], true);
+      const path  = this.curvePointGen(outers[1], [0, 360], true);
       const geo   = this.shapeGeoGen(shape, path);
       const mesh  = new THREE.Mesh(geo, this.shapeMat);
       this.shapes.add(mesh);
@@ -258,26 +271,28 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     // 翼
     const arcs1 = [this.arc1, this.arc2, this.arc3, this.arc4];
     const angles1 = [this.angle1, this.angle2, this.angle3, this.angle4];
+    const clockwise1 = [true, false, false, true];
     var wingShapes = [];
     for (var i = 0;i <= 3;i ++) {
       const arc = arcs1[i];
       const angle = angles1[i];
-      const shape = this.curvePointGen2(arc, angle);
+      const clockwise = clockwise1[i]
+      const shape = this.curvePointGen(arc, angle, clockwise);
       wingShapes = wingShapes.concat(shape);
     }
     const wingGeo = this.shapeGeoGen(wingShapes);
 
     // 頭
-    const headShape1 = this.curvePointGen2(this.arc5, [this.angle5[0] - 0.5, this.angle5[1]]);
-    const headShape2 = this.curvePointGen2(this.arc6, this.angle6);
-    const headShape3 = this.curvePointGen2(this.arc7, [this.angle7[0], this.angle7[1] - 0.3]);
+    const headShape1 = this.curvePointGen(this.arc5, [this.angle5[0] - 0.5, this.angle5[1]], true);
+    const headShape2 = this.curvePointGen(this.arc6, this.angle6, false);
+    const headShape3 = this.curvePointGen(this.arc7, [this.angle7[0], this.angle7[1] - 0.3], false);
 
-    const eyeShape1 = this.curvePointGen2(this.arc12, [0, 360]);
-    const eyeShape2 = this.curvePointGen2(this.arc13, [0, 360]);
-    const eyeShape3 = this.curvePointGen2(this.arc14, [0, 360]);
+    const eyeShape1 = this.curvePointGen(this.arc12, [0, 360], true);
+    const eyeShape2 = this.curvePointGen(this.arc13, [0, 360], true);
+    const eyeShape3 = this.curvePointGen(this.arc14, [0, 360], true);
 
-    const creaseShape1 = this.curvePointGen2(this.arc9,  this.angle9);
-    const creaseShape2 = this.curvePointGen2(this.arc10, this.angle10);
+    const creaseShape1 = this.curvePointGen(this.arc9,  this.angle9, true);
+    const creaseShape2 = this.curvePointGen(this.arc10, this.angle10, false);
 
     const apex = new THREE.Vector3(this.apex1.x + 3, this.apex1.y, 0);
     const headShapes =   headShape1.concat(headShape2, headShape3, apex);
@@ -292,21 +307,22 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     const eyeGeo = this.shapeGeoGen(eyeShape2, eyeShape3);
 
     const w = 4;
-    const form1 = this.lineShift(this.apex1, this.apex2, - w);
-    const form2 = this.lineShift(this.apex2, this.apex4, w);
-    const form3 = this.lineShift(this.apex4, this.apex1, w);
+    const va1 = this.lineShift(this.apex1, this.apex2, - w);
+    const va2 = this.lineShift(this.apex2, this.apex4, w);
+    const va3 = this.lineShift(this.apex4, this.apex1, w);
 
-    const form4 = this.lineShift(this.apex1, this.apex3, - w);
-    const form5 = this.lineShift(this.apex3, this.apex4, w);
-    const form6 = this.lineShift(this.apex4, this.apex1, - w);
+    const va4 = this.lineShift(this.apex1, this.apex3, - w);
+    const va5 = this.lineShift(this.apex3, this.apex4, w);
+    const va6 = this.lineShift(this.apex4, this.apex1, - w);
 
-    const apex1 = this.getIntersect2(form1, form2);
-    const apex2 = this.getIntersect2(form2, form3);
-    const apex3 = this.getIntersect2(form3, form1);
+    const apex1 = this.getIntersect(va1, va2);
+    const apex2 = this.getIntersect(va2, va3);
+    const apex3 = this.getIntersect(va3, va1);
 
-    const apex4 = this.getIntersect2(form4, form5);
-    const apex5 = this.getIntersect2(form5, form6);
-    const apex6 = this.getIntersect2(form6, form4);
+    const apex4 = this.getIntersect(va4, va5);
+    const apex5 = this.getIntersect(va5, va6);
+    const apex6 = this.getIntersect(va6, va4);
+
     const upperBeakGeo = this.shapeGeoGen([apex1, apex2, apex3]);
     const lowerBeakGeo = this.shapeGeoGen([apex4, apex5, apex6]);
 

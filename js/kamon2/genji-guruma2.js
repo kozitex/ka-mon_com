@@ -60,36 +60,49 @@ export default class GenjiGuruma2 extends Kamon {
     this.circle4 = {a: 0, b: 0, r:  260};
 
     const w = 4;
-    const c1 = this.circle1;
-    const c2 = this.circle2;
-    const c3 = this.circle3;
-    const c4 = this.circle4;
 
     // 部品１
-    const angle1 = THREE.MathUtils.radToDeg(Math.asin(w / (c1.r - w)));
-    const angle2 = THREE.MathUtils.radToDeg(Math.asin(w / (c2.r + w)));
-    const angle3 = THREE.MathUtils.radToDeg(Math.asin(w / (c3.r + w)));
-    const arc1 = this.curvePointGen(c1.a, c1.b, c1.r - w, 90 - angle1, 45 + angle1, true);
-    const arc2 = this.curvePointGen(c2.a, c2.b, c2.r + w, 45 + angle2, 65 + angle2, false);
-    const arc3 = this.curvePointGen(c3.a, c3.b, c3.r + w, 65 + angle3, 70 - angle3, false);
-    const arc4 = this.curvePointGen(c2.a, c2.b, c2.r + w, 70 - angle2, 90 - angle2, false);
+    const theta1 = THREE.MathUtils.radToDeg(Math.asin(w / (this.circle1.r - w)));
+    const theta2 = THREE.MathUtils.radToDeg(Math.asin(w / (this.circle2.r + w)));
+    const theta3 = THREE.MathUtils.radToDeg(Math.asin(w / (this.circle3.r + w)));
+    const circle1 = {a: this.circle1.a, b: this.circle1.b, r: this.circle1.r - w};
+    const circle2 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r + w};
+    const circle3 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r + w};
+    const circle4 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r + w};
+    const angle1 = [90 - theta1, 45 + theta1];
+    const angle2 = [45 + theta2, 65 + theta2];
+    const angle3 = [65 + theta3, 70 - theta3];
+    const angle4 = [70 - theta2, 90 - theta2];
+    const arc1 = this.curvePointGen(circle1, angle1, true);
+    const arc2 = this.curvePointGen(circle2, angle2, false);
+    const arc3 = this.curvePointGen(circle3, angle3, false);
+    const arc4 = this.curvePointGen(circle4, angle4, false);
     this.arcPoints1 = arc1.concat(arc2, arc3, arc4);
 
     // 部品２
-    const angle5 = THREE.MathUtils.radToDeg(Math.asin(w / (c2.r - w)));
-    const arc5 = this.curvePointGen(c2.a, c2.b, c2.r - w, 110 - angle5, 70 + angle5, true);
-    const arc6 = this.curvePointGen(c3.a, c3.b, c3.r + w, 70 + angle3, 110 - angle3, false);
+    const theta5 = THREE.MathUtils.radToDeg(Math.asin(w / (this.circle2.r - w)));
+    const circle5 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r - w};
+    const circle6 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r + w};
+    const angle5 = [110 - theta5, 70 + theta5];
+    const angle6 = [70 + theta3, 110 - theta3];
+    const arc5 = this.curvePointGen(circle5, angle5, true);
+    const arc6 = this.curvePointGen(circle6, angle6, false);
     this.arcPoints2 = arc5.concat(arc6);
 
     // 部品３
-    this.angle7 = THREE.MathUtils.radToDeg(Math.asin(w / (c3.r - w)));
-    this.angle8 = THREE.MathUtils.radToDeg(Math.asin(w / (c4.r + w)));
-    const arc7 = this.curvePointGen(c3.a, c3.b, c3.r - w, 100 - this.angle7, 80 + this.angle7, true);
-    const arc8 = this.curvePointGen(c4.a, c4.b, c4.r + w, 80 + this.angle8, 100 - this.angle8, false);
+    this.theta7 = THREE.MathUtils.radToDeg(Math.asin(w / (this.circle3.r - w)));
+    this.theta8 = THREE.MathUtils.radToDeg(Math.asin(w / (this.circle4.r + w)));
+    const circle7 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r - w};
+    const circle8 = {a: this.circle4.a, b: this.circle4.b, r: this.circle4.r + w};
+    const angle7 = [100 - this.theta7, 80 + this.theta7];
+    const angle8 = [80 + this.theta8, 100 - this.theta8];
+    const arc7 = this.curvePointGen(circle7, angle7, true);
+    const arc8 = this.curvePointGen(circle8, angle8, false);
     this.arcPoints3 = arc7.concat(arc8);
 
     // 中央の円
-    this.circlePoints = this.curvePointGen(c4.a, c4.b, c4.r - w, 0, 360, false);
+    const circle9 = {a: this.circle4.a, b: this.circle4.b, r: this.circle4.r - w};
+    this.circlePoints = this.curvePointGen(circle9, [0, 360], false);
   }
 
   // オブジェクトを生成
@@ -112,13 +125,15 @@ export default class GenjiGuruma2 extends Kamon {
     // 円
     const cs = [this.circle1, this.circle2, this.circle3, this.circle4];
     cs.forEach((c) => {
-      const points = this.circlePointGen(c.a, c.b, c.r, 90, 450, this.divCount);
+      const points = this.circleLocusGen(c, [90, 450], this.divCount);
       const circle = this.guidelineGen(points);
       this.guidelines.add(circle);
     });
 
     // 一番外側の直線
-    const points1 = this.linePointGen(1, 0, 0, this.circle1.r, - this.circle1.r, this.divCount);
+    const v1 = [new THREE.Vector3(0, this.circle1.r, 0), 
+      new THREE.Vector3(0, - this.circle1.r, 0)];
+    const points1 = this.lineLocusGen(v1[0], v1[1], 0, this.divCount);
     for (var i = 0;i <= 3;i ++) {
       const line1 = this.guidelineGen(points1);
       line1.rotation.z = THREE.MathUtils.degToRad(45 * i);
@@ -127,12 +142,12 @@ export default class GenjiGuruma2 extends Kamon {
 
     // 真ん中の直線
     const angle2 = THREE.MathUtils.degToRad(70);
-    const angle3 = THREE.MathUtils.degToRad(110);
-    const form2 = {a: Math.tan(angle2), b: 1, c: 0};
-    const form3 = {a: Math.tan(angle3), b: 1, c: 0};
     const x1 = this.circle1.r * Math.cos(angle2);
-    const points2 = this.linePointGen(form2.a, 1, form2.b, x1, - x1, this.divCount);
-    const points3 = this.linePointGen(form3.a, 1, form3.b, - x1, x1, this.divCount);
+    const y1 = this.circle1.r * Math.sin(angle2);
+    const v2 = [new THREE.Vector3(  x1, y1, 0), new THREE.Vector3(- x1, - y1, 0)];
+    const v3 = [new THREE.Vector3(- x1, y1, 0), new THREE.Vector3(  x1, - y1, 0)];
+    const points2 = this.lineLocusGen(v2[0], v2[1], 0, this.divCount);
+    const points3 = this.lineLocusGen(v3[0], v3[1], 0, this.divCount);
     for (var i = 0;i <= 3;i ++) {
       const line2 = this.guidelineGen(points2);
       const line3 = this.guidelineGen(points3);
@@ -142,13 +157,13 @@ export default class GenjiGuruma2 extends Kamon {
     }
 
     // 一番内側の直線
-    const angle4 = THREE.MathUtils.degToRad(80);
-    const angle5 = THREE.MathUtils.degToRad(100);
-    const straight4 = {a: Math.tan(angle4), b: 1, c: 0};
-    const straight5 = {a: Math.tan(angle5), b: 1, c: 0};
-    const x2 = this.circle1.r * Math.cos(angle5);
-    const points4 = this.linePointGen(straight4.a, 1, straight4.b, x2, - x2, this.divCount);
-    const points5 = this.linePointGen(straight5.a, 1, straight5.b, - x2, x2, this.divCount);
+    const angle3 = THREE.MathUtils.degToRad(100);
+    const x2 = this.circle1.r * Math.cos(angle3);
+    const y2 = this.circle1.r * Math.sin(angle3);
+    const v4 = [new THREE.Vector3(  x2, y2, 0), new THREE.Vector3(- x2, - y2, 0)];
+    const v5 = [new THREE.Vector3(- x2, y2, 0), new THREE.Vector3(  x2, - y2, 0)];
+    const points4 = this.lineLocusGen(v4[0], v4[1], 0, this.divCount);
+    const points5 = this.lineLocusGen(v5[0], v5[1], 0, this.divCount);
     for (var i = 0;i <= 3;i ++) {
       const line4 = this.guidelineGen(points4);
       const line5 = this.guidelineGen(points5);
@@ -164,28 +179,32 @@ export default class GenjiGuruma2 extends Kamon {
   generateOutline = () => {
 
     const w = 4;
-    const c1 = this.circle1;
-    const c2 = this.circle2;
-    const c3 = this.circle3;
-    const c4 = this.circle4;
 
     // 部品１
-    const arc1 = this.curvePointGen(c1.a, c1.b, c1.r + w, 90, 45, true);
-    const arc2 = this.curvePointGen(c2.a, c2.b, c2.r - w, 45, 65, false);
-    const arc3 = this.curvePointGen(c3.a, c3.b, c3.r - w, 65, 70, false);
-    const arc4 = this.curvePointGen(c2.a, c2.b, c2.r - w, 70, 90, false);
+    const circle1 = {a: this.circle1.a, b: this.circle1.b, r: this.circle1.r + w};
+    const circle2 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r - w};
+    const circle3 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r - w};
+    const circle4 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r - w};
+    const arc1 = this.curvePointGen(circle1, [90, 45], true);
+    const arc2 = this.curvePointGen(circle2, [45, 65], false);
+    const arc3 = this.curvePointGen(circle3, [65, 70], false);
+    const arc4 = this.curvePointGen(circle4, [70, 90], false);
     const points1 = arc1.concat(arc2, arc3, arc4);
     const partsGeo1 = this.shapeGeoGen(points1, this.arcPoints1);
 
     // 部品２
-    const arc5 = this.curvePointGen(c2.a, c2.b, c2.r - 3, 110, 70, true);
-    const arc6 = this.curvePointGen(c3.a, c3.b, c3.r - w, 70, 110, false);
+    const circle5 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r - 3};
+    const circle6 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r - w};
+    const arc5 = this.curvePointGen(circle5, [110, 70], true);
+    const arc6 = this.curvePointGen(circle6, [70, 110], false);
     const points2 = arc5.concat(arc6);
     const partsGeo2 = this.shapeGeoGen(points2, this.arcPoints2);
 
     // 部品３
-    const arc7 = this.curvePointGen(c3.a, c3.b, c3.r - 3, 100 + this.angle7, 80 - this.angle7, true);
-    const arc8 = this.curvePointGen(c4.a, c4.b, c4.r + w, 80 - this.angle8, 100 + this.angle8, false);
+    const circle7 = {a: this.circle3.a, b: this.circle3.b, r: this.circle3.r - 3};
+    const circle8 = {a: this.circle4.a, b: this.circle4.b, r: this.circle4.r + w};
+    const arc7 = this.curvePointGen(circle7, [100 + this.theta7, 80 - this.theta7], true);
+    const arc8 = this.curvePointGen(circle8, [80 - this.theta8, 100 + this.theta8], false);
     const points3 = arc7.concat(arc8);
     const partsGeo3 = this.shapeGeoGen(points3, this.arcPoints3);
 
@@ -201,7 +220,8 @@ export default class GenjiGuruma2 extends Kamon {
     }
 
     // 中央の円
-    const point7 = this.curvePointGen(c4.a, c4.b, c4.r + w, 0, 360, false);
+    const circle9 = {a: this.circle4.a, b: this.circle4.b, r: this.circle4.r + w};
+    const point7 = this.curvePointGen(circle9, [0, 360], false);
     const circleGeo = this.shapeGeoGen(point7, this.circlePoints);
     const circle = new THREE.Mesh(circleGeo, this.outlineMat);
     this.outlines.add(circle);

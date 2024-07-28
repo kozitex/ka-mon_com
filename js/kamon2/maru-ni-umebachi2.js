@@ -64,7 +64,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const circle = this.circle4;
       const angle = 54 + (72 * i);
-      const apex = this.circle(circle.a, circle.b, circle.r, angle);
+      const apex = this.circle(circle, angle);
       this.pentaApices.push(apex);
     }
 
@@ -73,15 +73,15 @@ export default class MaruNiUmebachi2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const apex1 = this.pentaApices[i];
       const apex2 = this.pentaApices[i == 4 ? 0 : i + 1];
-      const form = this.from2Points(apex1.x, apex1.y, apex2.x, apex2.y);
+      const form = this.from2Points(apex1, apex2);
       this.pentaForms.push(form);
     }
 
     // 五角形とX軸の交点
     const form1 = this.pentaForms[1];
-    const inter1 = this.straight(form1.a, 1, form1.b, undefined, 0);
+    const inter1 = this.straight(form1.a, form1.b, form1.c, undefined, 0);
     const form2 = this.pentaForms[4];
-    const inter2 = this.straight(form2.a, 1, form2.b, undefined, 0);
+    const inter2 = this.straight(form2.a, form2.b, form2.c, undefined, 0);
     this.pentaInters = [inter1, inter2];
 
   }
@@ -107,7 +107,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     this.circles1 = new THREE.Group();
     const circles1 = [this.circle1, this.circle2];
     circles1.forEach((circle) => {
-      const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
+      const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const circleMesh = this.guidelineGen(points);
       this.circles1.add(circleMesh);
     });
@@ -117,7 +117,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     this.circles2 = new THREE.Group();
     const circles2 = [this.circle3];
     circles2.forEach((circle) => {
-      const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
+      const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const circleMesh = this.sublineGen(points);
       this.circles2.add(circleMesh);
     });
@@ -126,7 +126,9 @@ export default class MaruNiUmebachi2 extends Kamon {
     // 放射線１
     this.radiation1 = new THREE.Group();
     const dist = this.circle3.r;
-    const linePoints1 = this.linePointGen(1, 0, 0, dist, - dist, this.divCount);
+    const v1 = new THREE.Vector3(0,   dist, 0);
+    const v2 = new THREE.Vector3(0, - dist, 0);
+    const linePoints1 = this.lineLocusGen(v1, v2, 0, this.divCount);
     for (var v = 0;v <= 4;v ++) {
       const line = this.sublineGen(linePoints1);
       line.rotation.z = THREE.MathUtils.degToRad(72 * v);
@@ -136,9 +138,8 @@ export default class MaruNiUmebachi2 extends Kamon {
 
     // 周回円
     this.fiveCircles = new THREE.Group();
-    const c = this.circle6;
     for (var v = 0;v <= 4;v ++) {
-      const circlePoints = this.circlePointGen(c.a, c.b, c.r, 90, 450, this.divCount);
+      const circlePoints = this.circleLocusGen(this.circle6, [90, 450], this.divCount);
       const circle = this.guidelineGen(circlePoints);
       circle.rotation.z = THREE.MathUtils.degToRad(72 * v);
       this.fiveCircles.add(circle);
@@ -149,7 +150,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     this.circles3 = new THREE.Group();
     const circles3 = [this.circle4];
     circles3.forEach((circle) => {
-      const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
+      const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const circleMesh = this.sublineGen(points);
       this.circles3.add(circleMesh);
     });
@@ -159,7 +160,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     this.circles4 = new THREE.Group();
     const circles4 = [this.circle5];
     circles4.forEach((circle) => {
-      const points = this.circlePointGen(circle.a, circle.b, circle.r, 90, 450, this.divCount);
+      const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const circleMesh = this.guidelineGen(points);
       this.circles4.add(circleMesh);
     });
@@ -170,8 +171,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const apex1 = this.pentaApices[i];
       const apex2 = this.pentaApices[i == 4 ? 0 : i + 1];
-      const form = this.pentaForms[i];
-      const points = this.linePointGen(form.a, 1, form.b, apex1.x, apex2.x, this.divCount);
+      const points = this.lineLocusGen(apex1, apex2, 0, this.divCount);
       const line = this.guidelineGen(points);
       this.pentagon.add(line);
     }
@@ -181,7 +181,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     this.radiation2 = new THREE.Group();
     const inter1 = this.pentaInters[0];
     const inter2 = this.pentaInters[1];
-    const linePoints2 = this.linePointGen(0, 1, 0, inter1.x, inter2.x, this.divCount);
+    const linePoints2 = this.lineLocusGen(inter1, inter2, 0, this.divCount);
     for (var v = 0;v <= 4;v ++) {
       const line = this.guidelineGen(linePoints2);
       line.rotation.z = THREE.MathUtils.degToRad(72 * v);
@@ -201,8 +201,10 @@ export default class MaruNiUmebachi2 extends Kamon {
     // 中心円
     const circles3 = [this.circle1, this.circle2, this.circle5];
     circles3.forEach((circle) => {
-      const point0 = this.curvePointGen(circle.a, circle.b, circle.r + w, 0, 360, false);
-      const point1 = this.curvePointGen(circle.a, circle.b, circle.r - w, 0, 360, false);
+      const circle0 = {a: circle.a, b: circle.b, r: circle.r + w};
+      const circle1 = {a: circle.a, b: circle.b, r: circle.r - w};
+      const point0 = this.curvePointGen(circle0, [0, 360], false);
+      const point1 = this.curvePointGen(circle1, [0, 360], false);
       const geo = this.shapeGeoGen(point0, point1);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
@@ -211,8 +213,10 @@ export default class MaruNiUmebachi2 extends Kamon {
     // ５つの周回円
     const circles4 = [this.circle6];
     circles4.forEach((circle) => {
-      const point0 = this.curvePointGen(circle.a, circle.b, circle.r + w, 0, 360, false);
-      const point1 = this.curvePointGen(circle.a, circle.b, circle.r - w, 0, 360, false);
+      const circle0 = {a: circle.a, b: circle.b, r: circle.r + w};
+      const circle1 = {a: circle.a, b: circle.b, r: circle.r - w};
+      const point0 = this.curvePointGen(circle0, [0, 360], false);
+      const point1 = this.curvePointGen(circle1, [0, 360], false);
       const geo = this.shapeGeoGen(point0, point1);
       for (var v = 0;v <= 4;v ++) {
         const mesh = new THREE.Mesh(geo, this.outlineMat);
@@ -225,10 +229,10 @@ export default class MaruNiUmebachi2 extends Kamon {
     const pentaShapes = [], pentaPathes = [];
     const xw = w + 1;
     for (var i = 0;i <= 4;i ++) {
-      const circle = this.circle4;
+      const c4 = this.circle4;
       const angle = 54 + (72 * i);
-      const apex1 = this.circle(circle.a, circle.b, circle.r + xw, angle);
-      const apex2 = this.circle(circle.a, circle.b, circle.r - xw, angle);
+      const apex1 = this.circle({a: c4.a, b: c4.b, r: c4.r + xw}, angle);
+      const apex2 = this.circle({a: c4.a, b: c4.b, r: c4.r - xw}, angle);
       pentaShapes.push(apex1);
       pentaPathes.push(apex2);
     }
@@ -262,24 +266,22 @@ export default class MaruNiUmebachi2 extends Kamon {
   generateShape = () => {
 
     // 外周円
-    const c1 = this.circle1;
-    const c2 = this.circle2;
-    const outerCircleShape = this.curvePointGen(c1.a, c1.b, c1.r, 0, 360, false);
-    const outerCirclePath  = this.curvePointGen(c2.a, c2.b, c2.r, 0, 360, false);
+    const outerCircleShape = this.curvePointGen(this.circle1, [0, 360], false);
+    const outerCirclePath  = this.curvePointGen(this.circle2, [0, 360], false);
     const outerCircleGeo   = this.shapeGeoGen(outerCircleShape, outerCirclePath);
     const outerCircleMesh  = new THREE.Mesh(outerCircleGeo, this.shapeMat);
     this.shapes.add(outerCircleMesh);
 
     // 中心円
     const c5 = this.circle5;
-    const innerCircleshape = this.curvePointGen(c5.a, c5.b, c5.r - 4, 0, 360, false);
+    const circle5 = {a: this.circle5.a, b: this.circle5.b, r: this.circle5.r - 4};
+    const innerCircleshape = this.curvePointGen(circle5, [0, 360], false);
     const innerCircleGeo = this.shapeGeoGen(innerCircleshape);
     const innerCircleMesh = new THREE.Mesh(innerCircleGeo, this.shapeMat);
     this.shapes.add(innerCircleMesh);
 
     // ５つの周回円
-    const c6 = this.circle6;
-    const fiveCircleShape = this.curvePointGen(c6.a, c6.b, c6.r, 0, 360, false);
+    const fiveCircleShape = this.curvePointGen(this.circle6, [0, 360], false);
     const fiveCircleGeo = this.shapeGeoGen(fiveCircleShape);
     for (var i = 0;i <= 4;i ++) {
       const fiveCircleMesh = new THREE.Mesh(fiveCircleGeo, this.shapeMat);
@@ -290,20 +292,23 @@ export default class MaruNiUmebachi2 extends Kamon {
     // 中心の五角形
 
     // 弧の部分
-    const point1 = this.circle(c5.a, c5.b, c5.r + 4, - 72);
+    const circle6 = {a: this.circle5.a, b: this.circle5.b, r: this.circle5.r + 4};
+    const point1 = this.circle(circle6, - 72);
     const r1 = THREE.MathUtils.degToRad(18);
     const p1 = 4 * Math.cos(r1);
     const q1 = 4 * Math.sin(r1);
     const point1d = new THREE.Vector3(point1.x - p1, point1.y - q1, 0);
     const theta1 = 18 - THREE.MathUtils.radToDeg(Math.asin(point1d.x / 204));
-    const arc1 = this.curvePointGen(c5.a, c5.b, c5.r + 4, - 72 - theta1, - 108 + theta1, true);
-    const arc2 = this.curvePointGen(c5.a, c5.b, c5.r + 4,   72 + theta1,   108 - theta1, false);
+    const arc1 = this.curvePointGen(circle6, [- 72 - theta1, - 108 + theta1], true);
+    const arc2 = this.curvePointGen(circle6, [  72 + theta1,   108 - theta1], false);
 
     // 五角形
-    const r4 = THREE.MathUtils.degToRad(72);
-    const f2 = this.pentaForms[2];
-    const point2 = this.getIntersect(Math.tan(r4), 0, f2.a, f2.b);
     const r2 = THREE.MathUtils.degToRad(18);
+    const a1 = this.circle5.r * Math.sin(r2);
+    const a2 = this.circle5.r * Math.cos(r2);
+    const va1 = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(a1, a2, 0)];
+    const va2 = [this.pentaApices[2], this.pentaApices[3]];
+    const point2 = this.getIntersect(va1, va2);
     const p2 = 4 * Math.cos(r2);
     const q2 = 4 * Math.sin(r2);
     const point2d = new THREE.Vector3(point2.x + p2, point2.y + q2, 0);

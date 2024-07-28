@@ -70,8 +70,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 対角線
     this.rad = [
-      this.circleShort(this.outer1,  45),
-      this.circleShort(this.outer1, 225)
+      this.circle(this.outer1,  45),
+      this.circle(this.outer1, 225)
     ];
 
     // 羽弁の線（[i: 0=手前の羽][j: 0=内側、1=中央、2=外側][k: 0=右下、1=左上][l: 0〜1=直線を結ぶ2点]）
@@ -87,7 +87,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
           for (var k = 0;k <= 3;k ++) {
             const m = Math.trunc(k / 2);
             const n = k % 2 == 0 ? 0 : 1;
-            const inter = this.getIntersect3(this.vane[0][j][m], this.vane[1][2][n]);
+            const inter = this.getIntersect(this.vane[0][j][m], this.vane[1][2][n]);
             lines.push([this.vane[0][j][m][n], inter]);
           }
         } else {
@@ -96,7 +96,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
             const a = 45 + (90 * k);
             const s = k == 1 ? 1 : - 1;
             for (var l = 0;l <= 1;l ++) {
-              var point = this.circleShort(this.wingC[j][l], a * s);
+              var point = this.circle(this.wingC[j][l], a * s);
               if (i == 1) point = this.rotateCoordinate(point, 90);
               points.push(point);
             }
@@ -125,7 +125,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
             for (var l = 0;l <= 1;l ++) {
               const a = 45 + (180 * l);
               const s = k + l == 1 ? 1 : - 1;
-              points.push(this.circleShort(this.wingC[j][l], a + s * t));
+              points.push(this.circle(this.wingC[j][l], a + s * t));
             }
             lines.push(points);
           }
@@ -133,7 +133,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
           for (var k = 0;k <= 3;k ++) {
             const m = Math.trunc(k / 2);
             const n = k % 2 == 0 ? 0 : 1;
-            const inter = this.getIntersect3(this.rachis[0][j][m], this.vane[1][2][n]);
+            const inter = this.getIntersect(this.rachis[0][j][m], this.vane[1][2][n]);
             lines.push([this.rachis[0][j][m][n], inter]);
           }
         }
@@ -143,8 +143,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     }
 
     // 羽枝（[i: 0=手前の羽、1=奥の羽と交差][j: 0=線の下端、1=線の中央、2=線の上端]
-    // 　　　[k: 0=右下の上側、1=右下の下側、2=左上の上側、3=左上の下側]
-    // 　　　[l: 0=一番下の線、1=真ん中の線、3=一番上の線][0=羽軸側の始点、1=羽弁側の終点]）
+    // 　　　[k: 0=上側の右下、1=上側の左上、2=下側の右下、3=下側の左上]
+    // 　　　[l: 0=一番下の線、1=真ん中の線、2=一番上の線][0=羽軸側の始点、1=羽弁側の終点]）
     this.barb = [];
     for (var i = 0;i <= 1;i ++) {
       const shapes = [];
@@ -157,35 +157,35 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
           for (var l = 0;l <= 2;l ++) {
 
             // 交点の算出用の座標パラメータ
-            const val = m == 0 ? 110 + jw + 100 * l : - 630 + jw + 100 * l;
-            const x1 = k <= 1 ?    0 : val, y1 = k <= 1 ? val :    0;
-            const x2 = k <= 1 ? 1600 : val, y2 = k <= 1 ? val : 1600;
+            const val = k <= 1 ? 110 + jw + 100 * l : - 630 + jw + 100 * l;
+            const x1 = m == 0 ?    0 : val, y1 = m == 0 ? val :    0;
+            const x2 = m == 0 ? 1600 : val, y2 = m == 0 ? val : 1600;
             const refLine = [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
 
             const n = j == 1 ? 1 : 2;
             var object;
-            if (i == 1 && m == 0) {
+            if (i == 1 && k <= 1) {
               object = this.vane[1][n][0];
             } else {
-              object = k <= 1 ? this.rachis[0][n][0] : this.rachis[0][n][1];
+              object = this.rachis[0][n][m];
             }
-            const pointF = this.getIntersect3(object, refLine);
+            const pointF = this.getIntersect(object, refLine);
 
             var pointT;
-            if (m == 0 && l >= 1) {
-              const inters = this.interLineCircle3(this.wingC[0][0], refLine);
-              pointT = k <= 1
+            if (k <= 1 && l >= 1) {
+                const inters = this.interLineCircle(this.wingC[0][0], refLine);
+              pointT = m == 0
                 ? inters[0].x > inters[1].x ? inters[0] : inters[1]
                 : inters[0].y > inters[1].y ? inters[0] : inters[1];
             } else {
               var object;
-              if (i == 1 && m == 1) {
-                object = this.vane[1][n][1];
+              if (i == 1 && k > 1) {
+                  object = this.vane[1][n][1];
               } else {
                 const o = j == 1 ? 1 : 0;
-                object = k <= 1 ? this.vane[0][o][0] : this.vane[0][o][1];  
+                object = m == 0 ? this.vane[0][o][0] : this.vane[0][o][1];
               }
-              pointT = this.getIntersect3(object, refLine);
+              pointT = this.getIntersect(object, refLine);
             }
             lines.push([pointF, pointT]);
           }
@@ -221,7 +221,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     const outers = [this.outer1, this.outer2];
     for (var i = 0;i <= outers.length - 1;i ++) {
       const outer = outers[i];
-      const points = this.circlePointGen2(outer,[90, 450], this.divCount);
+      const points = this.circleLocusGen(outer,[90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
       this.guidelines.add(mesh);
     }
@@ -230,7 +230,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     var pointsSum1 = [];
     for (var i = 0;i <= this.wingC[1].length - 1;i ++) {
       const circle = this.wingC[1][i];
-      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+      const points = this.circleLocusGen(circle,[90, 450], this.divCount);
       pointsSum1.push(points);
     }
 
@@ -238,12 +238,12 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     var pointsSum2 = [];
     for (var i = 0;i <= this.vane[0][1].length - 1;i ++) {
       const contour = this.vane[0][1][i];
-      const points = this.linePointGen2(contour[0], contour[1], 0, this.divCount);
+      const points = this.lineLocusGen(contour[0], contour[1], 0, this.divCount);
       pointsSum2.push(points);
     }
 
     // 対角線
-    const radPoints = this.linePointGen2(this.rad[0], this.rad[1], 0, this.divCount);
+    const radPoints = this.lineLocusGen(this.rad[0], this.rad[1], 0, this.divCount);
     const radMesh = this.sublineGen(radPoints);
     this.guidelines.add(radMesh);
 
@@ -251,7 +251,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     var pointsSum3 = [];
     for (var i = 0;i <= this.rachis[0][1].length - 1;i ++) {
       const rad = this.rachis[0][1][i];
-      const points = this.linePointGen2(rad[0], rad[1], 0, this.divCount);
+      const points = this.lineLocusGen(rad[0], rad[1], 0, this.divCount);
       pointsSum3.push(points);
     }
 
@@ -260,7 +260,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     for (var i = 0;i <= this.barb[0][1].length - 1;i ++) {
       const lines = this.barb[0][1][i];
       lines.forEach((line) => {
-        const points = this.linePointGen3(line[0], line[1], 0, this.divCount);
+        const points = this.lineLocusGen(line[0], line[1], 0, this.divCount);
         pointsSum4.push(points);
       })
     }
@@ -293,8 +293,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     outers.forEach((outer) => {
       const outer1 = {a: outer.a, b: outer.b, r: outer.r + w};
       const outer2 = {a: outer.a, b: outer.b, r: outer.r - w};
-      const shape = this.curvePointGen2(outer1, [0, 360]);
-      const path  = this.curvePointGen2(outer2, [0, 360]);
+      const shape = this.curvePointGen(outer1, [0, 360], true);
+      const path  = this.curvePointGen(outer2, [0, 360], true);
       const geo = this.shapeGeoGen(shape, path);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
@@ -312,16 +312,16 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     }
 
     // 羽弁の円
-    const angles = [
-      [- 45, 135], [135, 315], [135, 315], [135, 315]
-    ]
+    const angles = [[- 45, 135], [135, 315], [135, 315], [135, 315]]
+    const clockwises = [[false, true], [false, true], [false, true], [false, true]]
     for (var i = 0;i <= this.wingC[1].length - 1;i ++) {
       const circle = this.wingC[1][i];
       const angle = angles[i];
+      const clockwise = clockwises[i];
       const arc1 = {a: circle.a, b: circle.b, r: circle.r + w};
       const arc2 = {a: circle.a, b: circle.b, r: circle.r - w};
-      const point1 = this.curvePointGen2(arc1, [angle[0], angle[1]]);
-      const point2 = this.curvePointGen2(arc2, [angle[1], angle[0]]);
+      const point1 = this.curvePointGen(arc1, [angle[0], angle[1]], clockwise[0]);
+      const point2 = this.curvePointGen(arc2, [angle[1], angle[0]], clockwise[1]);
       const points = point2.concat(point1);
       const geo = this.shapeGeoGen(points);
       for (var j = 0;j <= 1;j ++) {
@@ -351,7 +351,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
           const geo = this.outlineGeoGen(line[0], line[1]);
           const mesh = new THREE.Mesh(geo, this.outlineMat);
           mesh.rotation.z = THREE.MathUtils.degToRad(90 * i);
-          this.outlines.add(mesh);  
+          this.outlines.add(mesh);
         })
       })
     }
@@ -367,8 +367,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     // 中心円
     const outers = [this.outer1, this.outer2];
     for (var i = 0;i <= 0;i ++) {
-      const shape = this.curvePointGen2(outers[0], [0, 360]);
-      const path  = this.curvePointGen2(outers[1], [0, 360]);
+      const shape = this.curvePointGen(outers[0], [0, 360], true);
+      const path  = this.curvePointGen(outers[1], [0, 360], true);
       const geo   = this.shapeGeoGen(shape, path);
       const mesh  = new THREE.Mesh(geo, this.shapeMat);
       this.shapes.add(mesh);
@@ -377,12 +377,12 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     // 羽軸
     const rTheta = THREE.MathUtils.radToDeg(Math.asin((40 - w) / this.wingC[0][0].r));
     const rachisArcs = [];
-    rachisArcs.push(this.curvePointGen3(this.wingC[0][0], [ 45 + rTheta,  45 - rTheta], true));
-    rachisArcs.push(this.curvePointGen3(this.wingC[0][3], [225 + rTheta, 225 - rTheta], true));
-    rachisArcs.push(this.curvePointGen3(this.wingC[2][3], [225 - rTheta, 225 + rTheta], false));
-    rachisArcs.push(this.curvePointGen3(this.wingC[0][2], [225 + rTheta, 225 - rTheta], true));
-    rachisArcs.push(this.curvePointGen3(this.wingC[2][2], [225 - rTheta, 225 + rTheta], false));
-    rachisArcs.push(this.curvePointGen3(this.wingC[0][1], [225 + rTheta, 225 - rTheta], true));
+    rachisArcs.push(this.curvePointGen(this.wingC[0][0], [ 45 + rTheta,  45 - rTheta], true));
+    rachisArcs.push(this.curvePointGen(this.wingC[0][3], [225 + rTheta, 225 - rTheta], true));
+    rachisArcs.push(this.curvePointGen(this.wingC[2][3], [225 - rTheta, 225 + rTheta], false));
+    rachisArcs.push(this.curvePointGen(this.wingC[0][2], [225 + rTheta, 225 - rTheta], true));
+    rachisArcs.push(this.curvePointGen(this.wingC[2][2], [225 - rTheta, 225 + rTheta], false));
+    rachisArcs.push(this.curvePointGen(this.wingC[0][1], [225 + rTheta, 225 - rTheta], true));
 
     const rachisPoints = [];
     rachisPoints.push(rachisArcs[0].concat(rachisArcs[1]));
@@ -418,13 +418,13 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 一つ目
     barbAngles.push([
-      this.arcAngle(this.wingC[0][0], this.barb[0][0][0][2][1]), 
-      this.arcAngle(this.wingC[0][0], this.barb[0][2][0][1][1])
+      this.arc(this.wingC[0][0], this.barb[0][0][0][2][1]), 
+      this.arc(this.wingC[0][0], this.barb[0][2][0][1][1])
     ]);
     barbPoints.push([
-      this.curvePointGen3(this.wingC[0][0], barbAngles[0], true).concat(
+      this.curvePointGen(this.wingC[0][0], barbAngles[0], true).concat(
         this.barb[0][2][0][1][0], this.barb[0][0][0][2][0]),
-      this.curvePointGen3(this.wingC[0][0], barbAngles[0], true).concat(
+      this.curvePointGen(this.wingC[0][0], barbAngles[0], true).concat(
         this.barb[1][2][0][1][0], this.barb[1][0][0][2][0])
     ]);
     barbGeos.push([
@@ -434,13 +434,13 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 二つ目
     barbAngles.push([
-      this.arcAngle(this.wingC[0][0], this.barb[0][0][0][1][1]), 
+      this.arc(this.wingC[0][0], this.barb[0][0][0][1][1]), 
       - 45
     ]);
     barbPoints.push([
-      this.curvePointGen3(this.wingC[0][0], barbAngles[1], true).concat(
+      this.curvePointGen(this.wingC[0][0], barbAngles[1], true).concat(
         this.barb[0][2][0][0][1], this.barb[0][2][0][0][0], this.barb[0][0][0][1][0]),
-      this.curvePointGen3(this.wingC[0][0], barbAngles[1], true).concat(
+      this.curvePointGen(this.wingC[0][0], barbAngles[1], true).concat(
         this.barb[1][2][0][0][1], this.barb[1][2][0][0][0], this.barb[1][0][0][1][0])
     ]);
     barbGeos.push([
@@ -450,10 +450,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 三つ目
     barbPoints.push([
-      [this.barb[0][0][1][2][0]].concat(this.barb[0][0][1][2][1], 
-        this.barb[0][2][1][1][1], this.barb[0][2][1][1][0]),
-      [this.barb[1][0][1][2][0]].concat(this.barb[1][0][1][2][1], 
-        this.barb[1][2][1][1][1], this.barb[1][2][1][1][0])
+      [this.barb[0][0][2][2][0]].concat(this.barb[0][0][2][2][1], 
+        this.barb[0][2][2][1][1], this.barb[0][2][2][1][0]),
+      [this.barb[1][0][2][2][0]].concat(this.barb[1][0][2][2][1], 
+        this.barb[1][2][2][1][1], this.barb[1][2][2][1][0])
     ]);
     barbGeos.push([
       this.shapeGeoGen(barbPoints[2][0]),
@@ -462,10 +462,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 四つ目
     barbPoints.push([
-      [this.barb[0][0][1][1][0]].concat(this.barb[0][0][1][1][1], 
-        this.barb[0][2][1][0][1], this.barb[0][2][1][0][0]),
-      [this.barb[1][0][1][1][0]].concat(this.barb[1][0][1][1][1], 
-        this.barb[1][2][1][0][1], this.barb[1][2][1][0][0])
+      [this.barb[0][0][2][1][0]].concat(this.barb[0][0][2][1][1], 
+        this.barb[0][2][2][0][1], this.barb[0][2][2][0][0]),
+      [this.barb[1][0][2][1][0]].concat(this.barb[1][0][2][1][1], 
+        this.barb[1][2][2][0][1], this.barb[1][2][2][0][0])
     ]);
     barbGeos.push([
       this.shapeGeoGen(barbPoints[3][0]),
@@ -493,13 +493,13 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 一つ目
     vaneAngles.push([
-      this.arcAngle(this.wingC[0][0], this.rachis[0][2][0][0]), 
-      this.arcAngle(this.wingC[0][0], this.barb[0][2][0][2][1])
+      this.arc(this.wingC[0][0], this.rachis[0][2][0][0]), 
+      this.arc(this.wingC[0][0], this.barb[0][2][0][2][1])
     ]);
     vanePoints.push([
-      this.curvePointGen3(this.wingC[0][0], vaneAngles[0], true).concat(
+      this.curvePointGen(this.wingC[0][0], vaneAngles[0], true).concat(
         this.barb[0][2][0][2][0]),
-      this.curvePointGen3(this.wingC[0][0], vaneAngles[0], true).concat(
+      this.curvePointGen(this.wingC[0][0], vaneAngles[0], true).concat(
         this.barb[1][2][0][2][0], this.rachis[1][2][0][1])
     ]);
     vaneGeos.push([
@@ -510,7 +510,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     // 二つ目
     vanePoints.push([
       [this.barb[0][0][0][0][0]].concat(this.barb[0][0][0][0][1], 
-        this.barb[0][2][1][2][1], this.barb[0][2][1][2][0]),
+        this.barb[0][2][2][2][1], this.barb[0][2][2][2][0]),
       [this.barb[1][0][0][0][0]].concat(this.barb[1][0][0][0][1], 
         this.vane[2][0][0][1])
     ]);
@@ -522,8 +522,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
     // 二つ目（※）
     vanePoints.push([
       [],
-      [this.rachis[1][2][1][1]].concat(this.barb[1][2][1][2][1], 
-        this.barb[1][2][1][2][0])
+      [this.rachis[1][2][1][1]].concat(this.barb[1][2][2][2][1], 
+        this.barb[1][2][2][2][0])
     ]);
     vaneGeos.push([
       ,
@@ -532,10 +532,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 三つ目
     vanePoints.push([
-      this.curvePointGen3(this.wingC[0][3], [315, 225 + vTheta], true).concat(
-        this.barb[0][0][1][0]),
-      this.curvePointGen3(this.wingC[0][3], [315, 225 + vTheta], true).concat(
-        this.barb[1][0][1][0], this.vane[2][0][1][1])
+      this.curvePointGen(this.wingC[0][3], [315, 225 + vTheta], true).concat(
+        this.barb[0][0][2][0]),
+      this.curvePointGen(this.wingC[0][3], [315, 225 + vTheta], true).concat(
+        this.barb[1][0][2][0], this.vane[2][0][1][1])
     ]);
     vaneGeos.push([
       this.shapeGeoGen(vanePoints[3][0]),
@@ -544,10 +544,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 四つ目
     vanePoints.push([
-      this.curvePointGen3(this.wingC[0][2], [315, 225 + vTheta], true).concat(
-        this.curvePointGen3(this.wingC[2][3], [225 + vTheta, 315], false)),
-      this.curvePointGen3(this.wingC[0][2], [315, 225 + vTheta], true).concat(
-        this.curvePointGen3(this.wingC[2][3], [225 + vTheta, 315], false)),
+      this.curvePointGen(this.wingC[0][2], [315, 225 + vTheta], true).concat(
+        this.curvePointGen(this.wingC[2][3], [225 + vTheta, 315], false)),
+      this.curvePointGen(this.wingC[0][2], [315, 225 + vTheta], true).concat(
+        this.curvePointGen(this.wingC[2][3], [225 + vTheta, 315], false)),
     ]);
     vaneGeos.push([
       this.shapeGeoGen(vanePoints[4][0]),
@@ -556,10 +556,10 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 五つ目
     vanePoints.push([
-      this.curvePointGen3(this.wingC[0][1], [315, 225 + vTheta], true).concat(
-        this.curvePointGen3(this.wingC[2][2], [225 + vTheta, 315], false)),
-      this.curvePointGen3(this.wingC[0][1], [315, 225 + vTheta], true).concat(
-        this.curvePointGen3(this.wingC[2][2], [225 + vTheta, 315], false)),
+      this.curvePointGen(this.wingC[0][1], [315, 225 + vTheta], true).concat(
+        this.curvePointGen(this.wingC[2][2], [225 + vTheta, 315], false)),
+      this.curvePointGen(this.wingC[0][1], [315, 225 + vTheta], true).concat(
+        this.curvePointGen(this.wingC[2][2], [225 + vTheta, 315], false)),
     ]);
     vaneGeos.push([
       this.shapeGeoGen(vanePoints[5][0]),

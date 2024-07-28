@@ -59,7 +59,7 @@ export default class Kikyou2 extends Kamon {
     this.pentaApices = [];
     for (var i = 0;i <= 5;i ++) {
       const theta = 90 + (72 * i);
-      const apex = this.circleShort(this.circle1, theta);
+      const apex = this.circle(this.circle1, theta);
       this.pentaApices.push(apex);
     }
 
@@ -68,8 +68,8 @@ export default class Kikyou2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const theta1 = 90 + (72 * i);
       const theta2 = theta1 + 180;
-      const apex1 = this.circleShort(this.circle1, theta1);
-      const apex2 = this.circleShort(this.circle1, theta2);
+      const apex1 = this.circle(this.circle1, theta1);
+      const apex2 = this.circle(this.circle1, theta2);
       this.pentaDiagApices.push([apex1, apex2]);
     }
 
@@ -80,8 +80,8 @@ export default class Kikyou2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const theta1 = (270 - theta0) + (72 * i);
       const theta2 = (270 + theta0) + (72 * i);
-      const apex1 = this.circleShort(this.circle2, theta1);
-      const apex2 = this.circleShort(this.circle2, theta2);
+      const apex1 = this.circle(this.circle2, theta1);
+      const apex2 = this.circle(this.circle2, theta2);
       if (i == 0) radius = Math.abs(apex1.x);
       this.outerParams.push(
         {a: apex1.x, b: apex1.y, r: radius},
@@ -95,8 +95,8 @@ export default class Kikyou2 extends Kamon {
       const theta1 = (270 - theta0) + (72 * i);
       const theta2 = (270 + theta0) + (72 * i);
       const apex0 = new THREE.Vector3(0, 0, 0);
-      const apex1 = this.circleShort(this.circle1, theta1);
-      const apex2 = this.circleShort(this.circle1, theta2);
+      const apex1 = this.circle(this.circle1, theta1);
+      const apex2 = this.circle(this.circle1, theta2);
       this.outerDiags.push([apex0, apex1], [apex0, apex2]);
     }
 
@@ -123,7 +123,7 @@ export default class Kikyou2 extends Kamon {
     const centers1 = [this.circle1, this.circle2, this.circle3];
     for (var i = 0;i <= 2;i ++) {
       const circle = centers1[i];
-      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+      const points = this.circleLocusGen(circle,[90, 450], this.divCount);
       const mesh = this.sublineGen(points);
       this.guidelines.add(mesh);
     }
@@ -132,7 +132,7 @@ export default class Kikyou2 extends Kamon {
     this.radiation1 = new THREE.Group();
     for (var i = 0;i <= 9;i ++) {
       const apices = this.outerDiags[i];
-      const points = this.linePointGen2(apices[0], apices[1], 0, this.divCount);
+      const points = this.lineLocusGen(apices[0], apices[1], 0, this.divCount);
       const mesh = this.sublineGen(points);
       this.radiation1.add(mesh);
     }
@@ -142,7 +142,7 @@ export default class Kikyou2 extends Kamon {
     this.radiation2 = new THREE.Group();
     for (var i = 0;i <= 4;i ++) {
       const apices = this.pentaDiagApices[i];
-      const points = this.linePointGen2(apices[0], apices[1], 0, this.divCount);
+      const points = this.lineLocusGen(apices[0], apices[1], 0, this.divCount);
       const mesh = this.guidelineGen(points);
       this.radiation2.add(mesh);
     }
@@ -151,7 +151,7 @@ export default class Kikyou2 extends Kamon {
     // 外周円
     for (var i = 0;i <= 9;i ++) {
       const outer = this.outerParams[i];
-      const points = this.circlePointGen2(outer,[90, 450], this.divCount);
+      const points = this.circleLocusGen(outer,[90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
       mesh.rotation.z = THREE.MathUtils.degToRad(216);
       this.guidelines.add(mesh);
@@ -162,7 +162,7 @@ export default class Kikyou2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const apex1 = this.pentaApices[i];
       const apex2 = this.pentaApices[i + 1];
-      const points = this.linePointGen2(apex1, apex2, 0, this.divCount);
+      const points = this.lineLocusGen(apex1, apex2, 0, this.divCount);
       const mesh = this.guidelineGen(points);
       this.pentagon.add(mesh);
     }
@@ -172,7 +172,7 @@ export default class Kikyou2 extends Kamon {
     const centers3 = [this.circle4];
     for (var i = 0;i <= 0;i ++) {
       const circle = centers3[i];
-      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+      const points = this.circleLocusGen(circle,[90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
       this.guidelines.add(mesh);
     }
@@ -190,8 +190,8 @@ export default class Kikyou2 extends Kamon {
     centers.forEach((center) => {
       const center1 = {a: center.a, b: center.b, r: center.r + w};
       const center2 = {a: center.a, b: center.b, r: center.r - w};
-      const shape = this.curvePointGen2(center1, [0, 360]);
-      const path  = this.curvePointGen2(center2, [0, 360]);
+      const shape = this.curvePointGen(center1, [0, 360], true);
+      const path  = this.curvePointGen(center2, [0, 360], true);
       const geo = this.shapeGeoGen(shape, path);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
@@ -202,8 +202,8 @@ export default class Kikyou2 extends Kamon {
     const angle = [270, 360];
     const arc1 = {a: outer.a, b: outer.b, r: outer.r + w};
     const arc2 = {a: outer.a, b: outer.b, r: outer.r - w};
-    const point1 = this.curvePointGen2(arc1, [angle[0], angle[1]]);
-    const point2 = this.curvePointGen2(arc2, [angle[1], angle[0]]);
+    const point1 = this.curvePointGen(arc1, [angle[0], angle[1]], false);
+    const point2 = this.curvePointGen(arc2, [angle[1], angle[0]], true);
     const points = point2.concat(point1);
     const outerGeo = this.shapeGeoGen(points);
 
@@ -254,14 +254,14 @@ export default class Kikyou2 extends Kamon {
     const centers = [this.circle4];
     centers.forEach((center) => {
       const param = {a: center.a, b: center.b, r: center.r - w};
-      const shape = this.curvePointGen2(param, [0, 360]);
+      const shape = this.curvePointGen(param, [0, 360], true);
       const geo = this.shapeGeoGen(shape);
       const mesh = new THREE.Mesh(geo, this.shapeMat);
       this.shapes.add(mesh);
     });
 
     // 花弁中央の頂点
-    const apex1 = this.circleShort(this.circle3, 234);
+    const apex1 = this.circle(this.circle3, 234);
 
     // 花弁中央の先端
     const theta = THREE.MathUtils.degToRad(36);
@@ -273,15 +273,15 @@ export default class Kikyou2 extends Kamon {
     const center = {a: c4.a, b: c4.b, r: c4.r + w};
 
     // 中央円弧の前後
-    const apex3d = this.circleShort(center, 234);
+    const apex3d = this.circle(center, 234);
     const apex3 = new THREE.Vector3(apex3d.x + paraX1, apex3d.y - paraY1, 0);
-    const apex4d = this.circleShort(center, 270);
+    const apex4d = this.circle(center, 270);
     const apex4 = new THREE.Vector3(apex4d.x - w, apex4d.y, 0);
 
     // 中央の円弧
-    const angle1 = this.arc(center.a, center.b, apex3.x, apex3.y);
-    const angle2 = this.arc(center.a, center.b, apex4.x, apex4.y);
-    const arc1 = this.curvePointGen2(center, [angle1, angle2]);
+    const angle1 = this.arc(center, apex3);
+    const angle2 = this.arc(center, apex4);
+    const arc1 = this.curvePointGen(center, [angle1, angle2], false);
 
     // 外周円弧の前後
     const outerParam = this.outerParams[0];
@@ -290,9 +290,9 @@ export default class Kikyou2 extends Kamon {
     const apex6 = new THREE.Vector3(outer.a, outer.b - outer.r, 0);
 
     // 外周の円弧
-    const angle3 = this.arc(outer.a, outer.b, apex5.x, apex5.y);
-    const angle4 = this.arc(outer.a, outer.b, apex6.x, apex6.y);
-    const arc2 = this.curvePointGen2(outer, [angle3, angle4]);
+    const angle3 = this.arc(outer, apex5);
+    const angle4 = this.arc(outer, apex6);
+    const arc2 = this.curvePointGen(outer, [angle3, angle4], true);
 
     // 花弁の頂点
     const paraX2 = w * Math.tan(theta);

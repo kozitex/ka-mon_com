@@ -92,7 +92,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     const circles = [this.circle1, this.circle2, this.circle3, this.circle4, this.circle5];
     for (var i = 0;i <= 4;i ++) {
       const circle = circles[i];
-      const points = this.circlePointGen2(circle,[90, 450], this.divCount);
+      const points = this.circleLocusGen(circle,[90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
       this.guidelines.add(mesh);
     }
@@ -110,8 +110,8 @@ export default class HidariFutatsuDomoe extends Kamon {
     circles1.forEach((circle) => {
       const circle1 = {a: circle.a, b: circle.b, r: circle.r + w};
       const circle2 = {a: circle.a, b: circle.b, r: circle.r - w};
-      const shape = this.curvePointGen2(circle1, [0, 360]);
-      const path  = this.curvePointGen2(circle2, [0, 360]);
+      const shape = this.curvePointGen(circle1, [0, 360], true);
+      const path  = this.curvePointGen(circle2, [0, 360], true);
       const geo = this.shapeGeoGen(shape, path);
       const mesh = new THREE.Mesh(geo, this.outlineMat);
       this.outlines.add(mesh);
@@ -133,9 +133,9 @@ export default class HidariFutatsuDomoe extends Kamon {
       var points = [];
       for (var j = 0;j <= 1;j ++) {
         const param = {a: circle.a, b: circle.b, r: circle.r + w * (1 - j * 2)};
-        const angle1 = this.arcAngle(param, inter[j]);
-        const angle2 = this.arcAngle(param, inter[1 - j]);
-        const point = this.curvePointGen3(param, [angle1, angle2], clockwise[j]);
+        const angle1 = this.arc(param, inter[j]);
+        const angle2 = this.arc(param, inter[1 - j]);
+        const point = this.curvePointGen(param, [angle1, angle2], clockwise[j]);
         points = points.concat(point);
       }
 
@@ -153,7 +153,7 @@ export default class HidariFutatsuDomoe extends Kamon {
     const w = 4;
 
     // 中心円
-    const shapes = this.curvePointGen2(this.circle1, [0, 360]);
+    const shapes = this.curvePointGen(this.circle1, [0, 360], true);
 
     // 円弧
     const circles = [this.circle2, this.circle5, this.circle3, this.circle4];
@@ -169,9 +169,9 @@ export default class HidariFutatsuDomoe extends Kamon {
       const inter = inters[i];
       const clockwise = clockwises[i];
       const param = {a: circle.a, b: circle.b, r: circle.r - 1};
-      const angle1 = this.arcAngle(param, inter[0]);
-      const angle2 = this.arcAngle(param, inter[1]);
-      const arc = this.curvePointGen3(param, [angle1, angle2], clockwise);
+      const angle1 = this.arc(param, inter[0]);
+      const angle2 = this.arc(param, inter[1]);
+      const arc = this.curvePointGen(param, [angle1, angle2], clockwise);
       pathes = pathes.concat(arc);
     }
 

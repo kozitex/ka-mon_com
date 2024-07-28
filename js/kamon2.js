@@ -1,7 +1,7 @@
 'use strict';
 
 import * as THREE from 'three';
-import Founder from './founder.js';
+import Founder from './founder2.js';
 
 export default class Kamon extends Founder {
 
@@ -127,54 +127,18 @@ export default class Kamon extends Founder {
     return new THREE.Line(geometry, this.subMat);
   }
 
-  // アウトラインの円弧のジオメトリを生成
-  outlineCircleGeoGen = (a, b, r, f, t, d) => {
-    const points = this.circlePointGen(a, b, r , f, t, d);
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    return geometry;
-  }
-
-  // アウトラインの円弧のメッシュを生成
-  outlineCircleMeshGen = (geometry, a, b, r, g, rotX, rotY, rotZ) => {
-    const mesh = new THREE.Line(geometry, this.outlineMat);
-    const scale = (r + g) / r;
-    var bTheta, oblique;
-    if (a == 0 && b == 0) {
-      bTheta = 0;
-      oblique = 0;
-    } else if (a == 0 && b != 0) {
-      bTheta = THREE.MathUtils.degToRad(90);
-      oblique = b;
-    } else if (a != 0 && b == 0) {
-      bTheta = THREE.MathUtils.degToRad(0);
-      oblique = a;
-    } else {
-      bTheta = Math.atan(b / a);
-      oblique = a / Math.cos(bTheta);
-    }
-    const d = oblique - oblique * scale;
-    const power = Math.abs(rotY) / Math.PI;
-    const sign = power % 2 == 0 ? 1 : -1;
-    const theta = bTheta + rotZ;
-    const posX = d * Math.cos(theta) * sign;
-    const posY = d * Math.sin(theta);
-    mesh.scale.set(scale, scale, 0);
-    mesh.position.set(posX, posY, 0);
-    mesh.rotation.set(rotX, rotY, rotZ);
-    return mesh;
-  }
-
-  // アウトラインの直線のジオメトリを生成
-  outlineLineGeoGen = (a, b, r, f, t, d) => {
-    const points = this.linePointGen(a, b, r, f, t, d);
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    return geometry;
-  }
-
+  // ２点を結ぶ直線のアウトラインジオメトリを生成（v1, v2: 直線の始点終点）
   outlineGeoGen = (v1, v2) => {
     const w = 4;
-    const form = this.from2Points2(v1, v2);
-    const theta = Math.atan(- 1 / form.a);
+    const form = this.from2Points(v1, v2);
+    var theta;
+    if (form.b == 0) {
+      theta = THREE.MathUtils.degToRad(0);
+    } else if (form.a == 0) {
+      theta = THREE.MathUtils.degToRad(90);
+    } else {
+      theta = Math.atan(- 1 / form.a);
+    }
     const p = w * Math.cos(theta);
     const q = w * Math.sin(theta);
     const point1 = new THREE.Vector3(v1.x + p, v1.y + q, 0);
@@ -185,150 +149,51 @@ export default class Kamon extends Founder {
     return this.shapeGeoGen(points);
   }
 
-  lineShift = (v1, v2, w) => {
-    const form = this.from2Points2(v1, v2);
-    const theta = Math.atan(- 1 / form.a);
-    const p = w * Math.cos(theta);
-    const q = w * Math.sin(theta);
-    const point1 = new THREE.Vector3(v1.x + p, v1.y + q, 0);
-    const point2 = new THREE.Vector3(v2.x + p, v2.y + q, 0);
-    return this.from2Points2(point1, point2); 
-    // return [point1, point2];
-  }
-
-  // アウトラインの直線のメッシュを生成
-  outlineLineMeshGen = (geometry, a, b, g, rotX, rotY, rotZ) => {
-    const mesh = new THREE.Line(geometry, this.outlineMat);
-    var bTheta;
-    if (b == 0) {
-      bTheta = THREE.MathUtils.degToRad(90);
-    } else if (a == 0) {
-      bTheta = THREE.MathUtils.degToRad(0);
-    } else {
-      bTheta = Math.atan(a);
-    }
-    const power = Math.abs(rotY) / Math.PI;
-    const sign = power % 2 == 0 ? 1 : -1;
-    const theta = (bTheta + rotZ) * sign;
-    const rad = theta + THREE.MathUtils.degToRad(90);
-    const x = g * Math.cos(rad);
-    const y = g * Math.sin(rad);
-    mesh.position.set(x, y, 0);
-    mesh.rotation.set(rotX, rotY, rotZ);
-    return mesh;
-  }
-
-  // アウトラインの直線エッジのジオメトリを生成
-  outlineEdgeGeoGen = (a, b, r, f, t) => {
-    var geometries = [];
-    const w = 6;
-    const edgeF = this.straight(a, b, r, b == 0 ? undefined : f, b == 0 ? f : undefined);
-    const edgeT = this.straight(a, b, r, b == 0 ? undefined : t, b == 0 ? t : undefined);
-    const edges = [edgeF, edgeT];
-    edges.forEach((edge) => {
-      const points = this.curvePointGen(edge.x, edge.y, w, 0, 360, false);
-      const shape = new THREE.Shape(points);
-      const geometry = new THREE.ShapeGeometry(shape);
-      geometries.push(geometry);
-    })
-    return geometries;
-  }
-
-  // アウトラインの直線エッジのメッシュを生成
-  outlineEdgeMeshGen = (geometry, rotX, rotY, rotZ) => {
-    const mesh = new THREE.Mesh(geometry, this.edgeMat);
-    mesh.rotation.set(rotX, rotY, rotZ);
-    return mesh;
-  }
-
-  // 直線の描画座標を生成
-  linePointGen = (a, b, r, f, t, d) => {
-    const points = [];
-    for (var i = 0;i <= d - 1;i ++) {
-      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      var point;
-      if (b == 0) {
-        point = new THREE.Vector3(r, p, 0);
-        // point = this.straight(a, b, r, undefined, p);
-      } else {
-        point = this.straight(a, b, r, p, undefined);
-      }
-      // console.log(point)
-      points.push(point);
-    }
-    return points;
-  }
-
-  // 直線の描画座標を生成
-  linePointGen2 = (v1, v2, s, d) => {
-    const form = this.from2Points2(v1, v2);
-    const f = v1.x > v2.x ? v1.x + s : v1.x - s;
-    const t = v1.x > v2.x ? v2.x - s : v2.x + s;
-    return this.linePointGen(form.a, 1, form.b, f, t, d);
-  }
-
-  // 直線の描画座標を生成
-  linePointGen3 = (v1, v2, s, d) => {
-    const form = this.from2Points3(v1, v2);
-    // console.log(form)
+  // 直線の描画軌跡の座標を生成（v1, v2: 直線を表す２点の座標, s: 直線前後に余分に引く線の長さ, d: 軌跡の座標数）
+  lineLocusGen = (v1, v2, s, d) => {
+    const form = this.from2Points(v1, v2);
+    const a = form.a, b = form.b, c = form.c;
     var f, t;
-    if (form.b == 0) {
+    if (b == 0) {
       f = v1.y > v2.y ? v1.y + s : v1.y - s;
       t = v1.y > v2.y ? v2.y - s : v2.y + s;
     } else {
       f = v1.x > v2.x ? v1.x + s : v1.x - s;
       t = v1.x > v2.x ? v2.x - s : v2.x + s;
     }
-    // console.log(form, f, t)
-    return this.linePointGen(form.a, form.b, form.c, f, t, d);
-  }
 
-  // 円弧の描画座標を生成
-  circlePointGen = (a, b, r, f, t, d) => {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      const point = this.circle(a, b, r, p);
+      if (b == 0) {
+        points.push(new THREE.Vector3(c, p, 0));
+      } else {
+        points.push(this.straight(a, b, c, p, undefined));
+      }
+    }
+    return points;
+  }
+
+  // 円弧の描画軌跡の座標を生成（circle: {a: 円の中心X,b: 円の中心Y,r: 円の半径}, angle: 弧の角度[0: 始点, 1:終点], d: 軌跡の座標数）
+  circleLocusGen = (circle, angle, d) => {
+    const points = [];
+    const a = circle.a, b = circle.b, r = circle.r;
+    const f = angle[0], t = angle[1];
+    for (var i = 0;i <= d - 1;i ++) {
+      const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
+      const point = this.circle({a: a, b: b, r: r}, p);
       points.push(point);
     }
     return points;
   }
 
-  // 円弧の描画座標を生成
-  circlePointGen2 = (circle, angle, d) => {
-    return this.circlePointGen(circle.a, circle.b, circle.r, angle[0], angle[1], d);
-    // const points = [];
-    // for (var i = 0;i <= d - 1;i ++) {
-    //   const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-    //   const point = this.circle(a, b, r, p);
-    //   points.push(point);
-    // }
-    // return points;
-  }
-
-  // 円弧の図形用座標を生成
-  curvePointGen = (a, b, r, f, t, c) => {
-    const curve = new THREE.EllipseCurve(
-      a, b,
-      r, r,
-      THREE.MathUtils.degToRad(f), THREE.MathUtils.degToRad(t),
-      c, 0
-    );
+  // 円弧の図形用座標を生成（circle: {a: 円の中心X,b: 円の中心Y,r: 円の半径}, angle: 弧の角度[0: 始点, 1:終点], clockwise: 時計回りか否かtrue/false）
+  curvePointGen = (circle, angle, clockwise) => {
+    const a = circle.a, b = circle.b, r = circle.r;
+    const f = THREE.MathUtils.degToRad(angle[0]),
+          t = THREE.MathUtils.degToRad(angle[1]);
+    const curve = new THREE.EllipseCurve(a, b, r, r, f, t, clockwise, 0);
     return curve.getPoints(100);
-  }
-
-  // 円弧の図形用座標を生成
-  curvePointGen2 = (arc, angle) => {
-    return this.curvePointGen(
-      arc.a, arc.b, arc.r, 
-      angle[0], angle[1], angle[0] > angle[1] ? true : false);
-  }
-
-  // 円弧の図形用座標を生成
-  curvePointGen3 = (arc, angle, clockwise) => {
-    return this.curvePointGen(
-      arc.a, arc.b, arc.r, 
-      angle[0], angle[1], clockwise);
   }
 
   // ポイントからシェイプを生成
@@ -340,16 +205,6 @@ export default class Kamon extends Founder {
     }
     const geometry = new THREE.ShapeGeometry(shape);
     return geometry;
-  }
-
-  // 円弧の座標を求める式（a: 中心X座標, b: 中心Y座標, r: 半径, t:角度）
-  circlePoint(circle, theta) {
-    return this.circle(circle.a, circle.b, circle.r, theta);
-  }
-
-  // 円弧の角度を求める式（v1: 円情報(a, b, r), v2: 円周座標(vector3)）
-  arcAngle(v1, v2) {
-    return this.arc(v1.a, v1.b, v2.x, v2.y);
   }
 
   // ガイドラインの表示制御
