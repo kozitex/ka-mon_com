@@ -181,7 +181,7 @@ export default class Kamon extends Founder {
     const f = angle[0], t = angle[1];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      const point = this.circle({a: a, b: b, r: r}, p);
+      const point = this.circumPoint({a: a, b: b, r: r}, p);
       points.push(point);
     }
     return points;

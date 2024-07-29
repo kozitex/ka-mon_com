@@ -59,7 +59,7 @@ export default class Kikyou2 extends Kamon {
     this.pentaApices = [];
     for (var i = 0;i <= 5;i ++) {
       const theta = 90 + (72 * i);
-      const apex = this.circle(this.circle1, theta);
+      const apex = this.circumPoint(this.circle1, theta);
       this.pentaApices.push(apex);
     }
 
@@ -68,8 +68,8 @@ export default class Kikyou2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const theta1 = 90 + (72 * i);
       const theta2 = theta1 + 180;
-      const apex1 = this.circle(this.circle1, theta1);
-      const apex2 = this.circle(this.circle1, theta2);
+      const apex1 = this.circumPoint(this.circle1, theta1);
+      const apex2 = this.circumPoint(this.circle1, theta2);
       this.pentaDiagApices.push([apex1, apex2]);
     }
 
@@ -80,8 +80,8 @@ export default class Kikyou2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const theta1 = (270 - theta0) + (72 * i);
       const theta2 = (270 + theta0) + (72 * i);
-      const apex1 = this.circle(this.circle2, theta1);
-      const apex2 = this.circle(this.circle2, theta2);
+      const apex1 = this.circumPoint(this.circle2, theta1);
+      const apex2 = this.circumPoint(this.circle2, theta2);
       if (i == 0) radius = Math.abs(apex1.x);
       this.outerParams.push(
         {a: apex1.x, b: apex1.y, r: radius},
@@ -95,8 +95,8 @@ export default class Kikyou2 extends Kamon {
       const theta1 = (270 - theta0) + (72 * i);
       const theta2 = (270 + theta0) + (72 * i);
       const apex0 = new THREE.Vector3(0, 0, 0);
-      const apex1 = this.circle(this.circle1, theta1);
-      const apex2 = this.circle(this.circle1, theta2);
+      const apex1 = this.circumPoint(this.circle1, theta1);
+      const apex2 = this.circumPoint(this.circle1, theta2);
       this.outerDiags.push([apex0, apex1], [apex0, apex2]);
     }
 
@@ -261,7 +261,7 @@ export default class Kikyou2 extends Kamon {
     });
 
     // 花弁中央の頂点
-    const apex1 = this.circle(this.circle3, 234);
+    const apex1 = this.circumPoint(this.circle3, 234);
 
     // 花弁中央の先端
     const theta = THREE.MathUtils.degToRad(36);
@@ -273,14 +273,14 @@ export default class Kikyou2 extends Kamon {
     const center = {a: c4.a, b: c4.b, r: c4.r + w};
 
     // 中央円弧の前後
-    const apex3d = this.circle(center, 234);
+    const apex3d = this.circumPoint(center, 234);
     const apex3 = new THREE.Vector3(apex3d.x + paraX1, apex3d.y - paraY1, 0);
-    const apex4d = this.circle(center, 270);
+    const apex4d = this.circumPoint(center, 270);
     const apex4 = new THREE.Vector3(apex4d.x - w, apex4d.y, 0);
 
     // 中央の円弧
-    const angle1 = this.arc(center, apex3);
-    const angle2 = this.arc(center, apex4);
+    const angle1 = this.circumAngle(center, apex3);
+    const angle2 = this.circumAngle(center, apex4);
     const arc1 = this.curvePointGen(center, [angle1, angle2], false);
 
     // 外周円弧の前後
@@ -290,8 +290,8 @@ export default class Kikyou2 extends Kamon {
     const apex6 = new THREE.Vector3(outer.a, outer.b - outer.r, 0);
 
     // 外周の円弧
-    const angle3 = this.arc(outer, apex5);
-    const angle4 = this.arc(outer, apex6);
+    const angle3 = this.circumAngle(outer, apex5);
+    const angle4 = this.circumAngle(outer, apex6);
     const arc2 = this.curvePointGen(outer, [angle3, angle4], true);
 
     // 花弁の頂点

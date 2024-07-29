@@ -18,7 +18,7 @@ export default class Founder {
   }
 
   // 円周上の座標を求める式（circle: {a: 中心X, b: 中心Y, r: 半径}, theta:角度）
-  circle(circle, theta) {
+  circumPoint(circle, theta) {
     const a = circle.a, b = circle.b, r = circle.r;
     const t = THREE.MathUtils.degToRad(theta);
     const x = a + r * Math.cos(t);
@@ -26,9 +26,9 @@ export default class Founder {
     return new THREE.Vector3(x, y, 0);
   }
 
-  // 円周上の座標の角度を求める式（v1: {a: 円の中心X, b: 円の中心Y}, v2: {x: 円周上座標X, x: 円周上座標Y}）
-  arc(v1, v2) {
-    const a = v1.a, b = v1.b, x = v2.x, y = v2.y;
+  // 円周上の座標の角度を求める式（circle: {a: 中心X, b: 中心Y, r: 半径}, v: {x: 円周上座標X, y: 円周上座標Y}）
+  circumAngle(circle, v) {
+    const a = circle.a, b = circle.b, x = v.x, y = v.y;
     return THREE.MathUtils.radToDeg(Math.atan2(y - b, x - a));
   }
 
@@ -141,7 +141,7 @@ export default class Founder {
     const points = [];
     for (var i = 0;i <= d - 1;i ++) {
       const p = THREE.MathUtils.damp(f, t, 10, i / (d - 1));
-      const point = this.circle({a: a, b: b, r: r}, p);
+      const point = this.circumPoint({a: a, b: b, r: r}, p);
       points.push(point);
     }
     return points;

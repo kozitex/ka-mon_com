@@ -87,7 +87,7 @@ const init = () => {
   const back = () => {
     if (window.scrollY == 0) {
       canvas.draw('back');
-      window.scrollTo(0, terminus);
+      window.scrollTo(0, terminus - 1);
     } else {
       window.scrollTo(0, 0);
       canvas.scrolled(window.scrollY);

@@ -89,8 +89,8 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
 
     // 単一座標
     this.apex1 = new THREE.Vector3(- 192,  976, 0);
-    this.apex2 = this.circle(this.arc5, this.angle5[0]);
-    this.apex3 = this.circle(this.arc7, this.angle7[1]);
+    this.apex2 = this.circumPoint(this.arc5, this.angle5[0]);
+    this.apex3 = this.circumPoint(this.arc7, this.angle7[1]);
     this.apex4 = new THREE.Vector3(- 410, 1008, 0);
   }
 
@@ -121,6 +121,7 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
 
   // ガイドラインを作成
   generateGuideline = () => {
+    var brother = new THREE.Group();
 
     // 外周円
     const outers = [this.circle1, this.circle2];
@@ -130,28 +131,21 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
       this.guidelines.add(mesh);
     });
 
+    const headspoints = [];
     const heads = [this.arc5, this.arc8, this.arc11, this.arc14];
     for (var i = 0;i <= 3;i ++) {
       const points = this.circleLocusGen(heads[i], [90, 450], this.divCount);
-      for (var j = 0;j <= 1;j ++) {
-        const geo = new THREE.BufferGeometry().setFromPoints(points);
-        const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
-        mesh.geometry.translate(0, - 1250 * j, 0);
-        this.guidelines.add(mesh);
-      }
+      headspoints.push(points);
     }
 
+    const wingspoints = [];
     const wings = [this.arc1, this.arc4, this.arc2, this.arc3];
     for (var i = 0;i <= 3;i ++) {
       const points = this.circleLocusGen(wings[i], [90, 450], this.divCount);
-      for (var j = 0;j <= 1;j ++) {
-        const geo = new THREE.BufferGeometry().setFromPoints(points);
-        const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
-        mesh.geometry.translate(0, - 1250 * j, 0);
-        this.guidelines.add(mesh);
-      }
+      wingspoints.push(points);
     }
 
+    const beakspoints = [];
     const beaks = [
       [this.apex1, this.apex2],
       [this.apex2, this.apex4],
@@ -162,13 +156,22 @@ export default class MaruNiFutatsuKarigane2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const beak = beaks[i];
       const points = this.lineLocusGen(beak[0], beak[1], 20, this.divCount);
-      for (var j = 0;j <= 1;j ++) {
-        const geo = new THREE.BufferGeometry().setFromPoints(points);
-        const mesh = new THREE.Line(geo, j == 0 ? this.guideMat : this.subMat);
-        mesh.geometry.translate(0, - 1250 * j, 0);
-        this.guidelines.add(mesh);
-      }
+      beakspoints.push(points);
     }
+
+    for (var i = 0;i <= 1;i ++) {
+      const pointsSums = [headspoints, wingspoints, beakspoints];
+      pointsSums.forEach((pointsSum) => {
+        const mat = i == 0 ? this.guideMat : this.subMat;
+        pointsSum.forEach((points) => {
+          const geo = new THREE.BufferGeometry().setFromPoints(points);
+          const mesh = new THREE.Line(geo, mat);
+          mesh.geometry.translate(0, - 1250 * i, 0);
+          i == 0 ? this.guidelines.add(mesh) : brother.add(mesh);
+        })
+      })
+    }
+    this.guidelines.add(brother);
 
     this.group.add(this.guidelines);
   }

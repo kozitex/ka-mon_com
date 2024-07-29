@@ -64,7 +64,7 @@ export default class MaruNiUmebachi2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const circle = this.circle4;
       const angle = 54 + (72 * i);
-      const apex = this.circle(circle, angle);
+      const apex = this.circumPoint(circle, angle);
       this.pentaApices.push(apex);
     }
 
@@ -231,8 +231,8 @@ export default class MaruNiUmebachi2 extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const c4 = this.circle4;
       const angle = 54 + (72 * i);
-      const apex1 = this.circle({a: c4.a, b: c4.b, r: c4.r + xw}, angle);
-      const apex2 = this.circle({a: c4.a, b: c4.b, r: c4.r - xw}, angle);
+      const apex1 = this.circumPoint({a: c4.a, b: c4.b, r: c4.r + xw}, angle);
+      const apex2 = this.circumPoint({a: c4.a, b: c4.b, r: c4.r - xw}, angle);
       pentaShapes.push(apex1);
       pentaPathes.push(apex2);
     }
@@ -293,7 +293,7 @@ export default class MaruNiUmebachi2 extends Kamon {
 
     // 弧の部分
     const circle6 = {a: this.circle5.a, b: this.circle5.b, r: this.circle5.r + 4};
-    const point1 = this.circle(circle6, - 72);
+    const point1 = this.circumPoint(circle6, - 72);
     const r1 = THREE.MathUtils.degToRad(18);
     const p1 = 4 * Math.cos(r1);
     const q1 = 4 * Math.sin(r1);

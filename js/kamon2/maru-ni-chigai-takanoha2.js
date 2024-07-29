@@ -70,8 +70,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 対角線
     this.rad = [
-      this.circle(this.outer1,  45),
-      this.circle(this.outer1, 225)
+      this.circumPoint(this.outer1,  45),
+      this.circumPoint(this.outer1, 225)
     ];
 
     // 羽弁の線（[i: 0=手前の羽][j: 0=内側、1=中央、2=外側][k: 0=右下、1=左上][l: 0〜1=直線を結ぶ2点]）
@@ -96,7 +96,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
             const a = 45 + (90 * k);
             const s = k == 1 ? 1 : - 1;
             for (var l = 0;l <= 1;l ++) {
-              var point = this.circle(this.wingC[j][l], a * s);
+              var point = this.circumPoint(this.wingC[j][l], a * s);
               if (i == 1) point = this.rotateCoordinate(point, 90);
               points.push(point);
             }
@@ -125,7 +125,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
             for (var l = 0;l <= 1;l ++) {
               const a = 45 + (180 * l);
               const s = k + l == 1 ? 1 : - 1;
-              points.push(this.circle(this.wingC[j][l], a + s * t));
+              points.push(this.circumPoint(this.wingC[j][l], a + s * t));
             }
             lines.push(points);
           }
@@ -157,7 +157,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
           for (var l = 0;l <= 2;l ++) {
 
             // 交点の算出用の座標パラメータ
-            const val = k <= 1 ? 110 + jw + 100 * l : - 630 + jw + 100 * l;
+            const val = k <= 1 ? 110 + jw + 100 * l : - 640 + jw + 100 * l;
             const x1 = m == 0 ?    0 : val, y1 = m == 0 ? val :    0;
             const x2 = m == 0 ? 1600 : val, y2 = m == 0 ? val : 1600;
             const refLine = [new THREE.Vector3(x1, y1, 0), new THREE.Vector3(x2, y2, 0)];
@@ -215,7 +215,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
   // ガイドラインを作成
   generateGuideline = () => {
-    var shadows = new THREE.Group();
+    const shadows = new THREE.Group();
 
     // 中心円
     const outers = [this.outer1, this.outer2];
@@ -418,8 +418,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 一つ目
     barbAngles.push([
-      this.arc(this.wingC[0][0], this.barb[0][0][0][2][1]), 
-      this.arc(this.wingC[0][0], this.barb[0][2][0][1][1])
+      this.circumAngle(this.wingC[0][0], this.barb[0][0][0][2][1]), 
+      this.circumAngle(this.wingC[0][0], this.barb[0][2][0][1][1])
     ]);
     barbPoints.push([
       this.curvePointGen(this.wingC[0][0], barbAngles[0], true).concat(
@@ -434,7 +434,7 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 二つ目
     barbAngles.push([
-      this.arc(this.wingC[0][0], this.barb[0][0][0][1][1]), 
+      this.circumAngle(this.wingC[0][0], this.barb[0][0][0][1][1]), 
       - 45
     ]);
     barbPoints.push([
@@ -493,8 +493,8 @@ export default class MaruNiChigaiTakanoha2 extends Kamon {
 
     // 一つ目
     vaneAngles.push([
-      this.arc(this.wingC[0][0], this.rachis[0][2][0][0]), 
-      this.arc(this.wingC[0][0], this.barb[0][2][0][2][1])
+      this.circumAngle(this.wingC[0][0], this.rachis[0][2][0][0]), 
+      this.circumAngle(this.wingC[0][0], this.barb[0][2][0][2][1])
     ]);
     vanePoints.push([
       this.curvePointGen(this.wingC[0][0], vaneAngles[0], true).concat(
