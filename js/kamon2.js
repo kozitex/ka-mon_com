@@ -196,6 +196,18 @@ export default class Kamon extends Founder {
     return curve.getPoints(100);
   }
 
+  // 円弧のアウトラインジオメトリを生成（circle: {a: 円の中心X,b: 円の中心Y,r: 円の半径}, angle: 弧の角度[0: 始点, 1:終点], clockwise: 時計回りか否かtrue/false）
+  curveOutlineGeoGen = (circle, angle, clockwise) => {
+    const w = 4;
+    const arc1 = {a: circle.a, b: circle.b, r: circle.r + w};
+    const arc2 = {a: circle.a, b: circle.b, r: circle.r - w};
+    const point1 = this.curvePointGen(arc1, [angle[0], angle[1]], clockwise);
+    const point2 = this.curvePointGen(arc2, [angle[1], angle[0]], !clockwise);
+    const points = point2.concat(point1);
+    const geo = this.shapeGeoGen(points);
+    return geo;
+  }
+
   // ポイントからシェイプを生成
   shapeGeoGen = (shapes, pathes) => {
     const shape = new THREE.Shape(shapes);
