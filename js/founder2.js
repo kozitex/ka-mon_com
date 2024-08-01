@@ -32,6 +32,28 @@ export default class Founder {
     return THREE.MathUtils.radToDeg(Math.atan2(y - b, x - a));
   }
 
+  // 直線と円の交点を求める（r: 半径, h: 中心X座標, k: 中心Y座標, m: 直線式の傾き, n: 直線式の切片）
+  interLineCircle0 = (r, h, k, m, n) => {
+    var a = 1 + Math.pow(m, 2);
+    var b = -2 * h + 2 * m * (n - k);
+    var c = Math.pow(h, 2) + Math.pow((n - k), 2) - Math.pow(r, 2);
+    var D = Math.pow(b, 2) - 4 * a * c;
+
+    var kouten = [];
+    if (D >= 0) {
+      var x1 = (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+      var x2 = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+      if (D == 0) {
+        kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
+      } else {
+        kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
+        kouten.push(new THREE.Vector3(x2, m * x2 + n, 0));
+      }
+    }
+    return kouten;
+  }
+
+
   // 直線と円の交点を求める（circle: {a: 中心X ,b: 中心Y,r: 半径}, va: 直線を表す２点の座標[{x, y}, {x, y}]）
   interLineCircle = (circle, va) => {
     const cx = circle.a;
