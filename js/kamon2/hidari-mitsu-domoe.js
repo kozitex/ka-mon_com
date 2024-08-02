@@ -50,50 +50,14 @@ export default class HidariMitsuDomoe extends Kamon {
     }
 
     // 円
+    const center2 = this.rotateCoordinate({x: 0, y: 600}, 60);
+
     this.circle0 = {a: 0, b:    0, r: 1600};
     this.circle1 = {a: 0, b:  900, r:  700};
-    // this.circle2 = {a: 0, b:  600, r: 1000};
-
-    const center2 = this.rotateCoordinate({x: 0, y: 600}, 60);
-    // console.log(center2)
     this.circle2 = {a: center2.x, b: center2.y, r: 1000};
-
-
 
     // 補助線の頂点
     this.apex1 = this.circumPoint(this.circle0, 90);
-    // this.apex2 = this.circumPoint(this.circle0, 210);
-    // this.apex3 = this.circumPoint(this.circle0, 330);
-
-    // this.circle2 = {a: 0, b: 850, r:  750};
-    this.circle3 = {a:   this.circle2.a, b: - this.circle2.b, r: this.circle2.r};
-    this.circle4 = {a: 0, b: 550, r: 1050};
-    this.circle5 = {a: - this.circle4.a, b: - this.circle4.b, r: this.circle4.r};
-
-    const form = {
-      a: - (2 * (this.circle2.a - this.circle1.a)) / (2 * (this.circle2.b - this.circle1.b)),
-      b: 1,
-      c: - ((this.circle1.a + this.circle2.a) * (this.circle1.a - this.circle2.a) + (this.circle1.b + this.circle2.b) * (this.circle1.b - this.circle2.b) + (this.circle2.r + this.circle1.r) * (this.circle2.r - this.circle1.r)) / (2 * (this.circle2.b - this.circle1.b))
-    };
-    const inter = this.interLineCircle(this.circle1, form);
-    console.log(inter)
-    this.inter1 = new THREE.Vector3(0, 1600, 0);
-    this.inter2 = inter[1];
-    this.inter3 = this.circumPoint(this.circle2, 210);
-
-    // 円の交点
-    const b1 = this.circle2.b;
-    const r1 = this.circle2.r;
-    const b2 = this.circle5.b;
-    const r2 = this.circle5.r;
-
-    const interY1 = (b1 ** 2 - b2 ** 2 - r1 ** 2 + r2 ** 2) / (2 * (b1 - b2));
-    const interX1 = Math.sqrt(r1 ** 2 - (interY1 - b1) ** 2);
-
-    // this.inter1 = new THREE.Vector3(- interX1, interY1, 0);
-    // this.inter2 = new THREE.Vector3(interX1, - interY1, 0);
-    // this.inter3 = new THREE.Vector3(this.circle1.a,   this.circle1.r, 0);
-    this.inter4 = new THREE.Vector3(this.circle1.a, - this.circle1.r, 0);
 
   }
 
@@ -138,6 +102,18 @@ export default class HidariMitsuDomoe extends Kamon {
     return kouten;
   }
 
+  // ２円の交点を求める
+  inter2Circles = (circle1, circle2) => {
+    const a1 = circle1.a, b1 = circle1.b, r1 = circle1.r;
+    const a2 = circle2.a, b2 = circle2.b, r2 = circle2.r;
+    const form = {
+      a: - (2 * (a2 - a1)) / (2 * (b2 - b1)),
+      b: 1,
+      c: - ((a1 + a2) * (a1 - a2) + (b1 + b2) * (b1 - b2) + (r2 + r1) * (r2 - r1)) / (2 * (b2 - b1))
+    };
+    return this.interLineCircle(circle1, form);
+  }
+
   // ガイドラインを作成
   generateGuideline = () => {
 
@@ -163,7 +139,7 @@ export default class HidariMitsuDomoe extends Kamon {
     circles.forEach((circle) => {
       const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const group = new THREE.Group();
-      for (var i = 0;i <= 0;i ++) {
+      for (var i = 0;i <= 2;i ++) {
         const mesh = this.guidelineGen(points);
         mesh.rotation.z = THREE.MathUtils.degToRad(120 * i);
         group.add(mesh);
@@ -186,67 +162,32 @@ export default class HidariMitsuDomoe extends Kamon {
       this.outlines.add(mesh);
     })
 
+    // 円弧
+    const inter0 = new THREE.Vector3(0, 1600, 0);
+    const inter1 = this.inter2Circles(this.circle1, this.circle2)[1];
+    const inter2 = this.circumPoint(this.circle2, 210);
+
     const circles = [this.circle1, this.circle2, this.circle0];
     const inters = [
-      [this.inter1, this.inter2], [this.inter2, this.inter3], 
-      [this.inter3, this.inter1],
+      [inter0, inter1], [inter1, inter2], [inter2, inter0],
     ];
     const clockwises = [true, false, true];
 
     for (var i = 0;i <= circles.length - 1;i ++) {
       const circle = circles[i];
       const inter = inters[i];
+      const clockwise = clockwises[i];
       const angles = [
         this.circumAngle(circle, inter[0]),
         this.circumAngle(circle, inter[1]),
       ];
-      const geo = this.curveOutlineGeoGen(circle, angles, clockwises[i]);
-      const mesh = new THREE.Mesh(geo, this.outlineMat);
-      this.outlines.add(mesh);
+      const geo = this.curveOutlineGeoGen(circle, angles, clockwise);
+      for (var j = 0;j <= 2;j ++) {
+        const mesh = new THREE.Mesh(geo, this.outlineMat);
+        mesh.rotation.z = THREE.MathUtils.degToRad(120 * j);
+        this.outlines.add(mesh);
+      }
     }
-
-
-
-    // const w = 4;
-
-    // // 中心円
-    // const circles1 = [this.circle1];
-    // circles1.forEach((circle) => {
-    //   const circle1 = {a: circle.a, b: circle.b, r: circle.r + w};
-    //   const circle2 = {a: circle.a, b: circle.b, r: circle.r - w};
-    //   const shape = this.curvePointGen(circle1, [0, 360], true);
-    //   const path  = this.curvePointGen(circle2, [0, 360], true);
-    //   const geo = this.shapeGeoGen(shape, path);
-    //   const mesh = new THREE.Mesh(geo, this.outlineMat);
-    //   this.outlines.add(mesh);
-    // });
-
-    // // 円弧
-    // const circles = [this.circle2, this.circle5, this.circle3, this.circle4];
-    // const inters = [
-    //   [this.inter3, this.inter1], [this.inter1, this.inter4], 
-    //   [this.inter4, this.inter2], [this.inter2, this.inter3],
-    // ];
-    // const clockwises = [[true, false], [false, true], [true, false], [false, true]];
-
-    // for (var i = 0;i <= 3;i ++) {
-    //   const circle = circles[i];
-    //   const inter = inters[i];
-    //   const clockwise = clockwises[i];
-
-    //   var points = [];
-    //   for (var j = 0;j <= 1;j ++) {
-    //     const param = {a: circle.a, b: circle.b, r: circle.r + w * (1 - j * 2)};
-    //     const angle1 = this.circumAngle(param, inter[j]);
-    //     const angle2 = this.circumAngle(param, inter[1 - j]);
-    //     const point = this.curvePointGen(param, [angle1, angle2], clockwise[j]);
-    //     points = points.concat(point);
-    //   }
-
-    //   const geo = this.shapeGeoGen(points);
-    //   const mesh = new THREE.Mesh(geo, this.outlineMat);
-    //   this.outlines.add(mesh);
-    // }
 
     this.group.add(this.outlines);
   }
@@ -256,32 +197,39 @@ export default class HidariMitsuDomoe extends Kamon {
 
     const w = 4;
 
-    // 中心円
-    const shapes = this.curvePointGen(this.circle1, [0, 360], true);
+    const circle0 = {a: this.circle0.a, b: this.circle0.b, r: this.circle0.r - w};
+    const circle1 = {a: this.circle1.a, b: this.circle1.b, r: this.circle1.r - w};
+    const circle2 = {a: this.circle2.a, b: this.circle2.b, r: this.circle2.r + w};
 
-    // 円弧
-    const circles = [this.circle2, this.circle5, this.circle3, this.circle4];
+    const inter0 = this.circumPoint(circle0, 90);
+    const inter1 = this.inter2Circles(circle1, circle2)[1];
+    const inter2 = this.circumPoint(circle2, 200);
+
+    const circles = [circle1, circle2, circle0];
     const inters = [
-      [this.inter3, this.inter1], [this.inter1, this.inter4], 
-      [this.inter4, this.inter2], [this.inter2, this.inter3],
+      [inter0, inter1], [inter1, inter2], [inter2, inter0],
     ];
-    const clockwises = [true, false, true, false];
+    const clockwises = [true, false, true];
 
-    var pathes = [];
-    for (var i = 0;i <= 3;i ++) {
+    var points = [];
+    for (var i = 0;i <= circles.length - 1;i ++) {
       const circle = circles[i];
       const inter = inters[i];
       const clockwise = clockwises[i];
-      const param = {a: circle.a, b: circle.b, r: circle.r - 1};
-      const angle1 = this.circumAngle(param, inter[0]);
-      const angle2 = this.circumAngle(param, inter[1]);
-      const arc = this.curvePointGen(param, [angle1, angle2], clockwise);
-      pathes = pathes.concat(arc);
+      const angles = [
+        this.circumAngle(circle, inter[0]),
+        this.circumAngle(circle, inter[1]),
+      ];
+      const point = this.curvePointGen(circle, angles, clockwise);
+      points = points.concat(point);
     }
+    const geo = this.shapeGeoGen(points);
 
-    const geo = this.shapeGeoGen(shapes, pathes);
-    const mesh = new THREE.Mesh(geo, this.shapeMat);
-    this.shapes.add(mesh);
+    for (var j = 0;j <= 2;j ++) {
+      const mesh = new THREE.Mesh(geo, this.shapeMat);
+      mesh.rotation.z = THREE.MathUtils.degToRad(120 * j);
+      this.shapes.add(mesh);
+    }
 
     this.group.add(this.shapes);
   }
