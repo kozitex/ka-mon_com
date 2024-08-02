@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import Kamon from '../kamon2.js';
 
-export default class JuurokuyouYaegiku extends Kamon {
+export default class JuurokuyouYaeOmoteKiku extends Kamon {
 
   constructor() {
 
@@ -11,9 +11,9 @@ export default class JuurokuyouYaegiku extends Kamon {
 
     // infoのテキスト
     this.jpNameText = '十六葉八重表菊';
-    this.jpDescText = '茗荷紋は、香味野菜として知られるミョウガをモチーフにした家紋で、日本十代家紋の一つに数えられます。茗荷紋は摩多羅神のシンボルと言われており、摩多羅神が日光東照宮に祀られたことがきっかけで広まったとされています。また、仏教用語である冥加（神仏からの目に見えない加護）と発音が同じであることも縁起が良いとされ、普及した要因の一つと言われています。';
-    this.enNameText = 'Juurokuyou-yaegiku';
-    this.enDescText = 'Myougamon is a family crest with a motif of Japanese ginger, which is known as a flavorful vegetable, and is considered one of the ten Japanese family crests. The Myouga crest is said to be a symbol of the god Matara, and it is said that it became popular when Matara was enshrined at Nikko Toshogu Shrine. It is also said to have the same pronunciation as the Buddhist term Myouga (invisible protection from the gods and Buddha), which is said to be auspicious, and is said to be one of the reasons for its popularity.';
+    this.jpDescText = '菊花紋はキク科キク属の植物であるキクを図案化した菊紋のうち、特に花の部分を中心に図案化した家紋のことを指します。中でも十六葉八重表菊は皇室の紋章としても知られ、日本の事実上の国章としても使われています。';
+    this.enNameText = 'Juurokuyou-yae-omote-kiku';
+    this.enDescText = 'A chrysanthemum crest is a family crest that is a pattern of a chrysanthemum, a plant belonging to the Asteraceae family, Asteraceae, with a focus on the flower part. Among them, the 16-leaf double chrysanthemum is also known as the emblem of the imperial family, and is also used as the de facto national emblem of Japan.';
 
     // ガイドラインの表示アニメーションパラメータ
     this.guidelineParams = {
@@ -55,43 +55,35 @@ export default class JuurokuyouYaegiku extends Kamon {
 
     this.theta = 360 / 16;
 
-    // 外周円
+    // 外周円１
     const thetaR = THREE.MathUtils.degToRad(this.theta / 2);
     const r = (1600 * Math.sin(thetaR)) / (1 + Math.sin(thetaR));
     this.outer1 = {a: 0, b: 1600 - r, r: r}
-    this.outerAngle1 = [
-      - this.theta / 2,
-      180 + this.theta / 2
-    ];
+    this.outerAngle1 = [- this.theta / 2, 180 + this.theta / 2];
 
     // 放射線
-    this.raditation1 = [
+    const c = r / Math.tan(thetaR);
+    this.rad1 = [
       this.circumPoint(this.center1, 90 - this.theta / 2),
       new THREE.Vector3(0, 0, 0),
     ];
-
-    const c = r / Math.tan(thetaR);
-    this.raditation2 = [
+    this.rad2 = [
       new THREE.Vector3(c * Math.sin(thetaR), c * Math.cos(thetaR), 0),
       this.circumPoint(this.center2, 90 - this.theta / 2),
     ];
 
+    // 外周円２
     const point1 = this.circumPoint(this.center1, 90 - (this.theta / 4));
     const point2 = new THREE.Vector3(0, 0, 0);
-    // const inter = this.interLineCircle(this.outer1, [point1, point2]);
     const form = this.from2Points(point1, point2);
-    const inter = this.interLineCircle0(this.outer1.r, this.outer1.a, this.outer1.b, form.a, form.c);
-    // console.log(this.theta / 4, point1, point2, inter)
+    const inter = this.interLineCircle(this.outer1, form);
     const angle = this.circumAngle(this.outer1, inter[0]);
-    // console.log(this.theta / 4, point1, point2, inter, angle)
-    this.outerAngle2 = [
-      angle,
-      180 - angle
-    ];
+    this.outerAngle2 = [angle, 180 - angle];
 
-
-
-    // 外周円
+    this.center3 = {a: 0, b: 0, r: 1600 - r}
+    const v1 = this.circumPoint(this.center3, 90 + this.theta / 2);
+    this.outer3 = {a:   v1.x, b: v1.y, r: r + 4}
+    this.outer4 = {a: - v1.x, b: v1.y, r: r + 4}
 
   }
 
@@ -109,15 +101,31 @@ export default class JuurokuyouYaegiku extends Kamon {
 
   }
 
-  // 円弧のアウトライン座標を生成（circle: {a: 円の中心X,b: 円の中心Y,r: 円の半径}, angle: 弧の角度[0: 始点, 1:終点], clockwise: 時計回りか否かtrue/false）
-  curveOutlinePointGen = (circle, angle, clockwise) => {
-    const w = 4;
-    const arc1 = {a: circle.a, b: circle.b, r: circle.r + w};
-    const arc2 = {a: circle.a, b: circle.b, r: circle.r - w};
-    const point1 = this.curvePointGen(arc1, [angle[0], angle[1]], clockwise);
-    const point2 = this.curvePointGen(arc2, [angle[1], angle[0]], !clockwise);
-    const points = point2.concat(point1);
-    return points;
+  // 直線と円の交点を求める（r: 半径, h: 中心X座標, k: 中心Y座標, m: 直線式の傾き, n: 直線式の切片）
+  interLineCircle = (circle, form) => {
+    const h = circle.a;
+    const k = circle.b;
+    const r = circle.r;
+    const m = form.a;
+    const n = form.c;
+
+    var a = 1 + Math.pow(m, 2);
+    var b = -2 * h + 2 * m * (n - k);
+    var c = Math.pow(h, 2) + Math.pow((n - k), 2) - Math.pow(r, 2);
+    var D = Math.pow(b, 2) - 4 * a * c;
+
+    var kouten = [];
+    if (D >= 0) {
+      var x1 = (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+      var x2 = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+      if (D == 0) {
+        kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
+      } else {
+        kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
+        kouten.push(new THREE.Vector3(x2, m * x2 + n, 0));
+      }
+    }
+    return kouten;
   }
 
   // ガイドラインを作成
@@ -133,25 +141,17 @@ export default class JuurokuyouYaegiku extends Kamon {
     const pointArr = [];
 
     // 放射線
-    // const theta0 = 360 / 16;
-    // const point1 = this.circumPoint(this.center1, 90 - theta0 / 2);
-    // const point2 = new THREE.Vector3(0, 0, 0);
-    const rad = this.raditation1;
-    // const radGeo = this.lineLocusGen(rad[0], rad[1], 0, this.divCount);
-    pointArr.push(this.lineLocusGen(rad[0], rad[1], 0, this.divCount));
-    // pointArr.push(this.lineLocusGen(this.circumPoint(this.center1, 90 - (this.theta / 4)), rad[1], 0, this.divCount));
+    const line = this.lineLocusGen(this.rad1[0], this.rad1[1], 0, this.divCount)
+    pointArr.push(line);
 
     // 外周円
-    // const thetaR0 = THREE.MathUtils.degToRad(theta0 / 2);
-    // const r = (1600 * Math.sin(thetaR0)) / (1 + Math.sin(thetaR0));
-    // const circle1 = {a: 0, b: 1600 - r, r: r}
     for (var i = 0;i <= 1;i ++) {
-      pointArr.push(this.circleLocusGen(this.outer1, [90, 450], this.divCount));
+      const outer = this.circleLocusGen(this.outer1, [90, 450], this.divCount)
+      pointArr.push(outer);
     }
 
     // メッシュの生成を16回繰り返す
     for (var i = 0;i <= pointArr.length - 1;i ++) {
-    // for (var i = 0;i <= 0;i ++) {
       const group = new THREE.Group();
       const points = pointArr[i];
       for (var j = 0;j <= 15;j ++) {
@@ -181,32 +181,28 @@ export default class JuurokuyouYaegiku extends Kamon {
     const mesh = new THREE.Mesh(geo, this.outlineMat);
     this.outlines.add(mesh);
 
-
-    const geoArr = [];
+    const geos = [];
 
     // 放射線
-    geoArr.push(this.outlineGeoGen(this.raditation2[0], this.raditation2[1]));
+    const line = this.outlineGeoGen(this.rad2[0], this.rad2[1])
+    geos.push(line);
 
     // 外周円の弧
-    // const geo = this.curveOutlineGeoGen(this.center2, [0, 360], false);
-    geoArr.push(this.curveOutlineGeoGen(
-      this.outer1, [this.outerAngle1[0], this.outerAngle1[1]], false))
-    geoArr.push(this.curveOutlineGeoGen(
-      this.outer1, [this.outerAngle2[0], this.outerAngle2[1]], false))
+    const arc1 = this.curveOutlineGeoGen(this.outer1, this.outerAngle1, false);
+    const arc2 = this.curveOutlineGeoGen(this.outer1, this.outerAngle2, false);
+    geos.push(arc1)
+    geos.push(arc2)
 
     // メッシュの生成を16回繰り返す
-    for (var i = 0;i <= geoArr.length - 1;i ++) {
-      // const group = new THREE.Group();
-      const geo = geoArr[i];
+    for (var i = 0;i <= geos.length - 1;i ++) {
+      const geo = geos[i];
       for (var j = 0;j <= 15;j ++) {
         const mesh = new THREE.Mesh(geo, this.outlineMat);
         const angle = i == 2 ? this.theta * (j - 0.5) : this.theta * j
         mesh.rotation.z = THREE.MathUtils.degToRad(angle);
         this.outlines.add(mesh);
-        // group.add(mesh);
       }
     }
-
 
     this.group.add(this.outlines);
   }
@@ -217,7 +213,6 @@ export default class JuurokuyouYaegiku extends Kamon {
     const w = 4;
 
     // 中心円
-    // const centers = [this.circle4];
     [this.center2].forEach((circle) => {
       const param = {a: circle.a, b: circle.b, r: circle.r - w};
       const shape = this.curvePointGen(param, [0, 360], true);
@@ -226,41 +221,51 @@ export default class JuurokuyouYaegiku extends Kamon {
       this.shapes.add(mesh);
     });
 
-    // const w = 4;
-    // const geos = [];
+    const geos = [];
 
-    // for (var i = 0;i <= this.frames.length - 1;i ++) {
-    //   // 輪郭の座標からシェイプを生成
-    //   var shapes = [];
-    //   const frameGroup = this.frames[i];
-    //   frameGroup.forEach((param) => {
-    //     const circle = param.r;
-    //     const side = param.s - 1;
-    //     const circleParam = {a: circle.a, b: circle.b, r: circle.r + w * side};
-    //     const points = this.curvePointGen(circleParam, [param.f, param.t], param.c);
-    //     shapes = shapes.concat(points);
-    //   })
-    //   const shape = new THREE.Shape(shapes);
+    // 手前の花弁
+    const outer2 = {a: this.outer1.a, b: this.outer1.b, r: this.outer1.r - w};
+    const points1 = this.curvePointGen(outer2, this.outerAngle1, false);
 
-    //   // ひだの座標から生成したパスを輪郭のシェイプから除外してジオメトリを生成
-    //   const foldsGroup = this.folds[i];
-    //   foldsGroup.forEach((param) => {
-    //     const points = this.curveOutlinePointGen(param, [param.f, param.t], param.c);
-    //     const path = new THREE.Path(points);
-    //     shape.holes.push(path);
-    //   })
-    //   const geo = new THREE.ShapeGeometry(shape);
-    //   geos.push(geo);
-    // }
+    const center2 = {a: this.center2.a, b: this.center2.b, r: this.center2.r + w};
+    const diff = THREE.MathUtils.radToDeg(Math.asin(w / center2.r));
+    const angles = [90 + this.theta / 2 - diff, 90 - this.theta / 2 + diff]
+    const points2 = this.curvePointGen(center2, angles, true);
 
-    // // ジオメトリからメッシュを生成（反転分も生成）
-    // for (var i = 0;i <= 1;i ++) {
-    //   geos.forEach((geo) => {
-    //     const mesh = new THREE.Mesh(geo, this.shapeMat);
-    //     mesh.rotation.y = THREE.MathUtils.degToRad(180 * i);
-    //     this.shapes.add(mesh);
-    //   })
-    // }
+    const points3 = points1.concat(points2);
+    const geo1 = this.shapeGeoGen(points3);
+    geos.push(geo1);
+
+    // 奥の花弁
+    const angles2 = [this.outerAngle2[0] + diff, this.outerAngle2[1] - diff];
+    const points4 = this.curvePointGen(outer2, angles2, false);
+
+    const angles3 = [
+      this.outerAngle2[0] + this.theta / 2 - diff - 1,
+      this.outerAngle1[0] + this.theta / 2 + diff,
+    ];
+    const points5 = this.curvePointGen(this.outer3, angles3, true);
+
+    const angles4 = [
+      this.outerAngle1[1] - this.theta / 2 - diff,
+      this.outerAngle2[1] - this.theta / 2 + diff + 1,
+    ];
+    const points6 = this.curvePointGen(this.outer4, angles4, true);
+
+    const points7 = points4.concat(points5, points6);
+    const geo2 = this.shapeGeoGen(points7);
+    geos.push(geo2);
+
+    // メッシュの生成を16回繰り返す
+    for (var i = 0;i <= geos.length - 1;i ++) {
+      const geo = geos[i];
+      for (var j = 0;j <= 15;j ++) {
+        const mesh = new THREE.Mesh(geo, this.shapeMat);
+        const angle = i == 1 ? this.theta * (j - 0.5) : this.theta * j
+        mesh.rotation.z = THREE.MathUtils.degToRad(angle);
+        this.shapes.add(mesh);
+      }
+    }
 
     this.group.add(this.shapes);
   }

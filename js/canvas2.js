@@ -11,7 +11,7 @@ import MaruNiChigaiTakanoha from './kamon2/maru-ni-chigai-takanoha2.js';
 import DakiMyouga from './kamon2/daki-myouga2.js';
 import MaruNiUmebachi from './kamon2/maru-ni-umebachi2.js';
 import MaruNiFutatsuKarigane from './kamon2/maru-ni-futatsu-karigane2.js';
-import JuurokuyouYaegiku from './kamon2/juurokuyou-yaegiku.js';
+import JuurokuyouYaeOmoteKiku from './kamon2/juurokuyou-yae-omote-kiku.js';
 
 export default class Canvas {
 
@@ -102,16 +102,16 @@ export default class Canvas {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      // new HidariFutatsuDomoe(),
-      // new Kikyou(),
-      // new GenjiGuruma(),
-      // new MaruNiChigaiTakanoha(),
-      // new DakiMyouga(),
-      // new MaruNiUmebachi(),
-      // new MaruNiFutatsuKarigane(),
-      new JuurokuyouYaegiku(),
+      new HidariFutatsuDomoe(),
+      new Kikyou(),
+      new GenjiGuruma(),
+      new MaruNiChigaiTakanoha(),
+      new DakiMyouga(),
+      new MaruNiUmebachi(),
+      new MaruNiFutatsuKarigane(),
+      new JuurokuyouYaeOmoteKiku(),
     ];
-    const maxNum = 7;
+    const maxNum = 10;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
     this.kamons = this.lottery(kamonList, kamonNum);
     this.kamons.forEach((kamon) => kamon.init());
