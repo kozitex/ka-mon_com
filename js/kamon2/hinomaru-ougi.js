@@ -70,9 +70,148 @@ export default class HinomaruOugi extends Kamon {
       // {a: 0, b:   528, r:  515}, // 扇面の日の丸
     ];
 
-    // const circle6 = {a: 0, b: 0, r: 38};
+    // 中骨の直線の式
+    this.forms = [];
+    for (var i = 0;i <= 4;i ++) {
+      const fromAngle = - 30 * (i + 1);
+      const group = [];
+      for (var j = 0;j <= 2;j ++) {
+        var circle;
+        if (j == 0) {
+          circle = this.circles[0];
+        } else {
+          const theta = THREE.MathUtils.degToRad(fromAngle + 270);
+          const sign = (3 - j * 2);
+          const a = 36 * Math.cos(theta) * sign;
+          const b = 36 * Math.sin(theta) * sign;
+          circle = {a: a, b: b, r: this.circles[0].r};
+        }
+        const lineFrom = this.circumPoint(circle, fromAngle);
+        const lineTo   = this.circumPoint(circle, fromAngle + 180);
+        const form = this.from2Points(lineFrom, lineTo);
+        group.push(form);
+      }
+      this.forms.push(group);
+    }
 
-    // 放射線
+    // 
+    // this.lineFroms = [];
+    // for (var i = 0;i <= 4;i ++) {
+    //   const center = this.circumPoint(this.circles[1], 210 + (30 * i));
+    //   const circle = {a: center.x, b: center.y, r: 38};
+    //   const angles = [120 + 30 * i, 300 + 30 * i];
+    //   for (var j = 0;j <= 1;j ++) {
+    //     const angle = angles[j];
+    //     this.lineFroms.push(this.circumPoint(circle, angle))
+    //   }
+    // }
+    // console.log(this.lineFroms);
+
+    // this.lineFroms = [];
+    // for (var i = 0;i <= 2;i ++) {
+    //   for (var j = 0;j <= 4;j ++) {
+    //     const center = this.circumPoint(this.circles[1], 210 + (30 * j));
+    //     const circle = {a: center.x, b: center.y, r: 38 + (i - 1) * 4};
+    //     const angles = [120 + 30 * j, 300 + 30 * j];
+    //     for (var k = 0;k <= 1;k ++) {
+    //       const angle = angles[k];
+    //       this.lineFroms.push(this.circumPoint(circle, angle))
+    //     }
+    //   }
+    // }
+    // console.log(this.lineFroms);
+
+    // this.lines = [];
+    // for (var i = 0;i <= 2;i ++) {
+    //   for (var j = 0;j <= 4;j ++) {
+    //     // const center = this.circumPoint(this.circles[1], 210 + (30 * j));
+    //     // const circle = {a: center.x, b: center.y, r: 38 + (i - 1) * 4};
+    //     // const angles = [120 + 30 * j, 300 + 30 * j];
+    //     for (var k = 0;k <= 1;k ++) {
+    //       // const angle = angles[k];
+    //       // this.lineFroms.push(this.circumPoint(circle, angle))
+    //       if 
+    //     }
+    //   }
+    // }
+
+
+
+    // // 交点
+    // this.lines = [
+    //   [
+    //     this.lineFroms[0],
+    //     this.interLineCircle(this.circles[3], this.forms[4][1])[0],
+    //   ],
+    //   [
+    //     this.lineFroms[1],
+    //     this.interLineCircle(this.circles[3], this.forms[4][2])[0],
+    //   ],
+    //   [
+    //     this.lineFroms[2],
+    //     this.getIntersect(this.forms[3][1], this.forms[4][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[3][1], this.forms[4][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[3][1])[0],
+    //   ],
+    //   [
+    //     this.lineFroms[3],
+    //     this.getIntersect(this.forms[3][2], this.forms[4][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[3][2], this.forms[4][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[3][2])[0],
+    //   ],
+    //   [
+    //     this.lineFroms[4],
+    //     this.getIntersect(this.forms[2][1], this.forms[3][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[2][1], this.forms[4][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[2][1])[1],
+    //   ],
+    //   [
+    //     this.lineFroms[5],
+    //     this.getIntersect(this.forms[2][2], this.forms[4][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[2][2], this.forms[3][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[2][2])[1],
+    //   ],
+    //   [
+    //     this.lineFroms[6],
+    //     this.getIntersect(this.forms[1][1], this.forms[2][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[1][1], this.forms[4][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[1][1])[1],
+    //   ],
+    //   [
+    //     this.lineFroms[7],
+    //     this.getIntersect(this.forms[1][2], this.forms[4][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[1][2], this.forms[2][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[1][2])[1],
+    //   ],
+    //   [
+    //     this.lineFroms[8],
+    //     this.getIntersect(this.forms[0][1], this.forms[1][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[0][1], this.forms[4][1]),
+    //     this.interLineCircle(this.circles[3], this.forms[0][1])[1],
+    //   ],
+    //   [
+    //     this.lineFroms[9],
+    //     this.getIntersect(this.forms[0][2], this.forms[4][2]),
+    //   ],
+    //   [
+    //     this.getIntersect(this.forms[0][2], this.forms[1][1]),
+    //     this.interLineCircle(this.circles[2], this.forms[0][2])[1],
+    //   ],
+    // ];
 
 
 
@@ -147,8 +286,8 @@ export default class HinomaruOugi extends Kamon {
     var kouten = [];
     if (D >= 0) {
       if (form.b == 0) {
-        var x1 = 0;
-        var x2 = 0;
+        var x1 = n;
+        var x2 = n;
       } else {
         var x1 = (- b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
         var x2 = (- b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
@@ -157,8 +296,8 @@ export default class HinomaruOugi extends Kamon {
         kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
       } else {
         if (form.b == 0) {
-          kouten.push(new THREE.Vector3(x1, - r, 0));
-          kouten.push(new THREE.Vector3(x2, r, 0));
+          kouten.push(new THREE.Vector3(n, - r + k, 0));
+          kouten.push(new THREE.Vector3(n, r + k, 0));
         } else {
           kouten.push(new THREE.Vector3(x1, m * x1 + n, 0));
           kouten.push(new THREE.Vector3(x2, m * x2 + n, 0));
@@ -168,130 +307,118 @@ export default class HinomaruOugi extends Kamon {
     return kouten;
   }
 
+  // ２直線の交点を求める式（form1,2: 直線の式）
+  getIntersect(form1, form2) {
+    // const form1 = this.from2Points(va1[0], va1[1]);
+    // const form2 = this.from2Points(va2[0], va2[1]);
+    const a1 = form1.a;
+    const b1 = form1.b;
+    const c1 = form1.c;
+    const a2 = form2.a;
+    const b2 = form2.b;
+    const c2 = form2.c;
+    var x, y;
+    if (b1 == 0) {
+      x = c1;
+      y = (a2 * c1 + c2) / b2;
+    } else if (b2 == 0) {
+      x = c2;
+      y = (a1 * c2 + c1) / b1;
+    } else {
+      x = (c2 - c1) / (a1 - a2);
+      y = ((a1 * c2) - (a2 * c1)) / (a1 - a2);
+    }
+    return new THREE.Vector3(x, y, 0);
+  }
+
   // ガイドラインを作成
   generateGuideline = () => {
 
-    // 中骨の補助円
-    const circles1 = [this.circles[0], this.circles[1]];
+    // 中骨の補助円１
+    const circles1 = [this.circles[0]];
     circles1.forEach((circle) => {
       const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const mesh = this.sublineGen(points);
+      mesh.geometry.translate(0, - 832, 0);
       this.guidelines.add(mesh);
     })
 
-    // 中骨の補助円
-    const circles2 = [this.circles[2], this.circles[3]];
+    // 天の円
+    const circles2 = [this.circles[3]];
     circles2.forEach((circle) => {
       const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
+      mesh.geometry.translate(0, - 832, 0);
       this.guidelines.add(mesh);
     })
 
     // 中骨の補助線
     for (var i = 0;i <= 4;i ++) {
-      const fromAngle = - 30 * (i + 1);
-      const lineFrom = this.circumPoint(this.circles[0], fromAngle);
-      const lineTo   = this.circumPoint(this.circles[0], fromAngle + 180);
-      const form = this.from2Points(lineFrom, lineTo);
+      const form = this.forms[i][0];
       const inter = this.interLineCircle(this.circles[3], form);
-      console.log(form, inter)
-      const line = this.lineLocusGen(inter[0], inter[1], 0, this.divCount);
-    // for (var i = 0;i <= 4;i ++) {
+      const pointFrom = inter[i <= 2 ? 0 : 1];
+      const pointTo = inter[i <= 2 ? 1 : 0];
+      const line = this.lineLocusGen(pointFrom, pointTo, 0, this.divCount);
       const mesh = this.sublineGen(line);
-      // mesh.rotation.z = THREE.MathUtils.degToRad(- 30 * i);
+      mesh.geometry.translate(0, - 832, 0);
       this.guidelines.add(mesh);
     }
 
     // 中骨
     for (var i = 0;i <= 4;i ++) {
       const group = new THREE.Group();
-      for (var j = 0;j <= 1;j ++) {
-        const fromAngle = - 30 * (i + 1);
-
-        const theta = THREE.MathUtils.degToRad(fromAngle + 270);
-        // const sign = (1 - j * 2);
-        const a = 36 * Math.cos(theta) * 1;
-        const b = 36 * Math.sin(theta) * 1;
-        const circle = {a: a, b: b, r: this.circles[0].r};
-        // const lineFrom = this.circumPoint(circle, - 30);
-        // const lineTo   = this.circumPoint(circle,  150);
-        // const line = this.lineLocusGen(lineFrom, lineTo, 0, this.divCount);
-
-        const lineFrom = this.circumPoint(circle, fromAngle);
-        const lineTo   = this.circumPoint(circle, fromAngle + 180);
-        const form = this.from2Points(lineFrom, lineTo);
+      for (var j = 1;j <= 2;j ++) {
+        const form = this.forms[i][j];
         const inter = this.interLineCircle(this.circles[3], form);
-        const line = this.lineLocusGen(inter[0], inter[1], 0, this.divCount);
-  
+        const pointFrom = inter[i <= 2 ? 0 : 1];
+        const pointTo = inter[i <= 2 ? 1 : 0];
+        const line = this.lineLocusGen(pointFrom, pointTo, 0, this.divCount);
         const mesh = this.guidelineGen(line);
-        // mesh.rotation.z = THREE.MathUtils.degToRad(- 30 * i);
+        mesh.geometry.translate(0, - 832, 0);
         group.add(mesh);
       }
       this.guidelines.add(group);
     }
 
-    // 要の先端
+    // 地の円
+    const circles3 = [this.circles[2]];
+    circles3.forEach((circle) => {
+      const points = this.circleLocusGen(circle, [90, 450], this.divCount);
+      const mesh = this.guidelineGen(points);
+      mesh.geometry.translate(0, - 832, 0);
+      this.guidelines.add(mesh);
+    })
+
+    // 中骨の補助円２
     const circles4 = [this.circles[1]];
     circles4.forEach((circle) => {
+      const points = this.circleLocusGen(circle, [90, 450], this.divCount);
+      const mesh = this.sublineGen(points);
+      mesh.geometry.translate(0, - 832, 0);
+      this.guidelines.add(mesh);
+    })
+
+    // 要の先端
+    const circles5 = [this.circles[1]];
+    circles5.forEach((circle) => {
       for (var i = 0;i <= 4;i ++) {
         const center = this.circumPoint(circle, 210 + (30 * i));
         const dCircle = {a: center.x, b: center.y, r: 38};
         const points = this.circleLocusGen(dCircle, [90, 450], this.divCount);
         const mesh = this.guidelineGen(points);
+        mesh.geometry.translate(0, - 832, 0);
         this.guidelines.add(mesh);
       }
     })
 
-    const circles3 = [this.circles[4], this.circles[5]];
-    circles3.forEach((circle) => {
+    // 要と日の丸
+    const circles6 = [this.circles[4], this.circles[5]];
+    circles6.forEach((circle) => {
       const points = this.circleLocusGen(circle, [90, 450], this.divCount);
       const mesh = this.guidelineGen(points);
+      mesh.geometry.translate(0, - 832, 0);
       this.guidelines.add(mesh);
     })
-
-
-
-    // this.guidelines.position.y = - 832;
-
-
-    // // 中心円１
-    // [this.center1].forEach((circle) => {
-    //   const points = this.circleLocusGen(circle, [90, 450], this.divCount);
-    //   const mesh = this.sublineGen(points);
-    //   this.guidelines.add(mesh);
-    // })
-
-    // const pointArr = [];
-
-    // // 放射線
-    // const line = this.lineLocusGen(this.rad1[0], this.rad1[1], 0, this.divCount)
-    // pointArr.push(line);
-
-    // // 外周円
-    // for (var i = 0;i <= 1;i ++) {
-    //   const outer = this.circleLocusGen(this.outer1, [90, 450], this.divCount)
-    //   pointArr.push(outer);
-    // }
-
-    // // メッシュの生成を16回繰り返す
-    // for (var i = 0;i <= pointArr.length - 1;i ++) {
-    //   const group = new THREE.Group();
-    //   const points = pointArr[i];
-    //   for (var j = 0;j <= 15;j ++) {
-    //     const mesh = i == 2 ? this.sublineGen(points) : this.guidelineGen(points);
-    //     const angle = i == 2 ? this.theta * (j - 0.5) : this.theta * j
-    //     mesh.rotation.z = THREE.MathUtils.degToRad(angle);
-    //     group.add(mesh);
-    //   }
-    //   this.guidelines.add(group);
-    // }
-
-    // // 中心円２
-    // [this.center2].forEach((circle) => {
-    //   const points = this.circleLocusGen(circle, [90, 450], this.divCount);
-    //   const mesh = this.guidelineGen(points);
-    //   this.guidelines.add(mesh);
-    // })
 
     this.group.add(this.guidelines);
   }
@@ -299,39 +426,151 @@ export default class HinomaruOugi extends Kamon {
   // アウトラインを作成
   generateOutline = () => {
 
-    // // 中心円
-    // const geo = this.curveOutlineGeoGen(this.center2, [0, 360], false);
-    // const mesh = new THREE.Mesh(geo, this.outlineMat);
-    // this.outlines.add(mesh);
+    // 天の孤の角度
+    const inter1 = this.interLineCircle(this.circles[3], this.forms[0][1]);
+    const inter2 = this.interLineCircle(this.circles[3], this.forms[4][2]);
+    const arcFrom1 = this.circumAngle(this.circles[3], inter1[1]);
+    const arcTo1   = this.circumAngle(this.circles[3], inter2[0]);
 
-    // const geos = [];
+    // 地の孤の角度
+    const inter3 = this.interLineCircle(this.circles[2], this.forms[0][1]);
+    const inter4 = this.interLineCircle(this.circles[2], this.forms[4][1]);
+    const arcFrom2 = this.circumAngle(this.circles[2], inter3[1]);
+    const arcTo2   = this.circumAngle(this.circles[2], inter4[0]);
 
-    // // 放射線
-    // const line = this.outlineGeoGen(this.rad2[0], this.rad2[1])
-    // geos.push(line);
+    // 円と孤
+    const circles = [this.circles[2], this.circles[3], this.circles[4], this.circles[5]];
+    const angles = [[arcFrom2, arcTo2], [arcFrom1, arcTo1], [0, 360], [0, 360]];
+    const clockwises = [true, true, false, false];
+    for (var i = 0;i <= circles.length - 1;i ++) {
+      const circle = circles[i];
+      const angle = angles[i];
+      const clockwise = clockwises[i];
+      const geo = this.curveOutlineGeoGen(circle, angle, clockwise);
+      const mesh = new THREE.Mesh(geo, this.outlineMat);
+      mesh.geometry.translate(0, - 832, 0);
+      this.outlines.add(mesh);
+    }
 
-    // // 外周円の弧
-    // const arc1 = this.curveOutlineGeoGen(this.outer1, this.outerAngle1, false);
-    // const arc2 = this.curveOutlineGeoGen(this.outer1, this.outerAngle2, false);
-    // geos.push(arc1)
-    // geos.push(arc2)
+    // 中骨と要の先端
+    const termini = [
+      [
+        this.interLineCircle(this.circles[3], this.forms[4][1])[0],
+        this.interLineCircle(this.circles[3], this.forms[4][2])[0],
+      ],
+      [
+        [
+          this.getIntersect(this.forms[3][1], this.forms[4][2]),
+          this.getIntersect(this.forms[3][1], this.forms[4][1]),
+          this.interLineCircle(this.circles[2], this.forms[3][1])[0],
+        ],
+        [
+          this.getIntersect(this.forms[3][2], this.forms[4][2]),
+          this.getIntersect(this.forms[3][2], this.forms[4][1]),
+          this.interLineCircle(this.circles[2], this.forms[3][2])[0],
+        ],
+      ],
+      [
+        [
+          this.getIntersect(this.forms[2][1], this.forms[3][2]),
+          this.getIntersect(this.forms[2][1], this.forms[4][1]),
+          this.interLineCircle(this.circles[2], this.forms[2][1])[1],
+        ],
+        [
+          this.getIntersect(this.forms[2][2], this.forms[4][2]),
+          this.getIntersect(this.forms[2][2], this.forms[3][1]),
+          this.interLineCircle(this.circles[2], this.forms[2][2])[1],
+        ],
+      ],
+      [
+        [
+          this.getIntersect(this.forms[1][1], this.forms[2][2]),
+          this.getIntersect(this.forms[1][1], this.forms[4][1]),
+          this.interLineCircle(this.circles[2], this.forms[1][1])[1],
+        ],
+        [
+          this.getIntersect(this.forms[1][2], this.forms[4][2]),
+          this.getIntersect(this.forms[1][2], this.forms[2][1]),
+          this.interLineCircle(this.circles[2], this.forms[1][2])[1],
+        ],
+      ],
+      [
+        [
+          this.getIntersect(this.forms[0][1], this.forms[1][2]),
+          this.getIntersect(this.forms[0][1], this.forms[4][1]),
+          this.interLineCircle(this.circles[3], this.forms[0][1])[1],
+        ],
+        [
+          this.getIntersect(this.forms[0][2], this.forms[4][2]),
+          this.getIntersect(this.forms[0][2], this.forms[1][1]),
+          this.interLineCircle(this.circles[2], this.forms[0][2])[1],
+        ],
+      ],
+    ];
 
-    // // メッシュの生成を16回繰り返す
-    // for (var i = 0;i <= geos.length - 1;i ++) {
-    //   const geo = geos[i];
-    //   for (var j = 0;j <= 15;j ++) {
-    //     const mesh = new THREE.Mesh(geo, this.outlineMat);
-    //     const angle = i == 2 ? this.theta * (j - 0.5) : this.theta * j
-    //     mesh.rotation.z = THREE.MathUtils.degToRad(angle);
-    //     this.outlines.add(mesh);
-    //   }
-    // }
+    for (var i = 0;i <= 4;i ++) {
+      const center = this.circumPoint(this.circles[1], 210 + (30 * i));
+      const circle = {a: center.x, b: center.y, r: 38};
+      const angles = [120 + 30 * i, 300 + 30 * i];
+
+      for (var j = 0;j <= 1;j ++) {
+        const angle = angles[j];
+        if (i == 0) {
+          const pointFrom = this.circumPoint(circle, angle);
+          const geo = this.outlineGeoGen(pointFrom, termini[i][j]);
+          const mesh = new THREE.Mesh(geo, this.outlineMat);
+          mesh.geometry.translate(0, - 832, 0);
+          this.outlines.add(mesh);
+        } else {
+          for (var k = 0;k <= 1;k ++) {
+            const pointFrom = k == 0 ? this.circumPoint(circle, angle) : termini[i][j][1];
+            const pointTo = k == 0 ? termini[i][j][0] : termini[i][j][2];
+            const geo = this.outlineGeoGen(pointFrom, pointTo);
+            const mesh = new THREE.Mesh(geo, this.outlineMat);
+            mesh.geometry.translate(0, - 832, 0);
+            this.outlines.add(mesh);
+          }
+        }
+      }
+
+      const geo = this.curveOutlineGeoGen(circle, angles, false);
+      const mesh = new THREE.Mesh(geo, this.outlineMat);
+      mesh.geometry.translate(0, - 832, 0);
+      this.outlines.add(mesh);
+    }
 
     this.group.add(this.outlines);
   }
 
   // 塗りつぶし図形を生成
   generateShape = () => {
+
+    const w = 4;
+
+    // 扇
+    const c3 = this.circles[3];
+    const topCircle = {a: c3.a, b: c3.b, r: c3.r - w};
+    const theta1 = THREE.MathUtils.radToDeg(Math.asin((36 - w) / (c3.r - w)));
+    const theta2 = THREE.MathUtils.radToDeg(Math.asin((36 + w) / (c3.r - w)));
+    console.log(theta1, theta2)
+    const arcFrom = 150 + theta1;
+    const arcTo   =  30 + theta2;
+    const topCurve = this.curvePointGen(topCircle, [arcFrom, arcTo], true);
+
+    const c2 = this.circles[2];
+    const botCircle = {a: c2.a, b: c2.b, r: c2.r + w};
+    // const theta3 = THREE.MathUtils.radToDeg(Math.asin((36 - w) / (c3.r - w)));
+    // const theta4 = THREE.MathUtils.radToDeg(Math.asin((36 + w) / (c3.r - w)));
+    // const botFrom = 150 + theta1;
+    // const botTo   =  30 + theta2;
+    const botCurve = this.curvePointGen(botCircle, [arcTo, arcFrom], false);
+    const points = topCurve.concat(botCurve);
+    // const shape = this.curvePointGen(param, [0, 360], true);
+    const geo = this.shapeGeoGen(points);
+    const mesh = new THREE.Mesh(geo, this.shapeMat);
+    mesh.geometry.translate(0, - 832, 0);
+    this.shapes.add(mesh);
+
 
     // const w = 4;
 
@@ -406,7 +645,7 @@ export default class HinomaruOugi extends Kamon {
     const scaleOutRatio = THREE.MathUtils.smoothstep(progRatio, param.scaleOut[0], param.scaleOut[1]);
 
     // 描画アニメーションの進捗
-    const drawDelayFactor = 0.04;
+    const drawDelayFactor = 0.03;
     const maxDrawDelay = drawDelayFactor * this.guidelines.children.length;
     const drawRatio = drawInRatio - drawOutRatio;
 
