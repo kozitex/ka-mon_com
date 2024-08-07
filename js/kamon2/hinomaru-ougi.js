@@ -11,9 +11,9 @@ export default class HinomaruOugi extends Kamon {
 
     // infoのテキスト
     this.jpNameText = '日の丸扇';
-    this.jpDescText = '菊花紋はキク科キク属の植物であるキクを図案化した菊紋のうち、特に花の部分を中心に図案化した家紋のことを指します。中でも十六葉八重表菊は皇室の紋章としても知られ、日本の事実上の国章としても使われています。';
+    this.jpDescText = '扇紋は扇を図案化した家紋です。扇はあおいで風を起こすという主要な用途の他に、芸能などにおける小道具や呪具、遊び道具など多様な用途で親しまれています。';
     this.enNameText = 'Hinomaru-ougi';
-    this.enDescText = 'A chrysanthemum crest is a family crest that is a pattern of a chrysanthemum, a plant belonging to the Asteraceae family, Asteraceae, with a focus on the flower part. Among them, the 16-leaf double chrysanthemum is also known as the emblem of the imperial family, and is also used as the de facto national emblem of Japan.';
+    this.enDescText = 'The fan crest is a family crest that depicts a fan. In addition to its main use of fanning to create wind, fans are also used for a variety of other purposes, including as props for performing arts, magical tools, and playthings.';
 
     // ガイドラインの表示アニメーションパラメータ
     this.guidelineParams = {
@@ -52,7 +52,7 @@ export default class HinomaruOugi extends Kamon {
 
 
 
-
+    const w = 4;
 
     // 円
     this.circles = [
@@ -62,197 +62,63 @@ export default class HinomaruOugi extends Kamon {
       {a: 0, b:   192, r: 1760}, // 扇の天
       {a: 0, b:     0, r:   30}, // 要
       {a: 0, b:  1360, r:  515}, // 扇面の日の丸
-      // {a: 0, b: - 832, r: 1600}, // 放射線用の補助円
-      // {a: 0, b: - 832, r:  240}, // 中央の補助円
-      // {a: 0, b: - 960, r:  900}, // 扇の地
-      // {a: 0, b: - 640, r: 1760}, // 扇の天
-      // {a: 0, b: - 832, r:   30}, // 要
-      // {a: 0, b:   528, r:  515}, // 扇面の日の丸
     ];
 
     // 中骨の直線の式
     this.forms = [];
-    for (var i = 0;i <= 4;i ++) {
-      const fromAngle = - 30 * (i + 1);
-      const group = [];
-      for (var j = 0;j <= 2;j ++) {
-        var circle;
-        if (j == 0) {
-          circle = this.circles[0];
-        } else {
-          const theta = THREE.MathUtils.degToRad(fromAngle + 270);
-          const sign = (3 - j * 2);
-          const a = 36 * Math.cos(theta) * sign;
-          const b = 36 * Math.sin(theta) * sign;
-          circle = {a: a, b: b, r: this.circles[0].r};
+    for (var i = 0;i <= 2;i ++) {
+      const group1 = [];
+      for (var j = 0;j <= 4;j ++) {
+        const fromAngle = - 30 * (j + 1);
+        const group2 = [];
+        for (var k = 0;k <= 2;k ++) {
+          var circle;
+          if (k == 0) {
+            circle = this.circles[0];
+          } else {
+            const theta = THREE.MathUtils.degToRad(fromAngle + 270);
+            const hypo = 36 + w * (i - 1);
+            const sign = (3 - k * 2);
+            const a = hypo * Math.cos(theta) * sign;
+            const b = hypo * Math.sin(theta) * sign;
+            circle = {a: a, b: b, r: this.circles[0].r};
+          }
+          const lineFrom = this.circumPoint(circle, fromAngle);
+          const lineTo   = this.circumPoint(circle, fromAngle + 180);
+          const form = this.from2Points(lineFrom, lineTo);
+          group2.push(form);
         }
-        const lineFrom = this.circumPoint(circle, fromAngle);
-        const lineTo   = this.circumPoint(circle, fromAngle + 180);
-        const form = this.from2Points(lineFrom, lineTo);
-        group.push(form);
+        group1.push(group2);
       }
-      this.forms.push(group);
+      this.forms.push(group1);
     }
 
-    // 
-    // this.lineFroms = [];
-    // for (var i = 0;i <= 4;i ++) {
-    //   const center = this.circumPoint(this.circles[1], 210 + (30 * i));
-    //   const circle = {a: center.x, b: center.y, r: 38};
-    //   const angles = [120 + 30 * i, 300 + 30 * i];
-    //   for (var j = 0;j <= 1;j ++) {
-    //     const angle = angles[j];
-    //     this.lineFroms.push(this.circumPoint(circle, angle))
-    //   }
-    // }
-    // console.log(this.lineFroms);
-
-    // this.lineFroms = [];
-    // for (var i = 0;i <= 2;i ++) {
-    //   for (var j = 0;j <= 4;j ++) {
-    //     const center = this.circumPoint(this.circles[1], 210 + (30 * j));
-    //     const circle = {a: center.x, b: center.y, r: 38 + (i - 1) * 4};
-    //     const angles = [120 + 30 * j, 300 + 30 * j];
-    //     for (var k = 0;k <= 1;k ++) {
-    //       const angle = angles[k];
-    //       this.lineFroms.push(this.circumPoint(circle, angle))
-    //     }
-    //   }
-    // }
-    // console.log(this.lineFroms);
-
-    // this.lines = [];
-    // for (var i = 0;i <= 2;i ++) {
-    //   for (var j = 0;j <= 4;j ++) {
-    //     // const center = this.circumPoint(this.circles[1], 210 + (30 * j));
-    //     // const circle = {a: center.x, b: center.y, r: 38 + (i - 1) * 4};
-    //     // const angles = [120 + 30 * j, 300 + 30 * j];
-    //     for (var k = 0;k <= 1;k ++) {
-    //       // const angle = angles[k];
-    //       // this.lineFroms.push(this.circumPoint(circle, angle))
-    //       if 
-    //     }
-    //   }
-    // }
-
-
-
-    // // 交点
-    // this.lines = [
-    //   [
-    //     this.lineFroms[0],
-    //     this.interLineCircle(this.circles[3], this.forms[4][1])[0],
-    //   ],
-    //   [
-    //     this.lineFroms[1],
-    //     this.interLineCircle(this.circles[3], this.forms[4][2])[0],
-    //   ],
-    //   [
-    //     this.lineFroms[2],
-    //     this.getIntersect(this.forms[3][1], this.forms[4][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[3][1], this.forms[4][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[3][1])[0],
-    //   ],
-    //   [
-    //     this.lineFroms[3],
-    //     this.getIntersect(this.forms[3][2], this.forms[4][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[3][2], this.forms[4][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[3][2])[0],
-    //   ],
-    //   [
-    //     this.lineFroms[4],
-    //     this.getIntersect(this.forms[2][1], this.forms[3][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[2][1], this.forms[4][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[2][1])[1],
-    //   ],
-    //   [
-    //     this.lineFroms[5],
-    //     this.getIntersect(this.forms[2][2], this.forms[4][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[2][2], this.forms[3][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[2][2])[1],
-    //   ],
-    //   [
-    //     this.lineFroms[6],
-    //     this.getIntersect(this.forms[1][1], this.forms[2][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[1][1], this.forms[4][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[1][1])[1],
-    //   ],
-    //   [
-    //     this.lineFroms[7],
-    //     this.getIntersect(this.forms[1][2], this.forms[4][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[1][2], this.forms[2][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[1][2])[1],
-    //   ],
-    //   [
-    //     this.lineFroms[8],
-    //     this.getIntersect(this.forms[0][1], this.forms[1][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[0][1], this.forms[4][1]),
-    //     this.interLineCircle(this.circles[3], this.forms[0][1])[1],
-    //   ],
-    //   [
-    //     this.lineFroms[9],
-    //     this.getIntersect(this.forms[0][2], this.forms[4][2]),
-    //   ],
-    //   [
-    //     this.getIntersect(this.forms[0][2], this.forms[1][1]),
-    //     this.interLineCircle(this.circles[2], this.forms[0][2])[1],
-    //   ],
-    // ];
-
-
-
-
-
-
-    // 中心円
-    this.center1 = {a: 0, b: 0, r: 1600};
-    this.center2 = {a: 0, b: 0, r: 200};
-
-    this.theta = 360 / 16;
-
-    // 外周円１
-    const thetaR = THREE.MathUtils.degToRad(this.theta / 2);
-    const r = (1600 * Math.sin(thetaR)) / (1 + Math.sin(thetaR));
-    this.outer1 = {a: 0, b: 1600 - r, r: r}
-    this.outerAngle1 = [- this.theta / 2, 180 + this.theta / 2];
-
-    // 放射線
-    const c = r / Math.tan(thetaR);
-    this.rad1 = [
-      this.circumPoint(this.center1, 90 - this.theta / 2),
-      new THREE.Vector3(0, 0, 0),
+    // 天の孤の角度
+    const topInter1 = this.interLineCircle(this.circles[3], this.forms[1][0][1]);
+    const topInter2 = this.interLineCircle(this.circles[3], this.forms[1][4][2]);
+    const topInter3 = this.interLineCircle(this.circles[3], this.forms[1][4][1]);
+    this.topArc1 = [
+      this.circumAngle(this.circles[3], topInter1[1]),
+      this.circumAngle(this.circles[3], topInter2[0]),
     ];
-    this.rad2 = [
-      new THREE.Vector3(c * Math.sin(thetaR), c * Math.cos(thetaR), 0),
-      this.circumPoint(this.center2, 90 - this.theta / 2),
+    this.topArc2 = [
+      this.circumAngle(this.circles[3], topInter1[1]),
+      this.circumAngle(this.circles[3], topInter3[0]),
+    ];
+    this.topArc3 = [
+      this.circumAngle(this.circles[3], topInter2[0]),
+      this.circumAngle(this.circles[3], topInter3[0]),
     ];
 
-    // 外周円２
-    const point1 = this.circumPoint(this.center1, 90 - (this.theta / 4));
-    const point2 = new THREE.Vector3(0, 0, 0);
-    const form = this.from2Points(point1, point2);
-    const inter = this.interLineCircle(this.outer1, form);
-    const angle = this.circumAngle(this.outer1, inter[0]);
-    this.outerAngle2 = [angle, 180 - angle];
-
-    this.center3 = {a: 0, b: 0, r: 1600 - r}
-    const v1 = this.circumPoint(this.center3, 90 + this.theta / 2);
-    this.outer3 = {a:   v1.x, b: v1.y, r: r + 4}
-    this.outer4 = {a: - v1.x, b: v1.y, r: r + 4}
+    // 地の孤の角度
+    const botInter = [
+      this.interLineCircle(this.circles[2], this.forms[1][0][1]),
+      this.interLineCircle(this.circles[2], this.forms[1][4][1]),
+    ];
+    this.botArc = [
+      this.circumAngle(this.circles[2], botInter[0][1]),
+      this.circumAngle(this.circles[2], botInter[1][0]),
+    ];
 
   }
 
@@ -309,8 +175,6 @@ export default class HinomaruOugi extends Kamon {
 
   // ２直線の交点を求める式（form1,2: 直線の式）
   getIntersect(form1, form2) {
-    // const form1 = this.from2Points(va1[0], va1[1]);
-    // const form2 = this.from2Points(va2[0], va2[1]);
     const a1 = form1.a;
     const b1 = form1.b;
     const c1 = form1.c;
@@ -354,7 +218,7 @@ export default class HinomaruOugi extends Kamon {
 
     // 中骨の補助線
     for (var i = 0;i <= 4;i ++) {
-      const form = this.forms[i][0];
+      const form = this.forms[1][i][0];
       const inter = this.interLineCircle(this.circles[3], form);
       const pointFrom = inter[i <= 2 ? 0 : 1];
       const pointTo = inter[i <= 2 ? 1 : 0];
@@ -368,7 +232,7 @@ export default class HinomaruOugi extends Kamon {
     for (var i = 0;i <= 4;i ++) {
       const group = new THREE.Group();
       for (var j = 1;j <= 2;j ++) {
-        const form = this.forms[i][j];
+        const form = this.forms[1][i][j];
         const inter = this.interLineCircle(this.circles[3], form);
         const pointFrom = inter[i <= 2 ? 0 : 1];
         const pointTo = inter[i <= 2 ? 1 : 0];
@@ -426,21 +290,9 @@ export default class HinomaruOugi extends Kamon {
   // アウトラインを作成
   generateOutline = () => {
 
-    // 天の孤の角度
-    const inter1 = this.interLineCircle(this.circles[3], this.forms[0][1]);
-    const inter2 = this.interLineCircle(this.circles[3], this.forms[4][2]);
-    const arcFrom1 = this.circumAngle(this.circles[3], inter1[1]);
-    const arcTo1   = this.circumAngle(this.circles[3], inter2[0]);
-
-    // 地の孤の角度
-    const inter3 = this.interLineCircle(this.circles[2], this.forms[0][1]);
-    const inter4 = this.interLineCircle(this.circles[2], this.forms[4][1]);
-    const arcFrom2 = this.circumAngle(this.circles[2], inter3[1]);
-    const arcTo2   = this.circumAngle(this.circles[2], inter4[0]);
-
-    // 円と孤
+    // 扇
     const circles = [this.circles[2], this.circles[3], this.circles[4], this.circles[5]];
-    const angles = [[arcFrom2, arcTo2], [arcFrom1, arcTo1], [0, 360], [0, 360]];
+    const angles = [this.botArc, this.topArc1, [0, 360], [0, 360]];
     const clockwises = [true, true, false, false];
     for (var i = 0;i <= circles.length - 1;i ++) {
       const circle = circles[i];
@@ -452,79 +304,49 @@ export default class HinomaruOugi extends Kamon {
       this.outlines.add(mesh);
     }
 
-    // 中骨と要の先端
-    const termini = [
-      [
-        this.interLineCircle(this.circles[3], this.forms[4][1])[0],
-        this.interLineCircle(this.circles[3], this.forms[4][2])[0],
-      ],
-      [
-        [
-          this.getIntersect(this.forms[3][1], this.forms[4][2]),
-          this.getIntersect(this.forms[3][1], this.forms[4][1]),
-          this.interLineCircle(this.circles[2], this.forms[3][1])[0],
-        ],
-        [
-          this.getIntersect(this.forms[3][2], this.forms[4][2]),
-          this.getIntersect(this.forms[3][2], this.forms[4][1]),
-          this.interLineCircle(this.circles[2], this.forms[3][2])[0],
-        ],
-      ],
-      [
-        [
-          this.getIntersect(this.forms[2][1], this.forms[3][2]),
-          this.getIntersect(this.forms[2][1], this.forms[4][1]),
-          this.interLineCircle(this.circles[2], this.forms[2][1])[1],
-        ],
-        [
-          this.getIntersect(this.forms[2][2], this.forms[4][2]),
-          this.getIntersect(this.forms[2][2], this.forms[3][1]),
-          this.interLineCircle(this.circles[2], this.forms[2][2])[1],
-        ],
-      ],
-      [
-        [
-          this.getIntersect(this.forms[1][1], this.forms[2][2]),
-          this.getIntersect(this.forms[1][1], this.forms[4][1]),
-          this.interLineCircle(this.circles[2], this.forms[1][1])[1],
-        ],
-        [
-          this.getIntersect(this.forms[1][2], this.forms[4][2]),
-          this.getIntersect(this.forms[1][2], this.forms[2][1]),
-          this.interLineCircle(this.circles[2], this.forms[1][2])[1],
-        ],
-      ],
-      [
-        [
-          this.getIntersect(this.forms[0][1], this.forms[1][2]),
-          this.getIntersect(this.forms[0][1], this.forms[4][1]),
-          this.interLineCircle(this.circles[3], this.forms[0][1])[1],
-        ],
-        [
-          this.getIntersect(this.forms[0][2], this.forms[4][2]),
-          this.getIntersect(this.forms[0][2], this.forms[1][1]),
-          this.interLineCircle(this.circles[2], this.forms[0][2])[1],
-        ],
-      ],
-    ];
-
+    // 中骨
     for (var i = 0;i <= 4;i ++) {
+
+      // 半円
       const center = this.circumPoint(this.circles[1], 210 + (30 * i));
       const circle = {a: center.x, b: center.y, r: 38};
       const angles = [120 + 30 * i, 300 + 30 * i];
+      const geo = this.curveOutlineGeoGen(circle, angles, false);
+      const mesh = new THREE.Mesh(geo, this.outlineMat);
+      mesh.geometry.translate(0, - 832, 0);
+      this.outlines.add(mesh);
 
-      for (var j = 0;j <= 1;j ++) {
-        const angle = angles[j];
-        if (i == 0) {
+      // 直線
+      if (i == 0) {
+        for (var j = 0;j <= 1;j ++) {
+          const angle = angles[j];
           const pointFrom = this.circumPoint(circle, angle);
-          const geo = this.outlineGeoGen(pointFrom, termini[i][j]);
+          const pointTo = this.interLineCircle(
+            this.circles[3], 
+            this.forms[1][4][j + 1])[0];
+          const geo = this.outlineGeoGen(pointFrom, pointTo);
           const mesh = new THREE.Mesh(geo, this.outlineMat);
           mesh.geometry.translate(0, - 832, 0);
           this.outlines.add(mesh);
-        } else {
+        }
+      } else {
+        for (var j = 0;j <= 1;j ++) {
+          const angle = angles[j];
           for (var k = 0;k <= 1;k ++) {
-            const pointFrom = k == 0 ? this.circumPoint(circle, angle) : termini[i][j][1];
-            const pointTo = k == 0 ? termini[i][j][0] : termini[i][j][2];
+            var pointFrom, pointTo;
+            if (k == 0) {
+              pointFrom = this.circumPoint(circle, angle);
+              pointTo = this.getIntersect(
+                this.forms[1][4 - i][j + 1],
+                this.forms[1][j == 0 ? 5 - i : 4][2]);
+            } else {
+              pointFrom = this.getIntersect(
+                this.forms[1][4 - i][j + 1],
+                this.forms[1][j == 0 ? 4 : 5 - i][1]);
+              pointTo = this.interLineCircle(
+                this.circles[i == 4 && j == 0 ? 3 : 2],
+                this.forms[1][4 - i][j + 1])[i == 1 ? 0 : 1];
+            }
             const geo = this.outlineGeoGen(pointFrom, pointTo);
             const mesh = new THREE.Mesh(geo, this.outlineMat);
             mesh.geometry.translate(0, - 832, 0);
@@ -532,11 +354,6 @@ export default class HinomaruOugi extends Kamon {
           }
         }
       }
-
-      const geo = this.curveOutlineGeoGen(circle, angles, false);
-      const mesh = new THREE.Mesh(geo, this.outlineMat);
-      mesh.geometry.translate(0, - 832, 0);
-      this.outlines.add(mesh);
     }
 
     this.group.add(this.outlines);
@@ -550,84 +367,84 @@ export default class HinomaruOugi extends Kamon {
     // 扇
     const c3 = this.circles[3];
     const topCircle = {a: c3.a, b: c3.b, r: c3.r - w};
-    const theta1 = THREE.MathUtils.radToDeg(Math.asin((36 - w) / (c3.r - w)));
-    const theta2 = THREE.MathUtils.radToDeg(Math.asin((36 + w) / (c3.r - w)));
-    console.log(theta1, theta2)
-    const arcFrom = 150 + theta1;
-    const arcTo   =  30 + theta2;
-    const topCurve = this.curvePointGen(topCircle, [arcFrom, arcTo], true);
+    const topTheta = THREE.MathUtils.radToDeg(Math.asin(4 / (c3.r - w)));
+    const topAngles = [
+      this.topArc2[0] - topTheta,
+      this.topArc2[1] + topTheta,
+    ];
+    const topCurve = this.curvePointGen(topCircle, topAngles, true);
 
     const c2 = this.circles[2];
     const botCircle = {a: c2.a, b: c2.b, r: c2.r + w};
-    // const theta3 = THREE.MathUtils.radToDeg(Math.asin((36 - w) / (c3.r - w)));
-    // const theta4 = THREE.MathUtils.radToDeg(Math.asin((36 + w) / (c3.r - w)));
-    // const botFrom = 150 + theta1;
-    // const botTo   =  30 + theta2;
-    const botCurve = this.curvePointGen(botCircle, [arcTo, arcFrom], false);
-    const points = topCurve.concat(botCurve);
-    // const shape = this.curvePointGen(param, [0, 360], true);
-    const geo = this.shapeGeoGen(points);
+    const botTheta = THREE.MathUtils.radToDeg(Math.asin(4 / (c2.r - w)));
+    const botAngles = [
+      this.botArc[1] + botTheta,
+      this.botArc[0] - botTheta,
+    ];
+    const botCurve = this.curvePointGen(botCircle, botAngles, false);
+
+    const shapes = topCurve.concat(botCurve);
+    const c5 = this.circles[5];
+    const sunCircle = {a: c5.a, b: c5.b, r: c5.r - w};
+    const pathes = this.curvePointGen(sunCircle, [0, 360], true);
+    const geo = this.shapeGeoGen(shapes, pathes);
     const mesh = new THREE.Mesh(geo, this.shapeMat);
     mesh.geometry.translate(0, - 832, 0);
     this.shapes.add(mesh);
 
+    // 中骨
+    for (var i = 0;i <= 4;i ++) {
+      const center = this.circumPoint(this.circles[1], 210 + (30 * i));
+      const circle = {a: center.x, b: center.y, r: 38 - w};
+      const angle = [120 + 30 * i, 300 + 30 * i];
 
-    // const w = 4;
-
-    // // 中心円
-    // [this.center2].forEach((circle) => {
-    //   const param = {a: circle.a, b: circle.b, r: circle.r - w};
-    //   const shape = this.curvePointGen(param, [0, 360], true);
-    //   const geo = this.shapeGeoGen(shape);
-    //   const mesh = new THREE.Mesh(geo, this.shapeMat);
-    //   this.shapes.add(mesh);
-    // });
-
-    // const geos = [];
-
-    // // 手前の花弁
-    // const outer2 = {a: this.outer1.a, b: this.outer1.b, r: this.outer1.r - w};
-    // const points1 = this.curvePointGen(outer2, this.outerAngle1, false);
-
-    // const center2 = {a: this.center2.a, b: this.center2.b, r: this.center2.r + w};
-    // const diff = THREE.MathUtils.radToDeg(Math.asin(w / center2.r));
-    // const angles = [90 + this.theta / 2 - diff, 90 - this.theta / 2 + diff]
-    // const points2 = this.curvePointGen(center2, angles, true);
-
-    // const points3 = points1.concat(points2);
-    // const geo1 = this.shapeGeoGen(points3);
-    // geos.push(geo1);
-
-    // // 奥の花弁
-    // const angles2 = [this.outerAngle2[0] + diff, this.outerAngle2[1] - diff];
-    // const points4 = this.curvePointGen(outer2, angles2, false);
-
-    // const angles3 = [
-    //   this.outerAngle2[0] + this.theta / 2 - diff - 1,
-    //   this.outerAngle1[0] + this.theta / 2 + diff,
-    // ];
-    // const points5 = this.curvePointGen(this.outer3, angles3, true);
-
-    // const angles4 = [
-    //   this.outerAngle1[1] - this.theta / 2 - diff,
-    //   this.outerAngle2[1] - this.theta / 2 + diff + 1,
-    // ];
-    // const points6 = this.curvePointGen(this.outer4, angles4, true);
-
-    // const points7 = points4.concat(points5, points6);
-    // const geo2 = this.shapeGeoGen(points7);
-    // geos.push(geo2);
-
-    // // メッシュの生成を16回繰り返す
-    // for (var i = 0;i <= geos.length - 1;i ++) {
-    //   const geo = geos[i];
-    //   for (var j = 0;j <= 15;j ++) {
-    //     const mesh = new THREE.Mesh(geo, this.shapeMat);
-    //     const angle = i == 1 ? this.theta * (j - 0.5) : this.theta * j
-    //     mesh.rotation.z = THREE.MathUtils.degToRad(angle);
-    //     this.shapes.add(mesh);
-    //   }
-    // }
+      if (i == 0) {
+        const curve1 = this.curvePointGen(circle, angle, false);
+        const curve2 = this.curvePointGen(topCircle, [this.topArc3[0] + topTheta, this.topArc3[1] - topTheta], false);
+        const shapes = curve1.concat(curve2);
+        const c4 = this.circles[4];
+        const pivot = {a: c4.a, b: c4.b, r: c4.r - w};
+        const pathes = this.curvePointGen(pivot, [0, 360], true);
+        const geo = this.shapeGeoGen(shapes, pathes);
+        const mesh = new THREE.Mesh(geo, this.shapeMat);
+        mesh.geometry.translate(0, - 832, 0);
+        this.shapes.add(mesh);
+      } else {
+        for (var j = 0;j <= 1;j ++) {
+          var points;
+          if (j == 0) {
+            const curve = this.curvePointGen(circle, angle, false);
+            var apices = [
+              this.getIntersect(this.forms[0][4 - i][2], this.forms[2][4][2]),
+              this.getIntersect(this.forms[2][5 - i][2], this.forms[2][4][2]),
+              this.getIntersect(this.forms[0][4 - i][1], this.forms[2][5 - i][2]),
+            ];
+            if (i == 1) apices.splice(1, 1);
+            points = curve.concat(apices);
+          } else {
+            var apices = [
+              this.getIntersect(this.forms[0][4 - i][1], this.forms[2][4][1]),
+              this.getIntersect(this.forms[2][5 - i][1], this.forms[2][4][1]),
+              this.getIntersect(this.forms[0][4 - i][2], this.forms[2][5 - i][1]),
+            ];
+            if (i == 1) apices.splice(1, 1);
+            const botInCircle = {a: c2.a, b: c2.b, r: c2.r - w};
+            const interFrom = this.interLineCircle(botInCircle, this.forms[0][4 - i][2])[i < 2 ? 0 : 1];
+            const interTo = this.interLineCircle(botInCircle, this.forms[0][4 - i][1])[i < 2 ? 0 : 1];
+            const angles = [
+              this.circumAngle(botInCircle, interFrom),
+              this.circumAngle(botInCircle, interTo)
+            ];
+            const curve = this.curvePointGen(botInCircle, angles, false);
+            points = curve.concat(apices);
+          }
+          const geo = this.shapeGeoGen(points);
+          const mesh = new THREE.Mesh(geo, this.shapeMat);
+          mesh.geometry.translate(0, - 832, 0);
+          this.shapes.add(mesh);
+        }
+      }
+    }
 
     this.group.add(this.shapes);
   }
