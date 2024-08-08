@@ -69,6 +69,18 @@ export default class Founder {
     }
   }
 
+  // ２円の交点を求める
+  inter2Circles = (circle1, circle2) => {
+    const a1 = circle1.a, b1 = circle1.b, r1 = circle1.r;
+    const a2 = circle2.a, b2 = circle2.b, r2 = circle2.r;
+    const form = {
+      a: - (2 * (a2 - a1)) / (2 * (b2 - b1)),
+      b: 1,
+      c: - ((a1 + a2) * (a1 - a2) + (b1 + b2) * (b1 - b2) + (r2 + r1) * (r2 - r1)) / (2 * (b2 - b1))
+    };
+    return this.interLineCircle(circle1, form);
+  }
+
   // ２点の座標から直線の方程式の係数（a,b,c）を取得（v1,v2: ２点の座標）
   from2Points = (v1, v2) => {
     const x1 = v1.x, y1 = v1.y;
