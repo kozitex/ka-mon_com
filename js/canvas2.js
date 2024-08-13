@@ -15,6 +15,7 @@ import MaruNiFutatsuKarigane from './kamon2/maru-ni-futatsu-karigane2.js';
 import JuurokuyouYaeOmoteKiku from './kamon2/juurokuyou-yae-omote-kiku.js';
 import HinomaruOugi from './kamon2/hinomaru-ougi.js';
 import Katabami from './kamon2/katabami.js';
+import Uranamisen from './kamon2/uranamisen.js';
 
 export default class Canvas {
 
@@ -115,9 +116,10 @@ export default class Canvas {
       // new MaruNiFutatsuKarigane(),
       // new JuurokuyouYaeOmoteKiku(),
       // new HinomaruOugi(),
-      new Katabami(),
+      // new Katabami(),
+      new Uranamisen(),
     ];
-    const maxNum = 10;
+    const maxNum = 20;
     const kamonNum = kamonList.length > maxNum ? maxNum : kamonList.length;
     this.kamons = this.lottery(kamonList, kamonNum);
     this.kamons.forEach((kamon) => kamon.init());

@@ -12,7 +12,7 @@ export default class Katabami extends Kamon {
     // infoのテキスト
     this.jpNameText = '片喰';
     this.jpDescText = '片喰紋は植物のカタバミを図案化した家紋です。カタバミは繁殖力が強く、一度根付くと取り除くことが難しいことから、家の繁栄と存続の縁起担ぎとして家紋に用いられたと言われています。そのため、多くの家の家紋として採用され、五大家紋、十大家紋の一つに数えられています。';
-    this.enNameText = 'katabami';
+    this.enNameText = 'Katabami';
     this.enDescText = 'Katabami-mon is a family crest that is a stylized version of the oxalis plant. Oxalis is said to have been used in family crests as a sign of good luck for the prosperity and survival of the family, as it is highly reproductive and its stems grow underground, making it difficult to remove once it takes root. For this reason, it has been adopted as the family crest of many families, and is counted as one of the five major family crests and one of the ten major family crests.';
 
     // ガイドラインの表示アニメーションパラメータ
