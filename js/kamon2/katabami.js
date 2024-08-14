@@ -192,39 +192,49 @@ export default class Katabami extends Kamon {
   generateGuideline = () => {
 
     const objects = [
-      {c: true,  s: false, r: false, m: false, o: this.circles[0]},
-      {c: true,  s: true,  r: false, m: false, o: this.circles[1]},
-      {c: true,  s: false, r: true,  m: true,  o: this.circles[4]},
-      {c: false, s: true,  r: true,  m: false, o: this.lines[0]},
-      {c: true,  s: true,  r: false, m: false, o: this.circles[2]},
-      {c: true,  s: true,  r: true,  m: false, o: this.circles[3]},
-      {c: true,  s: false, r: true,  m: false, o: this.circles[5]},
-      {c: false, s: true,  r: true,  m: false, o: this.lines[1]},
-      {c: false, s: false, r: true,  m: true , o: this.lines[2]},
-      {c: true,  s: false, r: true,  m: true,  o: this.circles[6]},
+      [
+        {c: true,  s: false, r: false, m: false, o: this.circles[0]},
+        {c: true,  s: true,  r: false, m: false, o: this.circles[1]},
+        {c: true,  s: true,  r: false, m: false, o: this.circles[2]},
+        {c: false, s: true,  r: true,  m: false, o: this.lines[0]},
+      ],
+      [
+        {c: true,  s: false, r: true,  m: true,  o: this.circles[4]},
+      ],
+      [
+        {c: true,  s: true,  r: true,  m: false, o: this.circles[3]},
+        {c: true,  s: false, r: true,  m: false, o: this.circles[5]},
+        {c: false, s: true,  r: true,  m: false, o: this.lines[1]},
+        {c: false, s: false, r: true,  m: true , o: this.lines[2]},
+      ],
+      [
+        {c: true,  s: false, r: true,  m: true,  o: this.circles[6]},
+      ]
     ];
 
     objects.forEach((object) => {
-      const points = object.c
-        ? this.circleLocusGen(object.o, [90, 450], this.divCount)
-        : this.lineLocusGen(object.o[0], object.o[1], 0, this.divCount);
-      var mesh;
-      if (object.r) {
-        const group = new THREE.Group();
-        for (var i = 0;i <= 1;i ++) {
-          for (var j = 0;j <= 2;j ++) {
-            mesh = object.s ? this.sublineGen(points) : this.guidelineGen(points);
-            const angleY = THREE.MathUtils.degToRad(180 * i);
-            const angleZ = THREE.MathUtils.degToRad(120 * j);
-            mesh.rotation.set(0, object.m ? angleY : 0, angleZ);
-            group.add(mesh);
+      const group = new THREE.Group();
+      object.forEach((param) => {
+        const points = param.c
+          ? this.circleLocusGen(param.o, [90, 450], this.divCount)
+          : this.lineLocusGen(param.o[0], param.o[1], 0, this.divCount);
+        var mesh;
+        if (param.r) {
+          for (var i = 0;i <= 1;i ++) {
+            for (var j = 0;j <= 2;j ++) {
+              mesh = param.s ? this.sublineGen(points) : this.guidelineGen(points);
+              const angleY = THREE.MathUtils.degToRad(180 * i);
+              const angleZ = THREE.MathUtils.degToRad(120 * j);
+              mesh.rotation.set(0, param.m ? angleY : 0, angleZ);
+              group.add(mesh);
+            }
           }
+        } else {
+          mesh = param.s ? this.sublineGen(points) : this.guidelineGen(points);
+          group.add(mesh);
         }
-        this.guidelines.add(group);
-      } else {
-        mesh = object.s ? this.sublineGen(points) : this.guidelineGen(points);
-        this.guidelines.add(mesh);
-      }
+      })
+      this.guidelines.add(group);
     })
 
     this.group.add(this.guidelines);

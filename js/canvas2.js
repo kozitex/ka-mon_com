@@ -106,17 +106,17 @@ export default class Canvas {
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
     const kamonList = [
-      // new HidariMitsuDomoe(),
-      // new HidariFutatsuDomoe(),
-      // new Kikyou(),
-      // new GenjiGuruma(),
-      // new MaruNiChigaiTakanoha(),
-      // new DakiMyouga(),
-      // new MaruNiUmebachi(),
-      // new MaruNiFutatsuKarigane(),
-      // new JuurokuyouYaeOmoteKiku(),
-      // new HinomaruOugi(),
-      // new Katabami(),
+      new HidariMitsuDomoe(),
+      new HidariFutatsuDomoe(),
+      new Kikyou(),
+      new GenjiGuruma(),
+      new MaruNiChigaiTakanoha(),
+      new DakiMyouga(),
+      new MaruNiUmebachi(),
+      new MaruNiFutatsuKarigane(),
+      new JuurokuyouYaeOmoteKiku(),
+      new HinomaruOugi(),
+      new Katabami(),
       new Uranamisen(),
     ];
     const maxNum = 20;
