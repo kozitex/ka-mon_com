@@ -537,7 +537,7 @@ body.light #ward .button .icon.running {
 
 
 
-#logo {
+/* #logo {
   position: fixed;
   width: 20.0rem;
   height: 20.0rem;
@@ -559,7 +559,7 @@ body.dark #logo {
 
 body.light #logo {
   background-color: #666666;
-}
+} */
 
 /* #logo img {
   width: 100%;

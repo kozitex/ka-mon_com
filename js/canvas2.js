@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import Grid from './grid.js';
-import Mist from './mist.js';
+import Mist from './mist2.js';
 import KageIgeta from './kamon/kage-igeta.js';
 import HidariFutatsuDomoe from './kamon2/hidari-futatsu-domoe2.js';
 import HidariMitsuDomoe from './kamon2/hidari-mitsu-domoe.js';
@@ -101,7 +101,7 @@ export default class Canvas {
     this.jpMiniName = document.getElementById('jpMiniName');
     this.enMiniName = document.getElementById('enMiniName');
 
-    this.logo = document.getElementById('logo');
+    // this.logo = document.getElementById('logo');
 
     // 家紋リストから５つ抽選して初期化
     this.nowIndex = 0
@@ -342,14 +342,14 @@ export default class Canvas {
     this.enMiniName.style = content;
   }
 
-  // logoの表示制御
-  logoDisplayControl = () => {
-    const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, 0.8, 0.85);
-    const outRatio = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.05);
-    const opaRaio = (1.0 - outRatio + inRatio) * 0.3;
-    const scaRatio = 1.0 + (inRatio - outRatio) * 0.2;
-    this.logo.style = `opacity: ${opaRaio};scale: ${scaRatio};`
-  }
+  // // logoの表示制御
+  // logoDisplayControl = () => {
+  //   const inRatio  = THREE.MathUtils.smoothstep(this.progRatio, 0.8, 0.85);
+  //   const outRatio = THREE.MathUtils.smoothstep(this.progRatio, 0.0, 0.05);
+  //   const opaRaio = (1.0 - outRatio + inRatio) * 0.3;
+  //   const scaRatio = 1.0 + (inRatio - outRatio) * 0.2;
+  //   this.logo.style = `opacity: ${opaRaio};scale: ${scaRatio};`
+  // }
 
   render() {
 
@@ -372,7 +372,7 @@ export default class Canvas {
     // ロゴなどのアニメーションを制御
     this.miniNameDisplayControl();
     this.descDisplayControl(this.kamon.descParams);
-    this.logoDisplayControl();
+    // this.logoDisplayControl();
 
     // 画面に表示
     this.renderer.render(this.scene, this.camera);
